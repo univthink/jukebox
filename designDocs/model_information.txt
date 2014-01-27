@@ -17,11 +17,15 @@ Guest
 	-[subcategorize from here]
 
 
-User
+Facebook User
 	-id
 	-username
 	-facebook oauth token (on adam's end)
 	-(Cache data or ask facebook every time?  Explore performance of each)
+
+Anonymous User
+	-id
+	-username
 
 Song
 	-id = track name & artist name
