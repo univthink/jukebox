@@ -1,0 +1,38 @@
+Room
+	-id
+	-creator
+	-room name
+	-mode
+	-coordinates
+		-lat
+		-long
+	-queue
+		-[songs]
+	-guests
+		-[guests]
+	-password (0 length if no password)
+
+Guest
+	-userid
+	-[subcategorize from here]
+
+
+User
+	-id
+	-username
+	-facebook oauth token (on adam's end)
+	-(Cache data or ask facebook every time?  Explore performance of each)
+
+Song
+	-id = track name & artist name
+	-spotify url
+	-track name
+	-artist name
+	-album name
+	-upvotes(0 if not up/down room)
+	-downvotes(^)
+	-submitter
+	-status
+		-queued/playing/played
+	-time submitted
+	-time played
