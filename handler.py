@@ -12,14 +12,15 @@ class Main(webapp2.RequestHandler):
 		self.response.write('Welcome to Music Vis!')
 		self.response.write(forms.CREATE_ROOM_FORM)
 
-		# self.response.write('Current Rooms:<br>')
+		self.response.write('<b>Current Rooms:<br></b>')
 
-		# roomlist_name = self.request.get('roomlist_name',DEFAULT_ROOMLIST_NAME)
-		# room_query = Room.query(ancestor=roomlist_key(roomlist_name)).order(-Room.time)
-		# rooms = room_query.fetch(10)
+		roomlist_name = self.request.get('roomlist_name',DEFAULT_ROOMLIST_NAME)
+		room_query = models.Room.query(ancestor=roomlist_key(roomlist_name))
+		rooms = room_query.fetch(10)
 
-		# for room in rooms:
-		# 	self.response.write(room.name + "<br>")
+		for room in rooms:
+			self.response.write(room)
+			self.response.write("<br>")
 
 		# self.response.write("<br><br>" + JOIN_FORM)
 
