@@ -1,0 +1,46 @@
+iPhone Endpoints
+-Create Room
+	-Send: Mode, user ID, username, room name, initial playlist, coordinates, (password)
+	-Return: Room #
+-Update Room (car session)
+	-Send: new coordinates
+-Join Room
+	-Send: Room #, user ID, (username), (password)
+-Register User
+	-Send: username
+	-Return: user ID
+-Search Rooms
+	-Send: (username), (coordinates), (room name)
+	-Return: Table (Room #, username, coordinates, room name)
+-Get Song Queue
+	-Send: Room # (security)
+	-Return: Song Queue
+-Vote on Song
+	-Send: Room #, Song ID, + or -, user ID (security)
+-Submit Song
+	-Send: Room #, (user ID), Song ID (security)
+-Remove Song
+	-Send: Room #, (user ID),Song ID (security)
+-Reorder Song
+	-Send: Room #, (user ID), Song ID, new position (security)
+-Pause Song
+	-Send: Room #, (user ID)
+-Get Song Play Status
+	-Send: Room #
+	-Return: Yes/No
+
+Add security token.
+
+Summary
+-Create Room
+-Update Room
+-Join Room
+-Register User
+-Search Rooms
+-Get Song Queue
+-Vote on Song
+-Submit Song
+-Remove Song
+-Reorder Song
+-Pause Song
+-Get Song Play Status
