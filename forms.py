@@ -1,11 +1,9 @@
 CREATE_ROOM_FORM = """\
 	<br><br>Create a room!<br>
 	<form action="create_room" method="post">
-	Id: <input type="text" name="id"><br>
 	Creator: <input type="text" name="creator"><br>
 	Room Name: <input type="text" name="room_name"><br>
-	Latitude:<input type="text" name="latitude"><br>
-	Longitude: <input type="text" name="longitude"><br>
+	Mode: <input type="text" name="mode"><br>
 	Password: <input type="text" name="password"><br>
 	<input type="submit" value="Create Room">
 	</form>
