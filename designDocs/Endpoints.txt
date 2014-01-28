@@ -28,6 +28,8 @@ iPhone Endpoints
 -Get Song Play Status
 	-Send: Room #
 	-Return: Yes/No
+-Change Room Mode (secondary)
+	-Send: Room #, new mode
 
 Add security token.
 
