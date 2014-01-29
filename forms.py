@@ -17,10 +17,10 @@ CREATE_GUEST_FORM = """\
 """
 
 CREATE_USER_FORM = """\
-	<form action="create_user" method="post">
-	Id: <input type="text" name="id"><br>
+	<br><br>Create a user!<br>
+	<form action="register_user" method="post">
 	Username: <input type="text" name="username"><br>
-	<input type="submit" value="Create Guest">
+	<input type="submit" value="Create User">
 	</form>
 """
 

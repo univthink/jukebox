@@ -15,7 +15,7 @@ class Room(ndb.Model):
 # 	#Subcategorize for different room types here.
 
 class User(ndb.Model):
-	id = ndb.IntegerProperty(required=True)
+	# id = ndb.IntegerProperty(required=True)
 	username = ndb.StringProperty(required=True)
 
 class Song(ndb.Model):
