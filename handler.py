@@ -18,6 +18,16 @@ class Main(webapp2.RequestHandler):
 			self.response.write(room)
 			self.response.write("<br>")
 
+			users_query = models.Guest.query(ancestor=room.key)
+			users = users_query.fetch()
+			for user in users:
+				self.response.write("<t>" + user.username)
+				self.response.write("<br>")
+
+
+		self.response.write('<br><br><b>Join a Room!<br></b>')
+		self.response.write(forms.JOIN_ROOM_FORM)
+
 		self.response.write(forms.CREATE_USER_FORM)
 
 		self.response.write('<b>Current Users:<br></b>')

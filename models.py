@@ -10,8 +10,9 @@ class Room(ndb.Model):
 	# guests = ndb.ListProperty(Guest,required=True) #(List of Keys to children?)
 	password = ndb.StringProperty()
 
-# class Guest(ndb.Model):
-# 	userid = ndb.ReferenceProperty(User, required=True)
+class Guest(ndb.Model):
+	username = ndb.StringProperty(required=True)
+#	userid = ndb.ReferenceProperty(User, required=True)
 # 	#Subcategorize for different room types here.
 
 class User(ndb.Model):

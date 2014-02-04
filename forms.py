@@ -9,6 +9,15 @@ CREATE_ROOM_FORM = """\
 	</form>
 """
 
+JOIN_ROOM_FORM = """\
+	<form action="join_room" method="post">
+	Id: <input type="text" name="room_id"><br>
+	Username: <input type="text" name="username"><br>
+	<input type="hidden" name="web_app" value="true">
+	<input type="submit" value="Join Room">
+	</form>
+"""
+
 CREATE_GUEST_FORM = """\
 	<form action="create_guest" method="post">
 	Id: <input type="text" name="id"><br>
