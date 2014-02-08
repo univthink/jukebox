@@ -9,6 +9,19 @@ CREATE_ROOM_FORM = """\
 	</form>
 """
 
+SUBMIT_SONG_FORM = """\
+	<form action="submit_song" method="post">
+	Room ID: <input type="text" name="room_id"><br>
+	User ID: <input type="text" name="user_id"><br>
+	Spotify URL: <input type="text" name="url"><br>
+	Track Name: <input type="text" name="track_name"><br>
+	Artist Name: <input type="text" name="artist_name"><br>
+	Album Name: <input type="text" name="album_name"><br>
+	<input type="hidden" name="web_app" value="true">
+	<input type="submit" value="Submit Song">
+	</form>
+"""
+
 JOIN_ROOM_FORM = """\
 	<form action="join_room" method="post">
 	Id: <input type="text" name="room_id"><br>
