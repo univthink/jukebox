@@ -5,6 +5,7 @@ CREATE_ROOM_FORM = """\
 	Room Name: <input type="text" name="room_name"><br>
 	Mode: <input type="text" name="mode"><br>
 	Password: <input type="text" name="password"><br>
+	Coordinates: <input type="text" name="coordinates"><br>
 	<input type="submit" value="Create Room">
 	</form>
 """

@@ -32,6 +32,8 @@ class Main(webapp2.RequestHandler):
 				self.response.write(song)
 				self.response.write("<br>")
 
+			self.response.write("<br><br>")
+
 		self.response.write('<br><br><b>Join a Room!<br></b>')
 		self.response.write(forms.JOIN_ROOM_FORM)
 
