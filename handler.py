@@ -20,13 +20,25 @@ class Main(webapp2.RequestHandler):
 
 			users_query = models.Guest.query(ancestor=room.key)
 			users = users_query.fetch()
+			self.response.write("Users:<br>")
 			for user in users:
-				self.response.write("<t>" + user.username)
+				self.response.write("<t>" + user.username + " -- ")
+				self.response.write(user)
 				self.response.write("<br>")
 
+			self.response.write("<br>Songs:<br>")
+			for song_id in room.queue:
+				song = models.Song.get_by_id(int(song_id),parent=room.key)
+				self.response.write(song)
+				self.response.write("<br>")
+
+			self.response.write("<br><br>")
 
 		self.response.write('<br><br><b>Join a Room!<br></b>')
 		self.response.write(forms.JOIN_ROOM_FORM)
+
+		self.response.write('<br><br><b>Submit a Song!<br></b>')
+		self.response.write(forms.SUBMIT_SONG_FORM)
 
 		self.response.write(forms.CREATE_USER_FORM)
 
@@ -47,5 +59,6 @@ application = webapp2.WSGIApplication([
 	('/', Main),
 	('/create_room', CreateRoom.CreateRoom),
 	('/register_user', RegisterUser.RegisterUser),
-	('/join_room', JoinRoom.JoinRoom)
+	('/join_room', JoinRoom.JoinRoom),
+	('/submit_song',SubmitSong.SubmitSong)
 ], debug=True)

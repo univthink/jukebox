@@ -5,7 +5,21 @@ CREATE_ROOM_FORM = """\
 	Room Name: <input type="text" name="room_name"><br>
 	Mode: <input type="text" name="mode"><br>
 	Password: <input type="text" name="password"><br>
+	Coordinates: <input type="text" name="coordinates"><br>
 	<input type="submit" value="Create Room">
+	</form>
+"""
+
+SUBMIT_SONG_FORM = """\
+	<form action="submit_song" method="post">
+	Room ID: <input type="text" name="room_id"><br>
+	User ID: <input type="text" name="user_id"><br>
+	Spotify URL: <input type="text" name="url"><br>
+	Track Name: <input type="text" name="track_name"><br>
+	Artist Name: <input type="text" name="artist_name"><br>
+	Album Name: <input type="text" name="album_name"><br>
+	<input type="hidden" name="web_app" value="true">
+	<input type="submit" value="Submit Song">
 	</form>
 """
 
