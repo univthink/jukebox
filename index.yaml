@@ -13,5 +13,22 @@ indexes:
 - kind: Room
   ancestor: yes
   properties:
+  - name: creator
+  - name: lat
+
+- kind: Room
+  ancestor: yes
+  properties:
+  - name: lat
+
+- kind: Room
+  ancestor: yes
+  properties:
+  - name: name
+  - name: lat
+
+- kind: Room
+  ancestor: yes
+  properties:
   - name: time
     direction: desc
