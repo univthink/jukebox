@@ -60,5 +60,6 @@ application = webapp2.WSGIApplication([
 	('/create_room', CreateRoom.CreateRoom),
 	('/register_user', RegisterUser.RegisterUser),
 	('/join_room', JoinRoom.JoinRoom),
-	('/submit_song',SubmitSong.SubmitSong)
+	('/submit_song',SubmitSong.SubmitSong),
+	('/search_room',SearchRoom.SearchRoom)
 ], debug=True)
