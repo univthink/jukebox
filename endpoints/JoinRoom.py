@@ -31,10 +31,9 @@ class JoinRoom(webapp2.RequestHandler):
 				if user_id == '':
 					self.response.write("No user_id was provided.")
 				else:
-					# user = models.User.get_by_id(int(user_id))
-					# user_key = ndb.Key(models.User, int(user_id))
-					# user = user_key.get()
-					if False: #user == None:
+					userlist_name = self.request.get('userlist_name', utils.DEFAULT_USERLIST_NAME)
+					user = models.User.get_by_id(int(user_id),parent=utils.userlist_key(userlist_name))
+					if user == None:
 						self.response.write("Invalid user_id.")
 					else:
 						guest = models.Guest(parent=room.key,user_id=int(user_id))

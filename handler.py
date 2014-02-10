@@ -22,7 +22,6 @@ class Main(webapp2.RequestHandler):
 			users = users_query.fetch()
 			self.response.write("Users:<br>")
 			for user in users:
-				self.response.write("<t>" + user.username + " -- ")
 				self.response.write(user)
 				self.response.write("<br>")
 
