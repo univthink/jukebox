@@ -42,7 +42,7 @@ def boundingBox (lat, lon, dist):
 	latMin = lat - deltaLat
 	latMax = lat + deltaLat
 
-	deltaLon = math.asin(math.sin(r)/math.cos(lat))
+	deltaLon = math.fabs(math.asin(math.sin(r)/math.cos(lat)))
 	lonMin = lon - deltaLon
 	lonMax = lon + deltaLon
 

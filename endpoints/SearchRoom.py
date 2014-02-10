@@ -12,17 +12,23 @@ class SearchRoom(webapp2.RequestHandler):
 		room = models.Room.query(ancestor=utils.roomlist_key(roomlist_name))
 		if self.request.get('name'):
 			room = room.filter(models.Room.name == self.request.get('name'))
+		if self.request.get('user_id'):
+			# bool has_user= False
+			room = room.filter(models.Room.creator==int(self.request.get('user_id')))
+		filterLon = False
+		lonMin = 0
+		lonMax =0
 		if self.request.get('coordinates') and self.request.get('radius'):
 			[lat, lon] = self.request.get('coordinates').split(',')
 			[latMin, latMax, lonMin, lonMax] = utils.boundingBox(float(lat), float(lon), float(self.request.get('radius')))
 			room = room.filter(models.Room.lat >= latMin, models.Room.lat <= latMax)
+			filterLon = True
 			# room = room.filter(models.Room.lon >= lonMin, models.Room.lon <= lonMax)
-		if self.request.get('user_id'):
-			# bool has_user= False
-			room = room.filter(models.Room.creator==int(self.request.get('user_id')))
 
-
-		self.response.write(utils.JSONEncoder().encode(room.fetch()))
+		rooms = room.fetch()
+		if filterLon:
+			rooms = [p for p in rooms if (p.lon >= lonMin and p.lon <= lonMax)]
+		self.response.write(utils.JSONEncoder().encode(rooms))
 
 		# if room == None:
 		# 	room_exists = False;
