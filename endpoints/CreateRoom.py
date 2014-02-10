@@ -23,4 +23,7 @@ class CreateRoom(webapp2.RequestHandler):
 							   queue=[])
 			room_key = room.put()
 
+			guest = models.Guest(parent=room_key,user_id=int(self.request.get('creator')))
+			guest.put()
+
 			self.response.write(json.dumps(room_key.integer_id()))
