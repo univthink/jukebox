@@ -53,6 +53,8 @@ class Main(webapp2.RequestHandler):
 			self.response.write("<br>")
 
 		# self.response.write("<br><br>" + JOIN_FORM)
+		self.response.write("<br><br>Get Song Queue!<br>")
+		self.response.write(forms.GET_SONG_QUEUE_FORM)
 
 
 application = webapp2.WSGIApplication([
@@ -61,5 +63,6 @@ application = webapp2.WSGIApplication([
 	('/register_user', RegisterUser.RegisterUser),
 	('/join_room', JoinRoom.JoinRoom),
 	('/submit_song',SubmitSong.SubmitSong),
-	('/search_room',SearchRoom.SearchRoom)
+	('/search_room',SearchRoom.SearchRoom),
+	('/get_song_queue',GetSongQueue.GetSongQueue)
 ], debug=True)
