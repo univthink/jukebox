@@ -1,9 +1,6 @@
 import webapp2, models, forms, json, endpoints, utils
 from google.appengine.ext import ndb
 
-def get_anonymous_name():
-	#TODO: Update
-	return 'anonymous'
 
 class JoinRoom(webapp2.RequestHandler):
 
@@ -30,18 +27,24 @@ class JoinRoom(webapp2.RequestHandler):
 				else:
 					self.response.write('0')
 			else:
-				username = self.request.get('username',get_anonymous_name())
-				if username == '':
-					username = get_anonymous_name()
-
-				guest = models.Guest(parent=room.key,username=username)
-				guest_key = guest.put()
-				#TODO: Consdier adding detail to "Guest"
-
-				if web_app:
-					self.response.write("\"" + room.name + "\" was successfully joined!")
+				user_id = self.request.get('user_id')
+				if user_id == '':
+					self.response.write("No user_id was provided.")
 				else:
-					self.response.write("1")
+					# user = models.User.get_by_id(int(user_id))
+					# user_key = ndb.Key(models.User, int(user_id))
+					# user = user_key.get()
+					if False: #user == None:
+						self.response.write("Invalid user_id.")
+					else:
+						guest = models.Guest(parent=room.key,user_id=int(user_id))
+						guest_key = guest.put()
+						#TODO: Consdier adding detail to "Guest"
+
+						if web_app:
+							self.response.write("\"" + room.name + "\" was successfully joined!")
+						else:
+							self.response.write("1")
 
 		if web_app:
 			self.response.write(forms.RETURN_TO_MAIN)

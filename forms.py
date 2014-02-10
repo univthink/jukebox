@@ -26,7 +26,7 @@ SUBMIT_SONG_FORM = """\
 JOIN_ROOM_FORM = """\
 	<form action="join_room" method="post">
 	Id: <input type="text" name="room_id"><br>
-	Username: <input type="text" name="username"><br>
+	User_ID: <input type="text" name="user_id"><br>
 	Password: <input type="text" name="password"><br>
 	<input type="hidden" name="web_app" value="true">
 	<input type="submit" value="Join Room">

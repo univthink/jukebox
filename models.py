@@ -13,7 +13,7 @@ class Room(ndb.Model):
 	password = ndb.StringProperty()
 
 class Guest(ndb.Model):
-	username = ndb.StringProperty(required=True)
+	user_id = ndb.IntegerProperty(required=True)
 #	userid = ndb.ReferenceProperty(User, required=True)
 # 	#Subcategorize for different room types here.
 
