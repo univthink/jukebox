@@ -102,6 +102,7 @@
           $.each(data, function(index, itemData) {
             var password = itemData["password"];
             if (password == "") password = "null"
+            $("#nearby_rooms").empty();
             $("#nearby_rooms").append(
               "<li>"
               + "Room Name: " + itemData["name"] + "<br>"
@@ -139,6 +140,7 @@
         success: function(data) {
           alert("here is the daters: " + data);
           getMyRooms();
+          getNearbyRooms();
         }
       }); 
     };
