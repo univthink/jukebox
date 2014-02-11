@@ -35,26 +35,6 @@
     }
   </style>
   <script type="text/javascript">
-    var cur_user = "Anonymous";
-    var cur_userID;
-    $(function() {
-      cur_userID = getQueryVariable('user');
-      if (cur_userID == null) cur_userID = 0;
-      $("#username_display").html(cur_user);
-      $('input[name="username_join"]').val(cur_user);
-      $.UISlideout();
-      $.UISlideout.populate([{main:'Home'},{header:'Actions'},{join_room:'Join Room'}]);
-      getMyRooms();
-      getNearbyRooms();
-      $("#username_update_form").submit(function() {
-        $("#username_display").html($("#username_input").val());
-        $('input[name="username_join"]').val($("#username_input").val());
-        cur_user = $("#username_input").val();
-        cur_userID = 0;
-        $("#username_input").val('');
-        $("#username_update_div").css("display", "none");
-      });
-    });
     function showUsernameUpdateDiv() {
       $("#username_update_div").css("display", "block");
     };
@@ -115,17 +95,23 @@
         }
       });
     };
+    function registerUser(username, callback) {
+      $.ajax({
+        type: "POST",
+        url: "/register_user",
+        data: {username: username},
+        success: function(userID) {
+          $("#register_flag").html("You are registered.");
+          cur_userID = userID;
+          callback();
+          return userID;
+        }
+      });
+    };
     function joinRoom(roomID, password) {
       if (cur_userID == 0) {
-        $.ajax({
-          type: "POST",
-          url: "/register_user",
-          data: {username: cur_user},
-          success: function(data) {
-            alert("Registered user: " + data);
-            cur_userID = data;
-            ajaxJoin(roomID, password);
-          }
+        registerUser(cur_user, function() {
+          ajaxJoin(roomID, password);
         });
       } else {
         ajaxJoin(roomID, password);
@@ -155,6 +141,37 @@
       }
      return null;
     }
+
+    // global vars
+    var cur_user = "Anonymous";
+    var cur_userID;
+
+    $(function() {
+      $.UISlideout();
+      $.UISlideout.populate([{main:'Home'},{header:'Actions'},{join_room:'Join Room'}]);
+
+      cur_userID = getQueryVariable('user');
+      if (cur_userID == null) cur_userID = 0;
+      $("#username_display").html(cur_user);
+      $('input[name="username_join"]').val(cur_user);
+
+      getMyRooms();
+      getNearbyRooms();
+
+      $("#username_update_form").submit(function(e) {
+        var newUsername = $("#username_input").val()
+        $("#username_display").html(newUsername);
+        $('input[name="username_join"]').val(newUsername);
+        cur_user = newUsername;
+        cur_userID = 0;
+        $("#username_input").val('');
+        $("#username_update_div").css("display", "none");
+        registerUser(newUsername);
+        e.preventDefault();
+      });
+
+    });
+
   </script>
 </head>
 <body>
@@ -170,6 +187,8 @@
             <a href="javascript:showUsernameUpdateDiv();" id="open_user_popup">
               <label>(edit)</label>
             </a>
+            <br>
+            <span id="register_flag">You are <b>not</b> registered.</span>
         </p>
         <div style="text-align: center;" id="username_update_div">
             <form id="username_update_form">
