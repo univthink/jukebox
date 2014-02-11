@@ -19,9 +19,9 @@ class SearchRoom(webapp2.RequestHandler):
 		filterLon = False
 		lonMin = 0
 		lonMax =0
-		if self.request.get('coordinates') and self.request.get('radius'):
+		if self.request.get('coordinates'):
 			[lat, lon] = self.request.get('coordinates').split(',')
-			[latMin, latMax, lonMin, lonMax] = utils.boundingBox(float(lat), float(lon), float(self.request.get('radius')))
+			[latMin, latMax, lonMin, lonMax] = utils.boundingBox(float(lat), float(lon), float(self.request.get('radius', '300')))
 			room = room.filter(models.Room.lat >= latMin, models.Room.lat <= latMax)
 			filterLon = True
 			# room = room.filter(models.Room.lon >= lonMin, models.Room.lon <= lonMax)
@@ -29,6 +29,7 @@ class SearchRoom(webapp2.RequestHandler):
 		rooms = room.fetch()
 		if filterLon:
 			rooms = [p for p in rooms if (p.lon != None and p.lon>= lonMin and p.lon <= lonMax)]
+
 		self.response.write(utils.JSONEncoder().encode(rooms))
 
 		# if room == None:
