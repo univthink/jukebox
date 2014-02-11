@@ -112,6 +112,8 @@
       if (cur_userID == 0) {
         registerUser(cur_user, function() {
           ajaxJoin(roomID, password);
+          getMyRooms();
+          getNearbyRooms();
         });
       } else {
         ajaxJoin(roomID, password);
@@ -166,7 +168,10 @@
         cur_userID = 0;
         $("#username_input").val('');
         $("#username_update_div").css("display", "none");
-        registerUser(newUsername);
+        registerUser(newUsername, function() {
+          getMyRooms();
+          getNearbyRooms();
+        });
         e.preventDefault();
       });
 
