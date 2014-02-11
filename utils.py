@@ -18,7 +18,9 @@ class JSONEncoder(json.JSONEncoder):
             o = ndb.get(o)
 
         if isinstance(o, ndb.Model):
-            return o.to_dict()
+        	obj = o.to_dict()
+        	obj['id'] = o.key.integer_id()
+        	return obj
         elif isinstance(o, (ndb.GeoPt)):
             return str(o)  # Or whatever other date format you're OK with...
 
