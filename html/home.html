@@ -23,19 +23,28 @@
     #username_update_div {
       display: none;
     }
+    .align-right {
+      display: inline;
+      float: left;
+    }
+    li {
+      overflow: auto;
+    }
     a {
       text-decoration: none;
     }
   </style>
   <script type="text/javascript">
     var cur_user = "Anonymous";
-    var cur_userID = 0;
-    var rooms
+    var cur_userID;
     $(function() {
+      cur_userID = getQueryVariable('user');
+      if (cur_userID == null) cur_userID = 0;
       $("#username_display").html(cur_user);
       $('input[name="username_join"]').val(cur_user);
       $.UISlideout();
       $.UISlideout.populate([{main:'Home'},{header:'Actions'},{join_room:'Join Room'}]);
+      getMyRooms();
       getNearbyRooms();
       $("#username_update_form").submit(function() {
         $("#username_display").html($("#username_input").val());
@@ -56,6 +65,56 @@
         cur_userID = 0;
         $("#username_display").html(cur_user);
       }
+      var roomID = $("#id_join").val();
+      var joinPassword = $("#password_join").val();
+      joinRoom(roomID, joinPassword);
+    };
+    function getMyRooms() {
+      //alert("my user id: " + cur_userID);
+      $.ajax({
+        type: "POST",
+        url: "/search_room",
+        data: {user_id: cur_userID},
+        success: function(data) {
+          //alert(data);
+          $.each(data, function(index, itemData) {
+            var password = itemData["password"];
+            if (password == "") password = "null"
+            $("#nearby_rooms").append(
+              "<li>"
+              + "Room Name: " + itemData["name"] + "<br>"
+              + "Creator: " + itemData["creator_name"] + "<br>"
+              + '<a href="javascript:joinRoom(' + itemData["id"] + ',' + password + ');" class="button action align-right" id="join_room_button">Join Room</a>'
+              + '<a href="queue.html?user=' + cur_userID + '&id=' + itemData["id"] + '" class="button action align-right" id="view_queue_button">View Queue</a>'
+              + "</li>"
+            );
+          });
+        }
+      });
+    };
+    function getNearbyRooms() {
+      //alert("refreshing your rooms");
+      $.ajax({
+        type: "POST",
+        url: "/search_room",
+        data: {},
+        success: function(data) {
+          $.each(data, function(index, itemData) {
+            var password = itemData["password"];
+            if (password == "") password = "null"
+            $("#nearby_rooms").append(
+              "<li>"
+              + "Room Name: " + itemData["name"] + "<br>"
+              + "Creator: " + itemData["creator_name"] + "<br>"
+              + '<a href="javascript:joinRoom(' + itemData["id"] + ',' + password + ');" class="button action align-right" id="join_room_button">Join Room</a>'
+              + '<a href="queue.html?user=' + cur_userID + '&id=' + itemData["id"] + '" class="button action align-right" id="view_queue_button">View Queue</a>'
+              + "</li>"
+            );
+          });
+        }
+      });
+    };
+    function joinRoom(roomID, password) {
       if (cur_userID == 0) {
         $.ajax({
           type: "POST",
@@ -64,45 +123,36 @@
           success: function(data) {
             alert("Registered user: " + data);
             cur_userID = data;
-            var roomID = $("#id_join").val();
-            var joinPassword = $("#password_join").val();
-            joinRoom(roomID, joinPassword);
+            ajaxJoin(roomID, password);
           }
         });
       } else {
-        var roomID = $("#id_join").val();
-        var joinPassword = $("#password_join").val();
-        joinRoom(roomID, password);
+        ajaxJoin(roomID, password);
       }
     };
-    function getNearbyRooms() {
+    function ajaxJoin(roomID, password) {
+      if (password == "null") password = "";
       $.ajax({
-        type: "POST",
-        url: "/search_room",
-        data: {},
-        success: function(data) {
-          $.each(data, function(index, itemData) {
-            $("#nearby_rooms").append(
-              "<li>"
-              + "Room Name: " + itemData["name"] + "<br>"
-              + "Creator: " + itemData["creator_name"] + "<br>"
-              + '<a href="javascript:joinRoom(' + itemData["id"] + ',' + itemData["password"] + ');" class="button action" id="join_room_button">Join Room</a>'
-              + "</li>"
-            );
-          });
-        }
-      });
-    };
-    function joinRoom(roomID, password) {
-      $.ajax({
-        type: "POST",
+       type: "POST",
         url: "/join_room",
         data: {room_id: roomID, user_id: cur_userID, password: password},
         success: function(data) {
-          alert(data);
+          alert("here is the daters: " + data);
+          getMyRooms();
         }
-      });
+      }); 
     };
+    function getQueryVariable(variable) {
+      var query = window.location.search.substring(1);
+      var vars = query.split("&");
+      for (var i = 0; i < vars.length; i++) {
+        var pair = vars[i].split("=");
+        if (pair[0] == variable) { 
+          return pair[1]; 
+        }
+      }
+     return null;
+    }
   </script>
 </head>
 <body>
