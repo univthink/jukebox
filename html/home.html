@@ -30,6 +30,7 @@
   <script type="text/javascript">
     var cur_user = "Anonymous";
     var cur_userID = 0;
+    var rooms
     $(function() {
       $("#username_display").html(cur_user);
       $('input[name="username_join"]').val(cur_user);
@@ -63,11 +64,15 @@
           success: function(data) {
             alert("Registered user: " + data);
             cur_userID = data;
-            joinRoom();
+            var roomID = $("#id_join").val();
+            var joinPassword = $("#password_join").val();
+            joinRoom(roomID, joinPassword);
           }
         });
       } else {
-        joinRoom();
+        var roomID = $("#id_join").val();
+        var joinPassword = $("#password_join").val();
+        joinRoom(roomID, password);
       }
     };
     function getNearbyRooms() {
@@ -76,18 +81,23 @@
         url: "/search_room",
         data: {},
         success: function(data) {
-          alert(JSON.stringify(data));
+          $.each(data, function(index, itemData) {
+            $("#nearby_rooms").append(
+              "<li>"
+              + "Room Name: " + itemData["name"] + "<br>"
+              + "Creator: " + itemData["creator_name"] + "<br>"
+              + '<a href="javascript:joinRoom(' + itemData["id"] + ',' + itemData["password"] + ');" class="button action" id="join_room_button">Join Room</a>'
+              + "</li>"
+            );
+          });
         }
       });
     };
-    function joinRoom() {
-      var roomID = $("#id_join").val();
-      var joinPassword = $("#password_join").val();
-      alert(roomID + ' : ' + joinPassword + ' : ' + cur_userID);
+    function joinRoom(roomID, password) {
       $.ajax({
         type: "POST",
         url: "/join_room",
-        data: {room_id: roomID, user_id: cur_userID, password: joinPassword},
+        data: {room_id: roomID, user_id: cur_userID, password: password},
         success: function(data) {
           alert(data);
         }
@@ -115,13 +125,11 @@
               <input type="submit" value="Update">
             </form>
         </div>
-        <h2>Your Rooms</h2>
-        <ul class='list'>
-          <li></li>
+        <h2>My Rooms</h2>
+        <ul class='list' id="my_rooms">
         </ul>
         <h2>Nearby Rooms</h2>
-        <ul class='list'>
-          <li></li>
+        <ul class='list' id="nearby_rooms">
         </ul>
       </section>
     </article>
