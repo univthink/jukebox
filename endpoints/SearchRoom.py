@@ -28,7 +28,7 @@ class SearchRoom(webapp2.RequestHandler):
 
 		rooms = room.fetch()
 		if filterLon:
-			rooms = [p for p in rooms if (p.lon != None && p.lon>= lonMin and p.lon <= lonMax)]
+			rooms = [p for p in rooms if (p.lon != None and p.lon>= lonMin and p.lon <= lonMax)]
 		self.response.write(utils.JSONEncoder().encode(rooms))
 
 		# if room == None:
