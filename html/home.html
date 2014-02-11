@@ -126,7 +126,7 @@
         url: "/join_room",
         data: {room_id: roomID, user_id: cur_userID, password: password},
         success: function(data) {
-          alert("here is the daters: " + data);
+          if (data) alert("Joined successfully!");
           getMyRooms();
           getNearbyRooms();
         }

@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+r<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="utf-8">
@@ -26,9 +26,13 @@
     }
   </style>
   <script type="text/javascript">
-    var userID;
+    // global vars
+    var cur_user;
+    var cur_userID;
     var roomID;
+    var qr = 0;
     var colors = ['red', 'blue', 'green', 'pink'];
+    var usernames = ['Oak', 'Misty', 'Ash', 'Brock', 'Mai']
     function getQueryVariable(variable) {
       var query = window.location.search.substring(1);
       var vars = query.split("&");
@@ -44,9 +48,9 @@
       $.ajax({
         type: "POST",
         url: "/submit_song",
-        data: {room_id: roomID, user_id: userID, url:autocompleteData.url, track:autocompleteData.name, artist:autocompleteData.artist, album:autocompleteData.album},
+        data: {room_id: roomID, user_id: cur_userID, url:autocompleteData.url, track:autocompleteData.name, artist:autocompleteData.artist, album:autocompleteData.album},
         success: function(data) {
-          console.log(data);
+          if (data) alert("Song added successfully!");
           displayQueue(roomID)
           $("#spotify_song_search").val('')
         }
@@ -82,36 +86,76 @@
         }
       });
     }
-    $(function() {
-      userID = getQueryVariable("user");
-      if (userID == null) userID = 0;
-      roomID = getQueryVariable("id");
-      if (roomID) displayQueue(roomID);
-      else {
-        $("#queue_list").append('<li class="comp">No room ID provided.</li>');
-      }
-      $("#homeButton").attr("href", "home.html?user=" + userID);
-      $("#spotify_song_search").autocomplete({
-        source: function(request, response) {
-            $.get("http://ws.spotify.com/search/1/track.json", {
-              //currently selected in input
-                q: request.term
-            }, function(data) {
-                console.log(data)
-                response($.map(data.tracks, function(item) {
-                    return {label: item.name +" by " + item.artists[0].name, data: {artist: item.artists[0].name, album: item.album.name, url: item.href, name: item.name}};
-                }));
-            });
-        },
-        select: function(event, ui) {
-          console.log(ui)
-          submitSong(roomID, ui.item.data)
-        },
-        messages: {
-            noResults: '',
-            results: function() {}
+    function registerUser(username, callback) {
+      $.ajax({
+        type: "POST",
+        url: "/register_user",
+        data: {username: username},
+        success: function(userID) {
+          cur_userID = userID;
+          callback();
         }
       });
+    };
+    function ajaxJoin(roomID, userID, password, callback) {
+      if (password == "null") password = "";
+      $.ajax({
+       type: "POST",
+        url: "/join_room",
+        data: {room_id: roomID, user_id: userID, password: password},
+        success: function(data) {
+          callback();
+        }
+      }); 
+    };
+    function callbackOnRegister() {
+      ajaxJoin(roomID, cur_userID, "", function() {
+        $("#homeButton").attr("href", "home.html?user=" + cur_userID);
+        $("#spotify_song_search").autocomplete({
+          source: function(request, response) {
+              $.get("http://ws.spotify.com/search/1/track.json", {
+                //currently selected in input
+                  q: request.term
+              }, function(data) {
+                  console.log(data)
+                  response($.map(data.tracks, function(item) {
+                      return {label: item.name +" by " + item.artists[0].name, data: {artist: item.artists[0].name, album: item.album.name, url: item.href, name: item.name}};
+                  }));
+              });
+          },
+          select: function(event, ui) {
+            console.log(ui);
+            if (cur_userID == 0) {
+              alert("You are not a registered user. You may not add a song to this queue.")
+            } else {
+              submitSong(roomID, ui.item.data);
+            }
+          },
+          messages: {
+              noResults: '',
+              results: function() {}
+          }
+        });
+      });
+    }
+    $(function() {
+      cur_userID = getQueryVariable("user");
+      if (cur_userID == null) cur_userID = 0;
+
+      roomID = getQueryVariable("id");
+      if (roomID) {
+        displayQueue(roomID);
+      } else {
+        $("#queue_list").append('<li class="comp">No room ID provided.</li>');
+      }
+
+      if (getQueryVariable("qr")) qr = 1;
+      if (qr) {
+        //alert("registering...");
+        registerUser("Anonymous", callbackOnRegister);
+      } else {
+        callbackOnRegister();
+      }
     });
   </script>
 </head>
