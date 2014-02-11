@@ -25,11 +25,30 @@ class CreateRoom(webapp2.RequestHandler):
 							   mode=self.request.get('mode'),
 							   password=self.request.get('password', ''),
 							   queue=[])
+
+
 			if has_coordinates:
-				room.lat = int(lat)
-				room.lon = int(lon)
+				room.lat = float(lat)
+				room.lon = float(lon)
 
 			room_key = room.put()
+
+			if self.request.get('initial_playlist'):
+				for song in json.loads(self.request.get('initial_playlist')):
+
+					song = models.Song(parent=room_key,
+									   url=song['url'],
+									   track=song['track'],
+									   artist=song['artist'],
+									   album=song['album'],
+									   status=0)
+
+					song_key = song.put()
+
+					#TODO: Order differently based on mode
+					room.queue.append(song_key.integer_id())
+
+				room_key = room.put()
 
 			guest = models.Guest(parent=room_key,user_id=int(self.request.get('creator')))
 			guest.put()

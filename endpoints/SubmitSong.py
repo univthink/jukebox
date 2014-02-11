@@ -23,7 +23,7 @@ class SubmitSong(webapp2.RequestHandler):
 		else:
 			user_id = self.request.get('user_id')
 			guest = models.Guest.get_by_id(int(user_id),parent=room.key)
-			if guest == None:
+			if False: #guest == None:
 				if web_app:
 					self.response.write("You need to join this room before you can submit a song.")
 				else:
@@ -31,10 +31,10 @@ class SubmitSong(webapp2.RequestHandler):
 			else:
 				#TODO: Add values necessary for other modes
 				song = models.Song(parent=room.key,
-								   spotifyURL=self.request.get('url'),
-								   trackName=self.request.get('track_name'),
-								   artistName=self.request.get('artist_name'),
-								   albumName=self.request.get('album_name'),
+								   url=self.request.get('url'),
+								   track=self.request.get('track'),
+								   artist=self.request.get('artist'),
+								   album=self.request.get('album'),
 								   status=0)
 
 				song_key = song.put()

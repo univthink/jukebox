@@ -22,10 +22,10 @@ class User(ndb.Model):
 	username = ndb.StringProperty(required=True)
 
 class Song(ndb.Model):
-	spotifyURL = ndb.StringProperty(required=True)
-	trackName = ndb.StringProperty(required=True)
-	artistName = ndb.StringProperty(required=True)
-	albumName = ndb.StringProperty()
+	url = ndb.StringProperty(required=True)
+	track = ndb.StringProperty(required=True)
+	artist = ndb.StringProperty(required=True)
+	album = ndb.StringProperty()
 	# upvotes = ndb.ListProperty(required=True) #(List of usernames)
 	# downvotes = ndb.ListProperty(required=True) #(List of usernames)
 	# submitter = ndb.ReferenceProperty(Guest, required=True)
