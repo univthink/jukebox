@@ -35,38 +35,55 @@
       $('input[name="username_join"]').val(cur_user);
       $.UISlideout();
       $.UISlideout.populate([{main:'Home'},{header:'Actions'},{join_room:'Join Room'}]);
+      getNearbyRooms();
       $("#username_update_form").submit(function() {
-        cur_user = $("#username_input").val();
-        $("#username_input").val('');
-        $("#username_display").html(cur_user);
-        $('input[name="username_join"]').val(cur_user);
-        $("#username_update_div").css("display", "none");
-      });
-      $("#username_update_form").submit(function() {
+        $("#username_display").html($("#username_input").val());
+        $('input[name="username_join"]').val($("#username_input").val());
         cur_user = $("#username_input").val();
         cur_userID = 0;
         $("#username_input").val('');
-        $("#username_display").html(cur_user);
-        $('input[name="username_join"]').val(cur_user);
         $("#username_update_div").css("display", "none");
-      })
+      });
     });
     function showUsernameUpdateDiv() {
       $("#username_update_div").css("display", "block");
     };
     function submitJoinRoom() {
+      var form_username = $('input[name="username_join"]').val();
+      if (form_username != cur_user) {
+        cur_user = form_username;
+        cur_userID = 0;
+        $("#username_display").html(cur_user);
+      }
       if (cur_userID == 0) {
         $.ajax({
           type: "POST",
-          url: "../register_user",
+          url: "/register_user",
           data: {username: cur_user},
           success: function(data) {
+            alert("Registered user: " + data);
             cur_userID = data;
+            joinRoom();
           }
         });
+      } else {
+        joinRoom();
       }
+    };
+    function getNearbyRooms() {
+      $.ajax({
+        type: "POST",
+        url: "/search_room",
+        data: {},
+        success: function(data) {
+          alert(JSON.stringify(data));
+        }
+      });
+    };
+    function joinRoom() {
       var roomID = $("#id_join").val();
       var joinPassword = $("#password_join").val();
+      alert(roomID + ' : ' + joinPassword + ' : ' + cur_userID);
       $.ajax({
         type: "POST",
         url: "/join_room",
@@ -99,6 +116,10 @@
             </form>
         </div>
         <h2>Your Rooms</h2>
+        <ul class='list'>
+          <li></li>
+        </ul>
+        <h2>Nearby Rooms</h2>
         <ul class='list'>
           <li></li>
         </ul>
