@@ -26,7 +26,7 @@ SUBMIT_SONG_FORM = """\
 JOIN_ROOM_FORM = """\
 	<form action="join_room" method="post">
 	Id: <input type="text" name="room_id"><br>
-	Username: <input type="text" name="username"><br>
+	User_ID: <input type="text" name="user_id"><br>
 	Password: <input type="text" name="password"><br>
 	<input type="hidden" name="web_app" value="true">
 	<input type="submit" value="Join Room">
@@ -65,5 +65,13 @@ CREATE_SONG_FORM = """\
 RETURN_TO_MAIN = """\
 	<form action="/" method="get">
 	<input type="submit" value="Return to home">
+	</form>
+"""
+
+GET_SONG_QUEUE_FORM = """\
+	<form action="get_song_queue" method="get">
+	<input type="text" name="room_id"><br>
+	<input type="text" name="num_songs"><br>
+	<input type="submit" value="Get Song Queue">
 	</form>
 """

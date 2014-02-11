@@ -22,7 +22,6 @@ class Main(webapp2.RequestHandler):
 			users = users_query.fetch()
 			self.response.write("Users:<br>")
 			for user in users:
-				self.response.write("<t>" + user.username + " -- ")
 				self.response.write(user)
 				self.response.write("<br>")
 
@@ -53,6 +52,8 @@ class Main(webapp2.RequestHandler):
 			self.response.write("<br>")
 
 		# self.response.write("<br><br>" + JOIN_FORM)
+		self.response.write("<br><br>Get Song Queue!<br>")
+		self.response.write(forms.GET_SONG_QUEUE_FORM)
 
 
 application = webapp2.WSGIApplication([
@@ -60,5 +61,7 @@ application = webapp2.WSGIApplication([
 	('/create_room', CreateRoom.CreateRoom),
 	('/register_user', RegisterUser.RegisterUser),
 	('/join_room', JoinRoom.JoinRoom),
-	('/submit_song',SubmitSong.SubmitSong)
+	('/submit_song',SubmitSong.SubmitSong),
+	('/search_room',SearchRoom.SearchRoom),
+	('/get_song_queue',GetSongQueue.GetSongQueue)
 ], debug=True)

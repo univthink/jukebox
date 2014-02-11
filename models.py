@@ -5,14 +5,15 @@ class Room(ndb.Model):
 	creator = ndb.IntegerProperty(required=True)
 	name = ndb.StringProperty(required=True)
 	mode = ndb.StringProperty(required=True)
-	coordinates = ndb.GeoPtProperty()
+	lat = ndb.FloatProperty()
+	lon = ndb.FloatProperty()
 	queue = ndb.IntegerProperty(repeated=True)
 	# queue = ndb.ListProperty(Song,required=True) #(List of Keys to children?)
 	# guests = ndb.ListProperty(Guest,required=True) #(List of Keys to children?)
 	password = ndb.StringProperty()
 
 class Guest(ndb.Model):
-	username = ndb.StringProperty(required=True)
+	user_id = ndb.IntegerProperty(required=True)
 #	userid = ndb.ReferenceProperty(User, required=True)
 # 	#Subcategorize for different room types here.
 
@@ -21,10 +22,10 @@ class User(ndb.Model):
 	username = ndb.StringProperty(required=True)
 
 class Song(ndb.Model):
-	spotifyURL = ndb.StringProperty(required=True)
-	trackName = ndb.StringProperty(required=True)
-	artistName = ndb.StringProperty(required=True)
-	albumName = ndb.StringProperty()
+	url = ndb.StringProperty(required=True)
+	track = ndb.StringProperty(required=True)
+	artist = ndb.StringProperty(required=True)
+	album = ndb.StringProperty()
 	# upvotes = ndb.ListProperty(required=True) #(List of usernames)
 	# downvotes = ndb.ListProperty(required=True) #(List of usernames)
 	# submitter = ndb.ReferenceProperty(Guest, required=True)
