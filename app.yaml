@@ -5,5 +5,10 @@ api_version: 1
 threadsafe: true
 
 handlers:
+- url: /html
+  static_dir: html
+  mime_type: text/html
+- url: /chui
+  static_dir: chui
 - url: /.*
   script: handler.application

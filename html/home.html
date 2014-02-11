@@ -1,36 +1,129 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="mobile-web-app-capable" content="yes">
-    <meta name="msapplication-tap-highlight" content="no">
-    <title>MusicViz Homepage</title>
-    <link rel="stylesheet" href="chui/chui-ios-3.5.2.css">
-    <script src="http://code.jquery.com/jquery-2.0.3.min.js"></script>
-    <script src="chui/chui-3.5.2.js"></script>
-    <style>
-      .button.action {
-        min-width: 200px;
-        max-width: 300px;
-        margin: 20px auto;
-        display: block;
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="msapplication-tap-highlight" content="no">
+  <title>MusicViz Homepage</title>
+  <link rel="stylesheet" href="../chui/chui-ios-3.5.2.css">
+  <script src="http://code.jquery.com/jquery-2.0.3.min.js"></script>
+  <script src="../chui/chui-3.5.2.js"></script>
+  <style>
+    .button.action {
+      min-width: 200px;
+      max-width: 300px;
+      margin: 20px auto;
+      display: block;
+    }
+    #username_display {
+      font-weight: bold;
+    }
+    #username_update_div {
+      display: none;
+    }
+    a {
+      text-decoration: none;
+    }
+  </style>
+  <script type="text/javascript">
+    var cur_user = "Anonymous";
+    var cur_userID = 0;
+    $(function() {
+      $("#username_display").html(cur_user);
+      $('input[name="username_join"]').val(cur_user);
+      $.UISlideout();
+      $.UISlideout.populate([{main:'Home'},{header:'Actions'},{join_room:'Join Room'}]);
+      $("#username_update_form").submit(function() {
+        cur_user = $("#username_input").val();
+        $("#username_input").val('');
+        $("#username_display").html(cur_user);
+        $('input[name="username_join"]').val(cur_user);
+        $("#username_update_div").css("display", "none");
+      });
+      $("#username_update_form").submit(function() {
+        cur_user = $("#username_input").val();
+        cur_userID = 0;
+        $("#username_input").val('');
+        $("#username_display").html(cur_user);
+        $('input[name="username_join"]').val(cur_user);
+        $("#username_update_div").css("display", "none");
+      })
+    });
+    function showUsernameUpdateDiv() {
+      $("#username_update_div").css("display", "block");
+    };
+    function submitJoinRoom() {
+      if (cur_userID == 0) {
+        $.ajax({
+          type: "POST",
+          url: "../register_user",
+          data: {username: cur_user},
+          success: function(data) {
+            cur_userID = data;
+          }
+        });
       }
-    </style>
-    <script type="text/javascript"></script>
-  </head>
-  <body>
+      var roomID = $("#id_join").val();
+      var joinPassword = $("#password_join").val();
+      $.ajax({
+        type: "POST",
+        url: "/join_room",
+        data: {room_id: roomID, user_id: cur_userID, password: joinPassword},
+        success: function(data) {
+          alert(data);
+        }
+      });
+    };
+  </script>
+</head>
+<body>
 
     <nav>
-      <h1>WELCOME TO MUSIC VIZ</h1>    
+      <h1>WELCOME TO MUSIC VIZ</h1>
+      <a class='button' id='editButton'>Settings</a> 
     </nav>
-
-    <article class='current'>
-
+    <article id="main">
       <section>
+        <p style="text-align: center;">
+            Your username is <span id="username_display"></span>
+            <a href="javascript:showUsernameUpdateDiv();" id="open_user_popup">
+              <label>(edit)</label>
+            </a>
+        </p>
+        <div style="text-align: center;" id="username_update_div">
+            <form id="username_update_form">
+              New Username: <input type="text" id="username_input">
+              <input type="submit" value="Update">
+            </form>
+        </div>
+        <h2>Your Rooms</h2>
+        <ul class='list'>
+          <li></li>
+        </ul>
       </section>
+    </article>
 
+    <nav>
+      <h1>JOIN A ROOM</h1>
+    </nav>
+    <article id="join_room">
+      <section>
+        <h2>JOIN A ROOM</h2>
+        <ul class='list' ui-implements='form'>
+          <li>
+            <input autocorrect="off" autocapitalize="words" type="text" id="id_join" placeholder="Room ID" required>
+          </li>
+          <li>
+            <input autocorrect="off" autocapitalize="words" type="text" name="username_join" placeholder="Your Username" required>
+          </li>
+          <li>
+           <input type="password" id="password_join" placeholder="Password" required>
+          </li>
+        </ul>
+        <a href="javascript:submitJoinRoom();" class='button action' id="join_room_button">Join Room</a>
+      </section>
     </article>
 
   </body>
