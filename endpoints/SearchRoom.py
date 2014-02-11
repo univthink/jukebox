@@ -4,9 +4,10 @@ from google.appengine.ext import ndb
 
 class SearchRoom(webapp2.RequestHandler):
 
-	def get(self):
+	def post(self):
 		# room_exists = True
 
+		self.response.headers['Content-Type'] = 'application/json'
 		roomlist_name = self.request.get('roomlist_name', utils.DEFAULT_ROOMLIST_NAME)
 		room_id = self.request.get('room_id')
 		room = models.Room.query(ancestor=utils.roomlist_key(roomlist_name))
