@@ -22,31 +22,40 @@ class SubmitSong(webapp2.RequestHandler):
 				self.response.write('0')
 		else:
 			user_id = self.request.get('user_id')
-			guest = models.Guest.get_by_id(int(user_id),parent=room.key)
-			if False: #guest == None:
+			userlist_name = self.request.get('userlist_name',utils.DEFAULT_USERLIST_NAME)
+			user = models.User.get_by_id(int(user_id),parent=utils.userlist_key(userlist_name))
+			if user == None:
 				if web_app:
-					self.response.write("You need to join this room before you can submit a song.")
+					self.response.write("The given user_id is not a valid user.")
 				else:
 					self.response.write('0')
 			else:
-				#TODO: Add values necessary for other modes
-				song = models.Song(parent=room.key,
-								   url=self.request.get('url'),
-								   track=self.request.get('track'),
-								   artist=self.request.get('artist'),
-								   album=self.request.get('album'),
-								   status=0)
-
-				song_key = song.put()
-
-				#TODO: Order differently based on mode
-				room.queue.append(song_key.integer_id())
-				room.put()
-
-				if web_app:
-					self.response.write("You successfully submitted \"" + self.request.get('track_name') + "\" to the room \"" + room.name + "\".")
+				guest_query = models.Guest.query(models.Guest.user_id == int(user_id),ancestor=room.key)
+				guest = guest_query.fetch()
+				if len(guest) == 0:
+					if web_app:
+						self.response.write("You need to join this room before you can submit a song.")
+					else:
+						self.response.write('0')
 				else:
-					self.response.write('1')
+					#TODO: Add values necessary for other modes
+					song = models.Song(parent=room.key,
+									   url=self.request.get('url'),
+									   track=self.request.get('track'),
+									   artist=self.request.get('artist'),
+									   album=self.request.get('album'),
+									   status=0)
+
+					song_key = song.put()
+
+					#TODO: Order differently based on mode
+					room.queue.append(song_key.integer_id())
+					room.put()
+
+					if web_app:
+						self.response.write("You successfully submitted \"" + self.request.get('track_name') + "\" to the room \"" + room.name + "\".")
+					else:
+						self.response.write('1')
 
 		if web_app:
 			self.response.write(forms.RETURN_TO_MAIN)
