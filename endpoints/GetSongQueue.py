@@ -23,7 +23,7 @@ class GetSongQueue(webapp2.RequestHandler):
 				self.response.write('0')
 		else:
 			#TODO: Error checking
-			num_songs = int(self.request.get('num_songs',"1"))
+			num_songs = int(self.request.get('num_songs',"1000"))
 			songs = []
 			for song_id in room.queue:
 				song = models.Song.get_by_id(int(song_id),parent=room.key)
