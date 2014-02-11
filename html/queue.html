@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="msapplication-tap-highlight" content="no">
+  <title>MusicViz Homepage</title>
+  <link rel="stylesheet" href="../chui/chui-ios-3.5.2.css">
+  <script src="http://code.jquery.com/jquery-2.0.3.min.js"></script>
+  <script src="../chui/chui-3.5.2.js"></script>
+  <style>
+  </style>
+  <script type="text/javascript">
+    function getQueryVariable(variable) {
+     var query = window.location.search.substring(1);
+     var vars = query.split("&");
+     for (var i = 0; i < vars.length; i++) {
+        var pair = vars[i].split("=");
+        if (pair[0] == variable) { 
+          return pair[1]; 
+        }
+     }
+     return null;
+    }
+    function displayQueue(roomID) {
+      $.ajax({
+        type: "GET",
+        url: "/get_song_queue",
+        data: {room_id: roomID},
+        success: function(data) {
+          if (data != 0) {
+            $.each(data, function(index, song) {
+              $("#queue_list").append(
+                '<li class="comp">'
+                + '<div>'
+                + '<h3>' + song["artist"] + '</h3>'
+                + '<h4>' + song["track_name"] + '</h4>'
+                + '<p>' + song["album"] + '</p>'
+                + '</div>'
+                + '</li>'
+              );
+            });
+          } else {
+            $("#queue_list").append('<li class="comp">Room ID does not exist.</li>');
+          }
+        }
+      });
+    }
+    $(function() {
+      var userID = getQueryVariable("user");
+      if (userID == null) userID = 0;
+      var roomID = getQueryVariable("id");
+      if (roomID) displayQueue(roomID);
+      else {
+        $("#queue_list").append('<li class="comp">No room ID provided.</li>');
+      }
+      $("#homeButton").attr("href", "home.html?user=" + userID);
+    });
+  </script>
+</head>
+<body>
+  <nav>
+    <a href="home.html" class='button' id='homeButton'>Home</a> 
+    <h1>QUEUE</h1>
+    <a class='button' id='editButton'>Edit</a> 
+  </nav>
+  <article id="main" class="current">
+    <section>
+      <h2>Music Playlist</h2>
+      <ul class='list' id="queue_list">
+      </ul>  
+    </section>
+  </article>
+</body>
+</html>
