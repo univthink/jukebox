@@ -59,6 +59,7 @@
         data: {room_id: roomID},
         success: function(data) {
           if (data != 0) {
+            $("#queue_list").empty();
             $.each(data, function(index, song) {
               var sColor = colors[Math.floor((Math.random()*colors.length))];
               $("#queue_list").append(
