@@ -21,7 +21,7 @@ class SearchRoom(webapp2.RequestHandler):
 		lonMax =0
 		if self.request.get('coordinates'):
 			[lat, lon] = self.request.get('coordinates').split(',')
-			[latMin, latMax, lonMin, lonMax] = utils.boundingBox(float(lat), float(lon), float(self.request.get('distance', '500')))
+			[latMin, latMax, lonMin, lonMax] = utils.boundingBox(float(lat), float(lon), float(self.request.get('distance', '1000')))
 			room = room.filter(models.Room.lat >= latMin, models.Room.lat <= latMax)
 			filterLon = True
 			# room = room.filter(models.Room.lon >= lonMin, models.Room.lon <= lonMax)
