@@ -15,15 +15,29 @@ r<!DOCTYPE html>
   <script src="http://code.jquery.com/ui/1.10.4/jquery-ui.js"></script>
   <style>
     .square {
-      width: 50px;
-      height: 50px;   
+      width: 60px;
+      height: 60px;   
       background: red;
       border-radius: 10px;
+      margin-left: 8px;
+      margin-right: 8px;
     }
     .fitParent {
       display: block;
       width:100%;
       height:100%;
+    }
+    .ui-autocomplete {
+      background: #4a4a4a;
+      border-radius: 0px;
+    }
+    .ui-autocomplete.source:hover {
+      background: #454545;
+    }
+    .ui-menu .ui-menu-item a {
+      background:red;
+      height:10px;
+      font-size:8px;
     }
   </style>
   <script type="text/javascript">
@@ -32,6 +46,7 @@ r<!DOCTYPE html>
     var cur_userID;
     var roomID;
     var qr = 0;
+    var sortable = false;
     var colors = ['red', 'blue', 'green', 'pink'];
     var usernames = ['Oak', 'Misty', 'Ash', 'Brock', 'Mai']
     function getQueryVariable(variable) {
@@ -74,12 +89,20 @@ r<!DOCTYPE html>
                 + '><img /></div>'
                 + '</aside>'
                 + '<div>'
-                + '<h3>' + song["artist"] + '</h3>'
-                + '<h4>' + song["track"] + '</h4>'
+                + '<h3>' + song["track"] + '</h3>'
+                + '<h4>' + song["artist"] + '</h4>'
                 + '<p>' + song["album"] + '</p>'
+                + '<span style="display:none;">' + song["url"] + '</span>'
                 + '</div>'
                 + '</li>'
               );
+            });
+            $.UIDeletable({
+              list: '#queue_list', 
+              callback: function(item) {
+                var url = $(item).siblings('div').find('span').text(); //url is not unique (think: duplicates)
+                alert("You deleted " + url);
+              }
             });
           } else {
             $("#queue_list").append('<li class="comp">Room ID does not exist.</li>');
@@ -118,14 +141,14 @@ r<!DOCTYPE html>
                 //currently selected in input
                   q: request.term
               }, function(data) {
-                  console.log(data)
+                  //console.log(data)
                   response($.map(data.tracks, function(item) {
-                      return {label: item.name +" by " + item.artists[0].name, data: {artist: item.artists[0].name, album: item.album.name, url: item.href, name: item.name}};
+                      return {label: item.artists[0].name + " - " + item.name, data: {artist: item.artists[0].name, album: item.album.name, url: item.href, name: item.name}};
                   }));
               });
           },
           select: function(event, ui) {
-            console.log(ui);
+            //console.log(ui);
             if (cur_userID == 0) {
               alert("You are not a registered user. You may not add a song to this queue.")
             } else {
@@ -139,8 +162,13 @@ r<!DOCTYPE html>
         });
       });
     }
-    function enableSortDelete() {
-      $("#queue_list").addClass("sortable");
+    function toggleSortDelete() {
+      sortable = !sortable;
+      if (sortable) {
+        $('.sortable').sortable('enable');
+      } else {
+        $('.sortable').sortable('disable');
+      }
     }
     $(function() {
       cur_userID = getQueryVariable("user");
@@ -155,11 +183,15 @@ r<!DOCTYPE html>
 
       if (getQueryVariable("qr")) qr = 1;
       if (qr) {
-        //alert("registering...");
         registerUser("Anonymous", callbackOnRegister);
       } else {
         callbackOnRegister();
       }
+
+      $('.sortable').sortable();
+      $('.sortable').sortable('disable');
+
+
     });
   </script>
 </head>
@@ -167,19 +199,19 @@ r<!DOCTYPE html>
   <nav>
     <a href="home.html" class='button' id='homeButton'>Home</a> 
     <h1>QUEUE</h1>
-    <a href="javascript:enableSortDelete();" class='button' id='editButton'>Edit</a> 
+    <!--<a href="javascript:toggleSortDelete();" class='button' id='editButton'>Edit</a> -->
   </nav>
   <article id="main" class="current">
     <section>
-        <h2>Search Songs</h2>
+        <h2>Add A Song</h2>
         <ul class='list' ui-implements='form'>
           <li>
             <input class="fitParent" id="spotify_song_search" placeholder="Search Song Name">
           </li>
         </ul>
         <h2>Music Playlist</h2>
-      <ul class='list' id="queue_list">
-      </ul>  
+          <ul class='list sortable' id="queue_list">
+          </ul>  
     </section>
   </article>
 </body>

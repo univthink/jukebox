@@ -10,5 +10,9 @@ handlers:
   mime_type: text/html
 - url: /chui
   static_dir: chui
+- url: /js
+  static_dir: js
+- url: /stylesheets
+  static_dir: stylesheets
 - url: /.*
   script: handler.application
