@@ -11,6 +11,7 @@ r<!DOCTYPE html>
   <link rel="stylesheet" href="//code.jquery.com/ui/1.10.4/themes/smoothness/jquery-ui.css">
   <script src="http://code.jquery.com/jquery-2.0.3.min.js"></script>
   <script src="../chui/chui-3.5.2.js"></script>
+  <script src="../js/jquery.sortable.js"></script>
   <script src="http://code.jquery.com/ui/1.10.4/jquery-ui.js"></script>
   <style>
     .square {
@@ -138,6 +139,9 @@ r<!DOCTYPE html>
         });
       });
     }
+    function enableSortDelete() {
+      $("#queue_list").addClass("sortable");
+    }
     $(function() {
       cur_userID = getQueryVariable("user");
       if (cur_userID == null) cur_userID = 0;
@@ -163,7 +167,7 @@ r<!DOCTYPE html>
   <nav>
     <a href="home.html" class='button' id='homeButton'>Home</a> 
     <h1>QUEUE</h1>
-    <a class='button' id='editButton'>Edit</a> 
+    <a href="javascript:enableSortDelete();" class='button' id='editButton'>Edit</a> 
   </nav>
   <article id="main" class="current">
     <section>
