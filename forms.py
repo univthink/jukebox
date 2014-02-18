@@ -51,9 +51,9 @@ CREATE_USER_FORM = """\
 CREATE_SONG_FORM = """\
 	<form action="create_guest" method="post">
 	Spotify URL: <input type="text" name="spotify_url"><br>
-	Track Name: <input type="text" name="track_name"><br>
-	Artist Name: <input type="text" name="artist_name"><br>
-	Album Name: <input type="text" name="album_name"><br>
+	Track Name: <input type="text" name="track"><br>
+	Artist Name: <input type="text" name="artist"><br>
+	Album Name: <input type="text" name="album"><br>
 	Submitter: <input type="text" name="submitter"><br>
 	Status: <input type="text" name="status"><br>
 	Time Submitted: <input type="text" name="time_submitted"><br>
