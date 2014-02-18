@@ -25,10 +25,14 @@ class GetSongQueue(webapp2.RequestHandler):
 			#TODO: Error checking
 			num_songs = int(self.request.get('num_songs',"1000"))
 			songs = []
+			song_pos = 0;
 			for song_id in room.queue:
 				song = models.Song.get_by_id(int(song_id),parent=room.key)
 				song_dict = song.to_dict()
 				song_dict['timeSubmitted'] = str(song_dict['timeSubmitted'])
+				song_dict['unique_id'] = int(song_id)
+				song_dict['song_pos'] = song_pos
+				song_pos = song_pos + 1
 				songs.append(song_dict)
 				if len(songs) >= num_songs:
 					break;

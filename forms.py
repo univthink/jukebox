@@ -51,9 +51,9 @@ CREATE_USER_FORM = """\
 CREATE_SONG_FORM = """\
 	<form action="create_guest" method="post">
 	Spotify URL: <input type="text" name="spotify_url"><br>
-	Track Name: <input type="text" name="track_name"><br>
-	Artist Name: <input type="text" name="artist_name"><br>
-	Album Name: <input type="text" name="album_name"><br>
+	Track Name: <input type="text" name="track"><br>
+	Artist Name: <input type="text" name="artist"><br>
+	Album Name: <input type="text" name="album"><br>
 	Submitter: <input type="text" name="submitter"><br>
 	Status: <input type="text" name="status"><br>
 	Time Submitted: <input type="text" name="time_submitted"><br>
@@ -70,8 +70,18 @@ RETURN_TO_MAIN = """\
 
 GET_SONG_QUEUE_FORM = """\
 	<form action="get_song_queue" method="get">
-	<input type="text" name="room_id"><br>
-	<input type="text" name="num_songs"><br>
+	Room ID: <input type="text" name="room_id"><br>
+	Num Songs: <input type="text" name="num_songs"><br>
 	<input type="submit" value="Get Song Queue">
+	</form>
+"""
+
+REORDER_SONG_FORM = """\
+	<form action="reorder_song" method="post">
+	Room ID: <input type="text" name="room_id"><br>
+	Song ID: <input type="text" name="song_id"><br>
+	New Pos: <input type="text" name="new_pos"><br>
+	<input type="hidden" name="web_app" value="true">
+	<input type="submit" value="Reorder Song!">
 	</form>
 """
