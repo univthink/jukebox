@@ -70,8 +70,8 @@ RETURN_TO_MAIN = """\
 
 GET_SONG_QUEUE_FORM = """\
 	<form action="get_song_queue" method="get">
-	<input type="text" name="room_id"><br>
-	<input type="text" name="num_songs"><br>
+	Room ID: <input type="text" name="room_id"><br>
+	Num Songs: <input type="text" name="num_songs"><br>
 	<input type="submit" value="Get Song Queue">
 	</form>
 """
