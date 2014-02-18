@@ -14,30 +14,86 @@ r<!DOCTYPE html>
   <script src="../js/jquery.sortable.js"></script>
   <script src="http://code.jquery.com/ui/1.10.4/jquery-ui.js"></script>
   <style>
+    #main h2 {
+      text-align: center;
+    }
     .square {
+      width: 54px;
+      height: 54px;   
+      border: 3px dashed red;
+      border-radius: 10px;
+    }
+    .miniSquare {
       width: 60px;
       height: 60px;   
-      background: red;
       border-radius: 10px;
-      margin-left: 8px;
-      margin-right: 8px;
+    }
+    .squareButton {
+      margin-left: 5px;
+      margin-right: 5px;
+    }
+    a.squareButton {
+      padding: 0;
+    }
+    #colorPickerList {
+      list-style-type: none;
+      padding: 0;
+      margin: 0;
+    }
+    #colorPickerList li {
+      display: block;
+      float: left;
+      padding-left: 10px;
+      padding-top: 10px;
+      padding-bottom: 0px;
+    }
+    #colorPopover {
+      zoom: 1;
+      width: 220px;
+      height: 220px;
+      background: white;
+      border: 16px solid rgb(219,73,56);
+      border-radius: 10px;
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      margin-left: -125px;
+      margin-top: -110px;
+      z-index: 0;
+
     }
     .fitParent {
       display: block;
-      width:100%;
-      height:100%;
+      width: 100%;
+      height: 100%;
     }
-    .ui-autocomplete {
-      background: #4a4a4a;
-      border-radius: 0px;
+    #spotify_song_search {
+      text-align: center;
+      font-size: 10pt;
+      margin-top: 13px;
+      margin-left: 13px;
+      width: 90%;
+
+      padding: 5px;
+      padding-left: 24px; /* to center */
+      outline: none;
+      border: 2px inset;
+      border-radius: 8px;
     }
-    .ui-autocomplete.source:hover {
-      background: #454545;
+    .ui-autocomplete-input {
+      /* No longer necessary, rules moved to #spotify_song_search */
     }
-    .ui-menu .ui-menu-item a {
-      background:red;
-      height:10px;
-      font-size:8px;
+    .ui-autocomplete-input:focus {
+      box-shadow: 0 0 0 2px rgb(154,192,235);
+    }
+    .ui-menu .ui-menu-item:nth-child(even) {
+      background-color: rgb(239,239,244);
+    }
+    .ui-menu .ui-menu-item .ui-state-hover {
+      background: rgb(154,192,235);
+    }
+    .ui-menu .ui-menu-item .ui-state-focus {
+      background: rgb(154,192,235);
     }
   </style>
   <script type="text/javascript">
@@ -47,6 +103,7 @@ r<!DOCTYPE html>
     var roomID;
     var qr = 0;
     var sortable = false;
+    var curE;
     var colors = ['red', 'blue', 'green', 'pink'];
     var usernames = ['Oak', 'Misty', 'Ash', 'Brock', 'Mai']
     function getQueryVariable(variable) {
@@ -60,15 +117,15 @@ r<!DOCTYPE html>
       }
       return null;
     }
-    function submitSong (roomID, autocompleteData) {
+    function submitSong(roomID, autocompleteData) {
       $.ajax({
         type: "POST",
         url: "/submit_song",
         data: {room_id: roomID, user_id: cur_userID, url:autocompleteData.url, track:autocompleteData.name, artist:autocompleteData.artist, album:autocompleteData.album},
         success: function(data) {
           if (data) alert("Song added successfully!");
-          displayQueue(roomID)
-          $("#spotify_song_search").val('')
+          displayQueue(roomID);
+          $("#spotify_song_search").val('');
         }
       });
     }
@@ -85,8 +142,9 @@ r<!DOCTYPE html>
               $("#queue_list").append(
                 '<li class="comp">'
                 + '<aside>'
-                + '<div class="square" style="background:' + sColor + ';"'
-                + '><img /></div>'
+                //+ '<div class="square" style="background:' + sColor + ';">'
+                + '<a class="squareButton" href="javascript:void(null)"><div class="square">'
+                + '<img /></div></a>'
                 + '</aside>'
                 + '<div>'
                 + '<h3>' + song["track"] + '</h3>'
@@ -103,6 +161,11 @@ r<!DOCTYPE html>
                 var url = $(item).siblings('div').find('span').text(); //url is not unique (think: duplicates)
                 alert("You deleted " + url);
               }
+            });
+            $(".squareButton").click(function(event) {
+              console.log(event);
+              curCB = event.target;
+              $("#colorPopover").show();
             });
           } else {
             $("#queue_list").append('<li class="comp">Room ID does not exist.</li>');
@@ -170,6 +233,13 @@ r<!DOCTYPE html>
         $('.sortable').sortable('disable');
       }
     }
+    function populateColorPicker() {
+      var colors = ['red','orange','yellow','green','blue','indigo','violet','pink','black'];
+      $.each(colors, function(index, color) {
+        $("#colorPickerList").append('<li><a class="miniSquareButton" href="javascript:void(null)"><div class="miniSquare" style="background:' + color + ';"><img /></div></a></li>');
+      });
+      $("#colorPopover").hide();
+    }
     $(function() {
       cur_userID = getQueryVariable("user");
       if (cur_userID == null) cur_userID = 0;
@@ -191,6 +261,15 @@ r<!DOCTYPE html>
       $('.sortable').sortable();
       $('.sortable').sortable('disable');
 
+      populateColorPicker();
+
+      $(".miniSquareButton").click(function(event) {
+        var color = $(event.target).css("background-color");
+        $(curCB).css("background-color", color);
+        $(curCB).css("border", "3px solid");
+        $(curCB).css("border-color", color);
+        $("#colorPopover").hide();
+      });
 
     });
   </script>
@@ -204,15 +283,15 @@ r<!DOCTYPE html>
   <article id="main" class="current">
     <section>
         <h2>Add A Song</h2>
-        <ul class='list' ui-implements='form'>
-          <li>
-            <input class="fitParent" id="spotify_song_search" placeholder="Search Song Name">
-          </li>
-        </ul>
+        <input class="fitParent" id="spotify_song_search" placeholder="Search Song Name">
         <h2>Music Playlist</h2>
-          <ul class='list sortable' id="queue_list">
-          </ul>  
+          <ul class='list sortable' id="queue_list"></ul>  
     </section>
   </article>
+
+  <div id="colorPopover">
+    <ul id="colorPickerList"></ul>
+  </div>
+
 </body>
 </html>

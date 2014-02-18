@@ -864,7 +864,7 @@ Version: 3.5.2
       }
     }); 
 
-      ///////////////////////////
+    ///////////////////////////
     // Initialize Back Buttons:
     ///////////////////////////
     $('body').on('singletap', 'a.back', function() {
