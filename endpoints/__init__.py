@@ -1,1 +1,1 @@
-__all__ = ["JoinRoom", "RegisterUser", "CreateRoom","SubmitSong", "SearchRoom", "GetSongQueue"]
+__all__ = ["JoinRoom", "RegisterUser", "CreateRoom","SubmitSong", "SearchRoom", "GetSongQueue","ReorderSong"]

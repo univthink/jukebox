@@ -75,3 +75,13 @@ GET_SONG_QUEUE_FORM = """\
 	<input type="submit" value="Get Song Queue">
 	</form>
 """
+
+REORDER_SONG_FORM = """\
+	<form action="reorder_song" method="post">
+	Room ID: <input type="text" name="room_id"><br>
+	Song ID: <input type="text" name="song_id"><br>
+	New Pos: <input type="text" name="new_pos"><br>
+	<input type="hidden" name="web_app" value="true">
+	<input type="submit" value="Reorder Song!">
+	</form>
+"""
