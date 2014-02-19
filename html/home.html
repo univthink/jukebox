@@ -57,18 +57,26 @@
         data: {user_id: cur_userID},
         success: function(data) {
           //alert(data);
-          $.each(data, function(index, itemData) {
-            var password = itemData["password"];
-            if (password == "") password = "null"
-            $("#nearby_rooms").append(
-              "<li>"
-              + "Room Name: " + itemData["name"] + "<br>"
-              + "Creator: " + itemData["creator_name"] + "<br>"
-              + '<a href="javascript:joinRoom(' + itemData["id"] + ',' + password + ');" class="button action align-right" id="join_room_button">Join Room</a>'
-              + '<a href="queue.html?user=' + cur_userID + '&id=' + itemData["id"] + '" class="button action align-right" id="view_queue_button">View Queue</a>'
-              + "</li>"
-            );
-          });
+          $("#nearby_rooms").empty();
+          if (data["status"] == "OK") {
+            $.each(data["data"], function(index, itemData) {
+                itemData = itemData["data"];
+                var password = itemData["password"];
+                if (password == "") password = "null"
+                $("#nearby_rooms").append(
+                  "<li>"
+                  + "Room Name: " + itemData["name"] + "<br>"
+                  + "Creator: " + itemData["creator_name"] + "<br>"
+                  + '<a href="javascript:joinRoom(' + itemData["id"] + ',' + password + ');" class="button action align-right" id="join_room_button">Join Room</a>'
+                  + '<a href="queue.html?user=' + cur_userID + '&id=' + itemData["id"] + '" class="button action align-right" id="view_queue_button">View Queue</a>'
+                  + "</li>"
+                );
+              
+            });
+          }
+          else {
+            console.log(data["message"]);
+          }
         }
       });
     };
@@ -79,19 +87,25 @@
         url: "/search_room",
         data: {},
         success: function(data) {
-          $.each(data, function(index, itemData) {
-            var password = itemData["password"];
-            if (password == "") password = "null"
-            $("#nearby_rooms").empty();
-            $("#nearby_rooms").append(
-              "<li>"
-              + "Room Name: " + itemData["name"] + "<br>"
-              + "Creator: " + itemData["creator_name"] + "<br>"
-              + '<a href="javascript:joinRoom(' + itemData["id"] + ',' + password + ');" class="button action align-right" id="join_room_button">Join Room</a>'
-              + '<a href="queue.html?user=' + cur_userID + '&id=' + itemData["id"] + '" class="button action align-right" id="view_queue_button">View Queue</a>'
-              + "</li>"
-            );
-          });
+          $("#nearby_rooms").empty();
+          if (data["status"] == "OK") {
+            $.each(data["data"], function(index, itemData) {
+                var password = itemData["password"];
+                if (password == "") password = "null"
+                $("#nearby_rooms").append(
+                  "<li>"
+                  + "Room Name: " + itemData["name"] + "<br>"
+                  + "Creator: " + itemData["creator_name"] + "<br>"
+                  + '<a href="javascript:joinRoom(' + itemData["id"] + ',' + password + ');" class="button action align-right" id="join_room_button">Join Room</a>'
+                  + '<a href="queue.html?user=' + cur_userID + '&id=' + itemData["id"] + '" class="button action align-right" id="view_queue_button">View Queue</a>'
+                  + "</li>"
+                );
+              
+            });
+          }
+          else {
+            console.log(data["message"]);
+          }
         }
       });
     };
@@ -100,11 +114,11 @@
         type: "POST",
         url: "/register_user",
         data: {username: username},
-        success: function(userID) {
+        success: function(data) {
           $("#register_flag").html("You are registered.");
-          cur_userID = userID;
+          cur_userID = data["data"];
           callback();
-          return userID;
+          return cur_userID;
         }
       });
     };
@@ -126,7 +140,7 @@
         url: "/join_room",
         data: {room_id: roomID, user_id: cur_userID, password: password},
         success: function(data) {
-          if (data) alert("Joined successfully!");
+          if (data["status"]=="OK") alert("Joined successfully!");
           getMyRooms();
           getNearbyRooms();
         }

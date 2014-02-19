@@ -123,7 +123,7 @@ r<!DOCTYPE html>
         url: "/submit_song",
         data: {room_id: roomID, user_id: cur_userID, url:autocompleteData.url, track:autocompleteData.name, artist:autocompleteData.artist, album:autocompleteData.album},
         success: function(data) {
-          if (data) alert("Song added successfully!");
+          if (data["status"]=="OK") alert("Song added successfully!");
           displayQueue(roomID);
           $("#spotify_song_search").val('');
         }
@@ -135,9 +135,9 @@ r<!DOCTYPE html>
         url: "/get_song_queue",
         data: {room_id: roomID},
         success: function(data) {
-          if (data != 0) {
+          if (data["status"] == "OK") {
             $("#queue_list").empty();
-            $.each(data, function(index, song) {
+            $.each(data["data"], function(index, song) {
               var sColor = colors[Math.floor((Math.random()*colors.length))];
               $("#queue_list").append(
                 '<li class="comp">'
@@ -168,7 +168,7 @@ r<!DOCTYPE html>
               $("#colorPopover").show();
             });
           } else {
-            $("#queue_list").append('<li class="comp">Room ID does not exist.</li>');
+            $("#queue_list").append('<li class="comp">' +data["message"]+'</li>');
           }
         }
       });
