@@ -143,8 +143,8 @@ r<!DOCTYPE html>
                 '<li class="comp">'
                 + '<aside>'
                 //+ '<div class="square" style="background:' + sColor + ';">'
-                + '<a class="squareButton" href="javascript:void(null)"><div class="square">'
-                + '<img /></div></a>'
+                + '<a class="squareButton" href="javascript:void(null)">'
+                + (song["image_url"] ?'<img src="'+song["image_url"]+'" style="width:60px; height=60px;"/></a>' : '<div class="square"><img></div></a>')
                 + '</aside>'
                 + '<div>'
                 + '<h3>' + song["track"] + '</h3>'
