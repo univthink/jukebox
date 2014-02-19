@@ -1,4 +1,4 @@
-import webapp2, models, forms, json, endpoints, utils
+import webapp2, models, forms, json, endpoints, utils, urllib2
 from google.appengine.ext import ndb
 
 class SubmitSong(webapp2.RequestHandler):
@@ -41,12 +41,15 @@ class SubmitSong(webapp2.RequestHandler):
 					else:
 						self.response.write(json.dumps({"status": "NOT OK", "message": "You need to join this room before you can submit a song."}))
 				else:
+					imageStuff = json.loads(urllib2.urlopen("https://embed.spotify.com/oembed/?url="+self.request.get('url')).read())
+					# self.response.write(imageStuff)
 					#TODO: Add values necessary for other modes
 					song = models.Song(parent=room.key,
 									   url=self.request.get('url'),
 									   track=self.request.get('track'),
 									   artist=self.request.get('artist'),
 									   album=self.request.get('album'),
+									   image_url=imageStuff["thumbnail_url"] if imageStuff else None,
 									   status=0)
 
 					song_key = song.put()

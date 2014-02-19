@@ -26,6 +26,7 @@ class Song(ndb.Model):
 	track = ndb.StringProperty(required=True)
 	artist = ndb.StringProperty(required=True)
 	album = ndb.StringProperty()
+	image_url = ndb.StringProperty()
 	# upvotes = ndb.ListProperty(required=True) #(List of usernames)
 	# downvotes = ndb.ListProperty(required=True) #(List of usernames)
 	# submitter = ndb.ReferenceProperty(Guest, required=True)
