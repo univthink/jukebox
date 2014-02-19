@@ -20,7 +20,7 @@ class GetSongQueue(webapp2.RequestHandler):
 			if web_app:
 				self.response.write("The referenced room was not found.")
 			else:
-				self.response.write('0')
+				self.response.write(json.dumps({"status": "NOT OK", "message": "The referenced room was not found."}))
 		else:
 			#TODO: Error checking
 			num_songs = int(self.request.get('num_songs',"1000"))
@@ -37,4 +37,4 @@ class GetSongQueue(webapp2.RequestHandler):
 				if len(songs) >= num_songs:
 					break;
 
-			self.response.write(json.dumps(songs))
+			self.response.write(json.dumps({"status": "OK", "data": songs}))

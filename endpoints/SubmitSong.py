@@ -9,9 +9,12 @@ class SubmitSong(webapp2.RequestHandler):
 		roomlist_name = self.request.get('roomlist_name',utils.DEFAULT_ROOMLIST_NAME)
 		room_id = self.request.get('room_id')
 
-		room = models.Room.get_by_id(int(room_id),parent=utils.roomlist_key(roomlist_name))
-		if room == None:
-			room_exists = False;
+		if not room_id:
+			room_exists = False
+		else:
+			room = models.Room.get_by_id(int(room_id),parent=utils.roomlist_key(roomlist_name))
+			if room == None:
+				room_exists = False;
 
 		web_app = self.request.get('web_app','false') != 'false'
 
@@ -19,7 +22,7 @@ class SubmitSong(webapp2.RequestHandler):
 			if web_app:
 				self.response.write("The referenced room was not found.")
 			else:
-				self.response.write('0')
+				self.response.write(json.dumps({"status": "NOT OK", "message": "The requested room was not found."}))
 		else:
 			user_id = self.request.get('user_id')
 			userlist_name = self.request.get('userlist_name',utils.DEFAULT_USERLIST_NAME)
@@ -28,7 +31,7 @@ class SubmitSong(webapp2.RequestHandler):
 				if web_app:
 					self.response.write("The given user_id is not a valid user.")
 				else:
-					self.response.write('0')
+					self.response.write(json.dumps({"status": "NOT OK", "message": "The given user_id is not a valid user."}))
 			else:
 				guest_query = models.Guest.query(models.Guest.user_id == int(user_id),ancestor=room.key)
 				guest = guest_query.fetch()
@@ -36,7 +39,7 @@ class SubmitSong(webapp2.RequestHandler):
 					if web_app:
 						self.response.write("You need to join this room before you can submit a song.")
 					else:
-						self.response.write('0')
+						self.response.write(json.dumps({"status": "NOT OK", "message": "You need to join this room before you can submit a song."}))
 				else:
 					#TODO: Add values necessary for other modes
 					song = models.Song(parent=room.key,
@@ -55,7 +58,7 @@ class SubmitSong(webapp2.RequestHandler):
 					if web_app:
 						self.response.write("You successfully submitted \"" + self.request.get('track_name') + "\" to the room \"" + room.name + "\".")
 					else:
-						self.response.write('1')
+						self.response.write(json.dumps({"status":"OK"}))
 
 		if web_app:
 			self.response.write(forms.RETURN_TO_MAIN)

@@ -17,7 +17,8 @@ class CreateRoom(webapp2.RequestHandler):
 		userlist_name = self.request.get('userlist_name', utils.DEFAULT_USERLIST_NAME)
 		user = models.User.get_by_id(int(self.request.get('creator')),parent=utils.userlist_key(userlist_name))
 		if user == None:
-			self.response.write("Invalid user_id.")
+			toReturn = {"status": "NOT OK", "message": "Invalid user_id."}
+			self.response.write(json.dumps(toReturn))
 		else:
 			room = models.Room(parent=utils.roomlist_key(roomlist_name),
 							   creator=int(self.request.get('creator')),
@@ -53,4 +54,5 @@ class CreateRoom(webapp2.RequestHandler):
 			guest = models.Guest(parent=room_key,user_id=int(self.request.get('creator')))
 			guest.put()
 
-			self.response.write(json.dumps(room_key.integer_id()))
+			toReturn = {"status": "OK", "data":room_key.integer_id()}
+			self.response.write(json.dumps(toReturn))

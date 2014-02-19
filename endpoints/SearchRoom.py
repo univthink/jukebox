@@ -30,37 +30,4 @@ class SearchRoom(webapp2.RequestHandler):
 		if filterLon:
 			rooms = [p for p in rooms if (p.lon != None and p.lon>= lonMin and p.lon <= lonMax)]
 
-		self.response.write(utils.JSONEncoder().encode(rooms))
-
-		# if room == None:
-		# 	room_exists = False;
-
-		# web_app = self.request.get('web_app','false') != 'false'
-
-		# if not room_exists:
-		# 	if web_app:
-		# 		self.response.write("The requested room was not found.")
-		# 	else:
-		# 		self.response.write('0')
-		# else:
-		# 	if room.password != '' and room.password != self.request.get('password'):
-		# 		if web_app:
-		# 			self.response.write("You did not enter the proper password for room: " + room.name)
-		# 		else:
-		# 			self.response.write('0')
-		# 	else:
-		# 		username = self.request.get('username',get_anonymous_name())
-		# 		if username == '':
-		# 			username = get_anonymous_name()
-
-		# 		guest = models.Guest(parent=room.key,username=username)
-		# 		guest_key = guest.put()
-		# 		#TODO: Consdier adding detail to "Guest"
-
-		# 		if web_app:
-		# 			self.response.write("\"" + room.name + "\" was successfully joined!")
-		# 		else:
-		# 			self.response.write("1")
-
-		# if web_app:
-		# 	self.response.write(forms.RETURN_TO_MAIN)
+		self.response.write(utils.JSONEncoder().encode({"status":"OK", "data": rooms}))
