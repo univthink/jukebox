@@ -15,9 +15,9 @@ SUBMIT_SONG_FORM = """\
 	Room ID: <input type="text" name="room_id"><br>
 	User ID: <input type="text" name="user_id"><br>
 	Spotify URL: <input type="text" name="url"><br>
-	Track Name: <input type="text" name="track_name"><br>
-	Artist Name: <input type="text" name="artist_name"><br>
-	Album Name: <input type="text" name="album_name"><br>
+	Track Name: <input type="text" name="track"><br>
+	Artist Name: <input type="text" name="artist"><br>
+	Album Name: <input type="text" name="album"><br>
 	<input type="hidden" name="web_app" value="true">
 	<input type="submit" value="Submit Song">
 	</form>
@@ -72,6 +72,7 @@ GET_SONG_QUEUE_FORM = """\
 	<form action="get_song_queue" method="get">
 	Room ID: <input type="text" name="room_id"><br>
 	Num Songs: <input type="text" name="num_songs"><br>
+	Type: <input type="text" name="type"><br>
 	<input type="submit" value="Get Song Queue">
 	</form>
 """
@@ -83,5 +84,14 @@ REORDER_SONG_FORM = """\
 	New Pos: <input type="text" name="new_pos"><br>
 	<input type="hidden" name="web_app" value="true">
 	<input type="submit" value="Reorder Song!">
+	</form>
+"""
+
+ARCHIVE_SONG_FORM = """\
+	<form action="archive_song" method="post">
+	Room ID: <input type="text" name="room_id"><br>
+	Song ID: <input type="text" name="song_id"><br>
+	<input type="hidden" name="web_app" value="true">
+	<input type="submit" value="Archive Song!">
 	</form>
 """

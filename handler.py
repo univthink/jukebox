@@ -58,6 +58,9 @@ class Main(webapp2.RequestHandler):
 		self.response.write("<br><br>Reorder Song!<br>")
 		self.response.write(forms.REORDER_SONG_FORM)
 
+		self.response.write("<br><br>Archive Song!<br>")
+		self.response.write(forms.ARCHIVE_SONG_FORM)
+
 
 application = webapp2.WSGIApplication([
 	('/', Main),
@@ -70,5 +73,6 @@ application = webapp2.WSGIApplication([
 	('/reorder_song',ReorderSong.ReorderSong),
 	('/delete_song', DeleteSong.DeleteSong),
 	('/get_room_from_id', GetRoomFromID.GetRoomFromID),
-	('/get_user_from_id', GetUserFromID.GetUserFromID)
+	('/get_user_from_id', GetUserFromID.GetUserFromID),
+	('/archive_song',ArchiveSong.ArchiveSong)
 ], debug=True)

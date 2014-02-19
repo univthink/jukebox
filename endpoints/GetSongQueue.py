@@ -26,13 +26,21 @@ class GetSongQueue(webapp2.RequestHandler):
 			num_songs = int(self.request.get('num_songs',"1000"))
 			songs = []
 			song_pos = 0;
-			for song_id in room.queue:
+			song_list = room.queue
+
+			if self.request.get('type') == 'history':
+				song_list = room.history
+			elif self.request.get('type') == 'both':
+				song_list = song_list + room.history
+
+			for song_id in song_list:
 				song = models.Song.get_by_id(int(song_id),parent=room.key)
 				song_dict = song.to_dict()
 				song_dict['timeSubmitted'] = str(song_dict['timeSubmitted'])
 				song_dict['unique_id'] = int(song_id)
-				song_dict['song_pos'] = song_pos
-				song_pos = song_pos + 1
+				if song.history == False:
+					song_dict['song_pos'] = song_pos
+					song_pos = song_pos + 1
 				songs.append(song_dict)
 				if len(songs) >= num_songs:
 					break;

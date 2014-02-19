@@ -25,7 +25,8 @@ class CreateRoom(webapp2.RequestHandler):
 							   name=self.request.get('room_name'),
 							   mode=self.request.get('mode'),
 							   password=self.request.get('password', ''),
-							   queue=[])
+							   queue=[],
+							   history=[])
 
 
 			if has_coordinates:

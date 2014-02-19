@@ -49,6 +49,7 @@ class SubmitSong(webapp2.RequestHandler):
 									   track=self.request.get('track'),
 									   artist=self.request.get('artist'),
 									   album=self.request.get('album'),
+									   history=False,
 									   image_url=imageStuff["thumbnail_url"] if imageStuff else None,
 									   status=0)
 
