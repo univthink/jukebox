@@ -67,5 +67,6 @@ application = webapp2.WSGIApplication([
 	('/submit_song',SubmitSong.SubmitSong),
 	('/search_room',SearchRoom.SearchRoom),
 	('/get_song_queue',GetSongQueue.GetSongQueue),
-	('/reorder_song',ReorderSong.ReorderSong)
+	('/reorder_song',ReorderSong.ReorderSong),
+	('/delete_song', DeleteSong.DeleteSong)
 ], debug=True)
