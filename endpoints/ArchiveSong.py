@@ -4,6 +4,7 @@ from google.appengine.ext import ndb
 class ArchiveSong(webapp2.RequestHandler):
 
 	def post(self):
+		self.response.headers['Content-Type'] = 'application/json'
 		room_exists = True
 
 		roomlist_name = self.request.get('roomlist_name',utils.DEFAULT_ROOMLIST_NAME)

@@ -5,6 +5,7 @@ class SubmitSong(webapp2.RequestHandler):
 
 	def post(self):
 		room_exists = True
+		self.response.headers['Content-Type'] = 'application/json'
 
 		roomlist_name = self.request.get('roomlist_name',utils.DEFAULT_ROOMLIST_NAME)
 		room_id = self.request.get('room_id')
