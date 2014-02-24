@@ -38,7 +38,10 @@ class CreateRoom(webapp2.RequestHandler):
 			if self.request.get('initial_playlist'):
 				for song in json.loads(self.request.get('initial_playlist')):
 
-					imageStuff = json.loads(urllib2.urlopen("https://embed.spotify.com/oembed/?url="+self.request.get(song['url'])).read())
+					try:
+						imageStuff = json.loads(urllib2.urlopen("https://embed.spotify.com/oembed/?url="+song['url']).read())
+					except:
+						imageStuff = None
 
 					song = models.Song(parent=room_key,
 									   url=song['url'],
