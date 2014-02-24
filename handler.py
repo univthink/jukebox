@@ -76,5 +76,6 @@ application = webapp2.WSGIApplication([
 	('/get_user_from_id', GetUserFromID.GetUserFromID),
 	('/archive_song',ArchiveSong.ArchiveSong),
 	('/delete_room', DeleteRoom.DeleteRoom),
-	('/delete_user', DeleteUser.DeleteUser)
+	('/delete_user', DeleteUser.DeleteUser),
+	('/update_room', UpdateRoom.UpdateRoom)
 ], debug=True)
