@@ -26,7 +26,7 @@ class ReorderSong(webapp2.RequestHandler):
 				self.response.write(json.dumps({"status": "NOT OK", "message": "The requested room was not found."}))
 		else:
 			#TODO: Mode?
-			if False:#room.mode != 0:
+			if room.mode != 0:
 				if web_app:
 					self.response.write("You can only reorder songs in First Come First Serve mode.")
 				else: 

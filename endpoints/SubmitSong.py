@@ -1,7 +1,30 @@
 import webapp2, models, forms, json, endpoints, utils, urllib2
 from google.appengine.ext import ndb
+from sets import Set
 
 class SubmitSong(webapp2.RequestHandler):
+
+	def get_submitter_id(self,song_id,room):
+		song = models.Song.get_by_id(int(song_id),parent=room.key)
+		return song.submitter.integer_id()
+
+	def fairness_insert(self,room,guest):
+		x = 0
+		already_seen = Set()
+		while x < len(room.queue):
+
+			submitter_id = self.get_submitter_id(room.queue[x],room)
+\
+			if submitter_id not in already_seen:
+				already_seen.add(submitter_id)
+			else:
+				if guest.key.integer_id() in already_seen:
+					already_seen.clear()
+				else:
+					return x
+			x = x + 1
+
+		return x
 
 	def post(self):
 		room_exists = True
@@ -58,7 +81,12 @@ class SubmitSong(webapp2.RequestHandler):
 					song_key = song.put()
 
 					#TODO: Order differently based on mode
-					room.queue.append(song_key.integer_id())
+					if room.mode == 1:
+						insert_pos = self.fairness_insert(room,guest[0])
+						room.queue.insert(insert_pos,song_key.integer_id())
+					else:
+						room.queue.append(song_key.integer_id())
+
 					room.put()
 
 					if web_app:

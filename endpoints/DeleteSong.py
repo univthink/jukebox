@@ -25,51 +25,56 @@ class DeleteSong(webapp2.RequestHandler):
 			else:
 				self.response.write(json.dumps({"status": "NOT OK", "message": "The requested room was not found."}))
 		else:
-
-			if self.request.get('url') == None:
+			if room.mode != 0:
 				if web_app:
-					self.response.write("No url specified.")
-				else:
-					self.response.write(json.dumps({"status": "NOT OK", "message": "No url specified."}))
+					self.response.write("You can only reorder songs in First Come First Serve mode.")
+				else: 
+					self.response.write(json.dumps({"status": "NOT OK", "message": "You can only reorder songs in First Come First Serve mode."}))
 			else:
-				song = models.Song.query(ancestor=room.key)
-				song = song.filter(models.Song.url == self.request.get('url'))
-				songs = song.fetch()
-
-				if not songs:
+				if self.request.get('url') == None:
 					if web_app:
-						self.response.write("Song not found in room.")
+						self.response.write("No url specified.")
 					else:
-						self.response.write(json.dumps({"status": "NOT OK", "message": "Song not found in room."}))
+						self.response.write(json.dumps({"status": "NOT OK", "message": "No url specified."}))
 				else:
-					if self.request.get('position'):
-						position = int(self.request.get('position'))
-						removedSong = False
-						for song in songs:
-							index = room.queue.index(song.key.integer_id())
-							if position == index:
-								room.queue.remove(song.key.integer_id())
-								song.key.delete()
-								room.put()
-								if web_app:
-									self.response.write("You successfully deleted the song.")
-								else:
-									self.response.write(json.dumps({"status":"OK"}))
-								removedSong = True
-								break
-						if not removedSong:
-							if web_app:
-								self.response.write("Song not found at that position in room.")
-							else:
-								self.response.write(json.dumps({"status": "NOT OK", "message": "Song not found at that position in room."}))
-					else:
-						room.queue.remove(songs[0].key.integer_id())
-						songs[0].key.delete()
-						room.put()
+					song = models.Song.query(ancestor=room.key)
+					song = song.filter(models.Song.url == self.request.get('url'))
+					songs = song.fetch()
+
+					if not songs:
 						if web_app:
-							self.response.write("You successfully deleted the song.")
+							self.response.write("Song not found in room.")
 						else:
-							self.response.write(json.dumps({"status":"OK"}))
+							self.response.write(json.dumps({"status": "NOT OK", "message": "Song not found in room."}))
+					else:
+						if self.request.get('position'):
+							position = int(self.request.get('position'))
+							removedSong = False
+							for song in songs:
+								index = room.queue.index(song.key.integer_id())
+								if position == index:
+									room.queue.remove(song.key.integer_id())
+									song.key.delete()
+									room.put()
+									if web_app:
+										self.response.write("You successfully deleted the song.")
+									else:
+										self.response.write(json.dumps({"status":"OK"}))
+									removedSong = True
+									break
+							if not removedSong:
+								if web_app:
+									self.response.write("Song not found at that position in room.")
+								else:
+									self.response.write(json.dumps({"status": "NOT OK", "message": "Song not found at that position in room."}))
+						else:
+							room.queue.remove(songs[0].key.integer_id())
+							songs[0].key.delete()
+							room.put()
+							if web_app:
+								self.response.write("You successfully deleted the song.")
+							else:
+								self.response.write(json.dumps({"status":"OK"}))
 
 		if web_app:
 			self.response.write(forms.RETURN_TO_MAIN)
