@@ -9,8 +9,7 @@ class Room(ndb.Model):
 	lon = ndb.FloatProperty()
 	queue = ndb.IntegerProperty(repeated=True)
 	history = ndb.IntegerProperty(repeated=True)
-	# queue = ndb.ListProperty(Song,required=True) #(List of Keys to children?)
-	# guests = ndb.ListProperty(Guest,required=True) #(List of Keys to children?)
+	playing = ndb.BooleanProperty(default=True)
 	password = ndb.StringProperty()
 
 class Guest(ndb.Model):

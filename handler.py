@@ -77,5 +77,7 @@ application = webapp2.WSGIApplication([
 	('/archive_song',ArchiveSong.ArchiveSong),
 	('/delete_room', DeleteRoom.DeleteRoom),
 	('/delete_user', DeleteUser.DeleteUser),
-	('/update_room', UpdateRoom.UpdateRoom)
+	('/update_room', UpdateRoom.UpdateRoom),
+	('/pause_song', PauseSong.PauseSong),
+	('/check_play_status', CheckPlayStatus.CheckPlayStatus)
 ], debug=True)
