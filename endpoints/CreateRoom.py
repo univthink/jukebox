@@ -20,10 +20,16 @@ class CreateRoom(webapp2.RequestHandler):
 			toReturn = {"status": "NOT OK", "message": "Invalid user_id."}
 			self.response.write(json.dumps(toReturn))
 		else:
+
+			try:
+				mode = int(self.request.get('mode'))
+			except:
+				mode = 0
+
 			room = models.Room(parent=utils.roomlist_key(roomlist_name),
 							   creator=int(self.request.get('creator')),
 							   name=self.request.get('room_name'),
-							   mode=self.request.get('mode'),
+							   mode=mode,
 							   password=self.request.get('password', ''),
 							   queue=[],
 							   history=[])
