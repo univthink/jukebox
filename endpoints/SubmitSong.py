@@ -14,7 +14,7 @@ class SubmitSong(webapp2.RequestHandler):
 		while x < len(room.queue):
 
 			submitter_id = self.get_submitter_id(room.queue[x],room)
-\
+
 			if submitter_id not in already_seen:
 				already_seen.add(submitter_id)
 			else:
@@ -81,6 +81,7 @@ class SubmitSong(webapp2.RequestHandler):
 					song_key = song.put()
 
 					#TODO: Order differently based on mode
+					#TODO: Delete/Reorder for Fairness?
 					if room.mode == 1:
 						insert_pos = self.fairness_insert(room,guest[0])
 						room.queue.insert(insert_pos,song_key.integer_id())
