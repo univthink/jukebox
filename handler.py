@@ -61,6 +61,9 @@ class Main(webapp2.RequestHandler):
 		self.response.write("<br><br>Archive Song!<br>")
 		self.response.write(forms.ARCHIVE_SONG_FORM)
 
+		self.response.write("<br><br>Set Admin!<br>")
+		self.response.write(forms.SET_ADMIN_FORM)
+
 
 application = webapp2.WSGIApplication([
 	('/', Main),
@@ -79,5 +82,6 @@ application = webapp2.WSGIApplication([
 	('/delete_user', DeleteUser.DeleteUser),
 	('/update_room', UpdateRoom.UpdateRoom),
 	('/pause_song', PauseSong.PauseSong),
-	('/check_play_status', CheckPlayStatus.CheckPlayStatus)
+	('/check_play_status', CheckPlayStatus.CheckPlayStatus),
+	('/set_admin',SetAdmin.SetAdmin)
 ], debug=True)

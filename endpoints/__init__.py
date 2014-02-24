@@ -13,4 +13,5 @@ __all__ = ["JoinRoom",
 		   "DeleteUser",
 		   "UpdateRoom",
 		   "PauseSong",
-		   "CheckPlayStatus"]
+		   "CheckPlayStatus",
+		   "SetAdmin"]

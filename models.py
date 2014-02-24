@@ -14,6 +14,7 @@ class Room(ndb.Model):
 
 class Guest(ndb.Model):
 	user_id = ndb.IntegerProperty(required=True)
+	admin = ndb.BooleanProperty(required=True,default=False)
 #	userid = ndb.ReferenceProperty(User, required=True)
 # 	#Subcategorize for different room types here.
 

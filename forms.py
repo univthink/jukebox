@@ -95,3 +95,13 @@ ARCHIVE_SONG_FORM = """\
 	<input type="submit" value="Archive Song!">
 	</form>
 """
+
+SET_ADMIN_FORM = ARCHIVE_SONG_FORM = """\
+	<form action="set_admin" method="post">
+	Room ID: <input type="text" name="room_id"><br>
+	Value: <input type="text" name="value"><br>
+	User ID: <input type="text" name="user_id"><br>
+	<input type="hidden" name="web_app" value="true">
+	<input type="submit" value="Set Admin!">
+	</form>
+"""

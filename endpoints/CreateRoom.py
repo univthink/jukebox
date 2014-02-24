@@ -41,7 +41,7 @@ class CreateRoom(webapp2.RequestHandler):
 
 			room_key = room.put()
 
-			guest = models.Guest(parent=room_key,user_id=int(self.request.get('creator')))
+			guest = models.Guest(parent=room_key,user_id=int(self.request.get('creator')),admin=True)
 			guest.put()
 
 			if self.request.get('initial_playlist'):
