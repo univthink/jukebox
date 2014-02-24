@@ -8,4 +8,5 @@ __all__ = ["JoinRoom",
 		   "DeleteSong",
 		   "GetRoomFromID",
 		   "GetUserFromID",
-		   "ArchiveSong"]
+		   "ArchiveSong",
+		   "DeleteRoom"]
