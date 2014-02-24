@@ -52,7 +52,8 @@ class SubmitSong(webapp2.RequestHandler):
 									   album=self.request.get('album'),
 									   history=False,
 									   image_url=imageStuff["thumbnail_url"] if imageStuff else None,
-									   status=0)
+									   status=0,
+									   submitter=guest[0].key)
 
 					song_key = song.put()
 

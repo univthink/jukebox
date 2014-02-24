@@ -41,6 +41,9 @@ class CreateRoom(webapp2.RequestHandler):
 
 			room_key = room.put()
 
+			guest = models.Guest(parent=room_key,user_id=int(self.request.get('creator')))
+			guest.put()
+
 			if self.request.get('initial_playlist'):
 				for song in json.loads(self.request.get('initial_playlist')):
 
@@ -56,7 +59,8 @@ class CreateRoom(webapp2.RequestHandler):
 									   album=song['album'],
 									   history = False,
 									   image_url=imageStuff["thumbnail_url"] if imageStuff else None,
-									   status=0)
+									   status=0,
+									   submitter=guest.key)
 
 					song_key = song.put()
 
@@ -64,9 +68,6 @@ class CreateRoom(webapp2.RequestHandler):
 					room.queue.append(song_key.integer_id())
 
 				room_key = room.put()
-
-			guest = models.Guest(parent=room_key,user_id=int(self.request.get('creator')))
-			guest.put()
 
 			toReturn = {"status": "OK", "data":room_key.integer_id()}
 			self.response.write(json.dumps(toReturn))

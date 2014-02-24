@@ -30,7 +30,7 @@ class Song(ndb.Model):
 	history = ndb.BooleanProperty(required=True)
 	# upvotes = ndb.ListProperty(required=True) #(List of usernames)
 	# downvotes = ndb.ListProperty(required=True) #(List of usernames)
-	# submitter = ndb.ReferenceProperty(Guest, required=True)
+	submitter = ndb.KeyProperty(kind=Guest, required=True)
 	status = ndb.IntegerProperty(required=True)
 	timeSubmitted = ndb.DateTimeProperty(auto_now_add=True,required=True)
 	#timePlayed = ndb.DateTimeProperty()
