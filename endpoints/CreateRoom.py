@@ -43,6 +43,7 @@ class CreateRoom(webapp2.RequestHandler):
 									   track=song['track'],
 									   artist=song['artist'],
 									   album=song['album'],
+									   history = False,
 									   status=0)
 
 					song_key = song.put()
