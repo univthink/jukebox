@@ -1,4 +1,4 @@
-import webapp2, models, forms, json, endpoints, utils
+import webapp2, models, forms, json, endpoints, utils, urllib2
 from google.appengine.ext import ndb
 
 class CreateRoom(webapp2.RequestHandler):
@@ -38,12 +38,15 @@ class CreateRoom(webapp2.RequestHandler):
 			if self.request.get('initial_playlist'):
 				for song in json.loads(self.request.get('initial_playlist')):
 
+					imageStuff = json.loads(urllib2.urlopen("https://embed.spotify.com/oembed/?url="+self.request.get(song['url'])).read())
+
 					song = models.Song(parent=room_key,
 									   url=song['url'],
 									   track=song['track'],
 									   artist=song['artist'],
 									   album=song['album'],
 									   history = False,
+									   image_url=imageStuff["thumbnail_url"] if imageStuff else None,
 									   status=0)
 
 					song_key = song.put()
