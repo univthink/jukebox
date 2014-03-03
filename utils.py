@@ -23,6 +23,7 @@ class JSONEncoder(json.JSONEncoder):
         	if isinstance(o, models.Room):
         		user = models.User.get_by_id(int(obj['creator']),parent=userlist_key(DEFAULT_USERLIST_NAME))
         		obj['creator_name'] = user.username
+        		obj.pop('password')
         	return obj
         elif isinstance(o, (ndb.GeoPt)):
             return str(o)  # Or whatever other date format you're OK with...
