@@ -1,6 +1,20 @@
 import webapp2, models, forms, json, endpoints, utils, urllib2
 from google.appengine.ext import ndb
 
+def fairness_adjustment(room,position,submitter):
+	x = position
+	while x < len(room.queue):
+		queue_id = room.queue[x]
+		queue_song = models.Song.get_by_id(int(queue_id),parent=room.key)
+		queue_submitter = queue_song.submitter.integer_id()
+		if queue_submitter == submitter:
+			if position == x:
+				break
+			room.queue.remove(queue_id)
+			room.queue.insert(position,queue_id)
+			position = x + 1
+		x = x + 1
+
 class DeleteSong(webapp2.RequestHandler):
 
 	def post(self):
@@ -32,11 +46,11 @@ class DeleteSong(webapp2.RequestHandler):
 				else:
 					self.response.write(json.dumps({"status": "NOT OK", "message": "The correct password was not provided."}))
 			else:
-				if room.mode != 0:
+				if room.mode != 0 and room.mode != 1:
 					if web_app:
-						self.response.write("You can only reorder songs in First Come First Serve mode.")
+						self.response.write("You cannot delte songs in this mode.")
 					else: 
-						self.response.write(json.dumps({"status": "NOT OK", "message": "You can only reorder songs in First Come First Serve mode."}))
+						self.response.write(json.dumps({"status": "NOT OK", "message": "You cannot delet songs in this mode."}))
 				else:
 					if self.request.get('url') == None:
 						if web_app:
@@ -60,7 +74,14 @@ class DeleteSong(webapp2.RequestHandler):
 								for song in songs:
 									index = room.queue.index(song.key.integer_id())
 									if position == index:
+
+										submitter = song.submitter.integer_id()
+
 										room.queue.remove(song.key.integer_id())
+
+										if room.mode == 1:
+											fairness_adjustment(room,position,submitter)
+
 										song.key.delete()
 										room.put()
 										if web_app:
@@ -75,8 +96,15 @@ class DeleteSong(webapp2.RequestHandler):
 									else:
 										self.response.write(json.dumps({"status": "NOT OK", "message": "Song not found at that position in room."}))
 							else:
+								submitter = songs[0].submitter.integer_id()
+								position = room.queue.index(songs[0].key.integer_id())
+
 								room.queue.remove(songs[0].key.integer_id())
 								songs[0].key.delete()
+
+								if room.mode == 1:
+									fairness_adjustment(room,position,submitter)
+
 								room.put()
 								if web_app:
 									self.response.write("You successfully deleted the song.")

@@ -17,12 +17,12 @@ class SubmitSong(webapp2.RequestHandler):
 
 			if submitter_id not in already_seen:
 				already_seen.add(submitter_id)
+				x = x + 1
 			else:
 				if guest.key.integer_id() in already_seen:
 					already_seen.clear()
 				else:
 					return x
-			x = x + 1
 
 		return x
 
