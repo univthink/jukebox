@@ -1,5 +1,5 @@
 from google.appengine.ext import ndb
-import json, math, models
+import json, math, models, hashlib
 
 DEFAULT_ROOMLIST_NAME = "default_roomlist"
 DEFAULT_USERLIST_NAME = "default_userlist"
@@ -60,3 +60,6 @@ def toRad(value):
 # Converts numeric degrees to radians
 def toDeg(value):
 	return value * 180 / math.pi
+
+def checkPassword (submitted, passHash):
+	return not passHash or passHash == hashlib.sha512(submitted).hexdigest()
