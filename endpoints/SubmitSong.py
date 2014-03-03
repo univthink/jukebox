@@ -48,52 +48,59 @@ class SubmitSong(webapp2.RequestHandler):
 			else:
 				self.response.write(json.dumps({"status": "NOT OK", "message": "The requested room was not found."}))
 		else:
-			user_id = self.request.get('user_id')
-			userlist_name = self.request.get('userlist_name',utils.DEFAULT_USERLIST_NAME)
-			user = models.User.get_by_id(int(user_id),parent=utils.userlist_key(userlist_name))
-			if user == None:
+			allowed = utils.checkPassword(self.request.get('password', ''), room.password)
+			if not allowed:
 				if web_app:
-					self.response.write("The given user_id is not a valid user.")
+					self.response.write("The correct password was not provided.")
 				else:
-					self.response.write(json.dumps({"status": "NOT OK", "message": "The given user_id is not a valid user."}))
+					self.response.write(json.dumps({"status": "NOT OK", "message": "The correct password was not provided."}))
 			else:
-				guest_query = models.Guest.query(models.Guest.user_id == int(user_id),ancestor=room.key)
-				guest = guest_query.fetch()
-				if len(guest) == 0:
+				user_id = self.request.get('user_id')
+				userlist_name = self.request.get('userlist_name',utils.DEFAULT_USERLIST_NAME)
+				user = models.User.get_by_id(int(user_id),parent=utils.userlist_key(userlist_name))
+				if user == None:
 					if web_app:
-						self.response.write("You need to join this room before you can submit a song.")
+						self.response.write("The given user_id is not a valid user.")
 					else:
-						self.response.write(json.dumps({"status": "NOT OK", "message": "You need to join this room before you can submit a song."}))
+						self.response.write(json.dumps({"status": "NOT OK", "message": "The given user_id is not a valid user."}))
 				else:
-					imageStuff = json.loads(urllib2.urlopen("https://embed.spotify.com/oembed/?url="+self.request.get('url')).read())
-					# self.response.write(imageStuff)
-					#TODO: Add values necessary for other modes
-					song = models.Song(parent=room.key,
-									   url=self.request.get('url'),
-									   track=self.request.get('track'),
-									   artist=self.request.get('artist'),
-									   album=self.request.get('album'),
-									   history=False,
-									   image_url=imageStuff["thumbnail_url"] if imageStuff else None,
-									   status=0,
-									   submitter=guest[0].key)
-
-					song_key = song.put()
-
-					#TODO: Order differently based on mode
-					#TODO: Delete/Reorder for Fairness?
-					if room.mode == 1:
-						insert_pos = self.fairness_insert(room,guest[0])
-						room.queue.insert(insert_pos,song_key.integer_id())
+					guest_query = models.Guest.query(models.Guest.user_id == int(user_id),ancestor=room.key)
+					guest = guest_query.fetch()
+					if len(guest) == 0:
+						if web_app:
+							self.response.write("You need to join this room before you can submit a song.")
+						else:
+							self.response.write(json.dumps({"status": "NOT OK", "message": "You need to join this room before you can submit a song."}))
 					else:
-						room.queue.append(song_key.integer_id())
+						imageStuff = json.loads(urllib2.urlopen("https://embed.spotify.com/oembed/?url="+self.request.get('url')).read())
+						# self.response.write(imageStuff)
+						#TODO: Add values necessary for other modes
+						song = models.Song(parent=room.key,
+										   url=self.request.get('url'),
+										   track=self.request.get('track'),
+										   artist=self.request.get('artist'),
+										   album=self.request.get('album'),
+										   history=False,
+										   image_url=imageStuff["thumbnail_url"] if imageStuff else None,
+										   status=0,
+										   submitter=guest[0].key)
 
-					room.put()
+						song_key = song.put()
 
-					if web_app:
-						self.response.write("You successfully submitted \"" + self.request.get('track_name') + "\" to the room \"" + room.name + "\".")
-					else:
-						self.response.write(json.dumps({"status":"OK"}))
+						#TODO: Order differently based on mode
+						#TODO: Delete/Reorder for Fairness?
+						if room.mode == 1:
+							insert_pos = self.fairness_insert(room,guest[0])
+							room.queue.insert(insert_pos,song_key.integer_id())
+						else:
+							room.queue.append(song_key.integer_id())
+
+						room.put()
+
+						if web_app:
+							self.response.write("You successfully submitted \"" + self.request.get('track_name') + "\" to the room \"" + room.name + "\".")
+						else:
+							self.response.write(json.dumps({"status":"OK"}))
 
 		if web_app:
 			self.response.write(forms.RETURN_TO_MAIN)

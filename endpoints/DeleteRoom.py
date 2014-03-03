@@ -25,13 +25,19 @@ class DeleteRoom(webapp2.RequestHandler):
 			else:
 				self.response.write(json.dumps({"status": "NOT OK", "message": "The requested room was not found."}))
 		else:
-
-			ndb.delete_multi(ndb.Query(ancestor = room.key).iter(keys_only = True))
-
-			if web_app:
-				self.response.write("You successfully deleted the song.")
+			allowed = utils.checkPassword(self.request.get('password', ''), room.password)
+			if not allowed:
+				if web_app:
+					self.response.write("The correct password was not provided.")
+				else:
+					self.response.write(json.dumps({"status": "NOT OK", "message": "The correct password was not provided."}))
 			else:
-				self.response.write(json.dumps({"status":"OK"}))
+				ndb.delete_multi(ndb.Query(ancestor = room.key).iter(keys_only = True))
+
+				if web_app:
+					self.response.write("You successfully deleted the song.")
+				else:
+					self.response.write(json.dumps({"status":"OK"}))
 
 		if web_app:
 			self.response.write(forms.RETURN_TO_MAIN)

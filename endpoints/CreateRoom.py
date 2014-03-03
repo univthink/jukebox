@@ -1,4 +1,4 @@
-import webapp2, models, forms, json, endpoints, utils, urllib2
+import webapp2, models, forms, json, endpoints, utils, urllib2, hashlib
 from google.appengine.ext import ndb
 
 class CreateRoom(webapp2.RequestHandler):
@@ -26,11 +26,14 @@ class CreateRoom(webapp2.RequestHandler):
 			except:
 				mode = 0
 
+			password = self.request.get('password', '')
+			hashed_password = hashlib.sha512(password).hexdigest() if password else ''
+
 			room = models.Room(parent=utils.roomlist_key(roomlist_name),
 							   creator=int(self.request.get('creator')),
 							   name=self.request.get('room_name'),
 							   mode=mode,
-							   password=self.request.get('password', ''),
+							   password= hashed_password,
 							   queue=[],
 							   history=[])
 

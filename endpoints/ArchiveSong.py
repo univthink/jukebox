@@ -24,25 +24,32 @@ class ArchiveSong(webapp2.RequestHandler):
 			else:
 				self.response.write(json.dumps({"status": "NOT OK", "message": "The requested room was not found."}))
 		else:
-			song_id = int(self.request.get('song_id'))
-			if room.queue.count(song_id) == 0:
+			allowed = utils.checkPassword(self.request.get('password', ''), room.password)
+			if not allowed:
 				if web_app:
-					self.response.write("The requested song is not in the Room's queue.")
+					self.response.write("The correct password was not provided.")
 				else:
-					self.response.write(json.dumps({"status": "NOT OK", "message": "The requested song is not in the Room's queue."}))
-			else:
-				song = models.Song.get_by_id(int(song_id),parent=room.key)
-				song.history = True
-				song.put()
-
-				room.queue.remove(song_id)
-				room.history.append(song_id)
-				room.put()
-
-				if web_app:
-					self.response.write("You successfully archived song \"" + str(song_id) + ".\"")
+					self.response.write(json.dumps({"status": "NOT OK", "message": "The correct password was not provided."}))
+			else: 
+				song_id = int(self.request.get('song_id'))
+				if room.queue.count(song_id) == 0:
+					if web_app:
+						self.response.write("The requested song is not in the Room's queue.")
+					else:
+						self.response.write(json.dumps({"status": "NOT OK", "message": "The requested song is not in the Room's queue."}))
 				else:
-					self.response.write(json.dumps({"status":"OK"}))
+					song = models.Song.get_by_id(int(song_id),parent=room.key)
+					song.history = True
+					song.put()
+
+					room.queue.remove(song_id)
+					room.history.append(song_id)
+					room.put()
+
+					if web_app:
+						self.response.write("You successfully archived song \"" + str(song_id) + ".\"")
+					else:
+						self.response.write(json.dumps({"status":"OK"}))
 
 		if web_app:
 			self.response.write(forms.RETURN_TO_MAIN)

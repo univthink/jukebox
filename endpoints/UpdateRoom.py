@@ -25,27 +25,33 @@ class UpdateRoom(webapp2.RequestHandler):
 			else:
 				self.response.write(json.dumps({"status": "NOT OK", "message": "The requested room was not found."}))
 		else:
-
-			if self.request.get("coordinates") != '':
-				try:
-					[lat, lon] = self.request.get("coordinates").split(',')
-					room.lat = float(lat)
-					room.lon = float(lon)
-					room.put()
-					if web_app:
-						self.response.write("You successfully updated the room.")
-					else:
-						self.response.write(json.dumps({"status":"OK"}))
-				except:
-					if web_app:
-						self.response.write("Misformatted coordinates specified.")
-					else:
-						self.response.write(json.dumps({"status": "NOT OK", "message": "Misformatted coordinates specified."}))
-			else:
+			allowed = utils.checkPassword(self.request.get('password', ''), room.password)
+			if not allowed:
 				if web_app:
-					self.response.write("No coordinates specified.")
+					self.response.write("The correct password was not provided.")
 				else:
-					self.response.write(json.dumps({"status": "NOT OK", "message": "No coordinates specified."}))
+					self.response.write(json.dumps({"status": "NOT OK", "message": "The correct password was not provided."}))
+			else:
+				if self.request.get("coordinates") != '':
+					try:
+						[lat, lon] = self.request.get("coordinates").split(',')
+						room.lat = float(lat)
+						room.lon = float(lon)
+						room.put()
+						if web_app:
+							self.response.write("You successfully updated the room.")
+						else:
+							self.response.write(json.dumps({"status":"OK"}))
+					except:
+						if web_app:
+							self.response.write("Misformatted coordinates specified.")
+						else:
+							self.response.write(json.dumps({"status": "NOT OK", "message": "Misformatted coordinates specified."}))
+				else:
+					if web_app:
+						self.response.write("No coordinates specified.")
+					else:
+						self.response.write(json.dumps({"status": "NOT OK", "message": "No coordinates specified."}))
 
 			
 

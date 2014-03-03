@@ -24,7 +24,8 @@ class JoinRoom(webapp2.RequestHandler):
 			else:
 				self.response.write(json.dumps({"status": "NOT OK", "message": "The requested room was not found."}))
 		else:
-			if room.password != '' and room.password != self.request.get('password'):
+			allowed = utils.checkPassword(self.request.get('password', ''), room.password)
+			if not allowed:
 				if web_app:
 					self.response.write("You did not enter the proper password for room: " + room.name)
 				else:

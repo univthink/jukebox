@@ -26,10 +26,17 @@ class GetRoomFromID(webapp2.RequestHandler):
 			else:
 				self.response.write(json.dumps({"status": "NOT OK", "message": "The requested room was not found."}))
 		else:
-			if web_app:
-				self.response.write(utils.JSONEncoder().encode(room))
+			allowed = utils.checkPassword(self.request.get('password', ''), room.password)
+			if not allowed:
+				if web_app:
+					self.response.write("The correct password was not provided.")
+				else:
+					self.response.write(json.dumps({"status": "NOT OK", "message": "The correct password was not provided."}))
 			else:
-				self.response.write(utils.JSONEncoder().encode({"status":"OK", "data": room}))
+				if web_app:
+					self.response.write(utils.JSONEncoder().encode(room))
+				else:
+					self.response.write(utils.JSONEncoder().encode({"status":"OK", "data": room}))
 
 		if web_app:
 			self.response.write(forms.RETURN_TO_MAIN)

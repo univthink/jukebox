@@ -24,43 +24,50 @@ class SetAdmin(webapp2.RequestHandler):
 			else:
 				self.response.write(json.dumps({"status": "NOT OK", "message": "The requested room was not found."}))
 		else:
-			user_id = self.request.get('user_id')
-			userlist_name = self.request.get('userlist_name',utils.DEFAULT_USERLIST_NAME)
-			user = models.User.get_by_id(int(user_id),parent=utils.userlist_key(userlist_name))
-			if user == None:
+			allowed = utils.checkPassword(self.request.get('password', ''), room.password)
+			if not allowed:
 				if web_app:
-					self.response.write("The given user_id is not a valid user.")
+					self.response.write("The correct password was not provided.")
 				else:
-					self.response.write(json.dumps({"status": "NOT OK", "message": "The given user_id is not a valid user."}))
+					self.response.write(json.dumps({"status": "NOT OK", "message": "The correct password was not provided."}))
 			else:
-				guest_query = models.Guest.query(models.Guest.user_id == int(user_id),ancestor=room.key)
-				guests = guest_query.fetch()
-				if len(guests) == 0:
+				user_id = self.request.get('user_id')
+				userlist_name = self.request.get('userlist_name',utils.DEFAULT_USERLIST_NAME)
+				user = models.User.get_by_id(int(user_id),parent=utils.userlist_key(userlist_name))
+				if user == None:
 					if web_app:
-						self.response.write("The referenced user is not in this room.")
+						self.response.write("The given user_id is not a valid user.")
 					else:
-						self.response.write(json.dumps({"status": "NOT OK", "message": "The referenced user is not in this room."}))
+						self.response.write(json.dumps({"status": "NOT OK", "message": "The given user_id is not a valid user."}))
 				else:
-					guest = guests[0]
-
-					try:
-						value = int(self.request.get('value'))
-					except:
+					guest_query = models.Guest.query(models.Guest.user_id == int(user_id),ancestor=room.key)
+					guests = guest_query.fetch()
+					if len(guests) == 0:
 						if web_app:
 							self.response.write("The referenced user is not in this room.")
 						else:
 							self.response.write(json.dumps({"status": "NOT OK", "message": "The referenced user is not in this room."}))
 					else:
-						if value == 0:
-							guest.admin = False
-						else:
-							guest.admin = True
-						guest.put()
+						guest = guests[0]
 
-						if web_app:
-							self.response.write("Admin Status Succesfully Changed!")
+						try:
+							value = int(self.request.get('value'))
+						except:
+							if web_app:
+								self.response.write("The referenced user is not in this room.")
+							else:
+								self.response.write(json.dumps({"status": "NOT OK", "message": "The referenced user is not in this room."}))
 						else:
-							self.response.write(json.dumps({"status":"OK"}))
+							if value == 0:
+								guest.admin = False
+							else:
+								guest.admin = True
+							guest.put()
+
+							if web_app:
+								self.response.write("Admin Status Succesfully Changed!")
+							else:
+								self.response.write(json.dumps({"status":"OK"}))
 
 		if web_app:
 			self.response.write(forms.RETURN_TO_MAIN)

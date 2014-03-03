@@ -22,27 +22,34 @@ class GetSongQueue(webapp2.RequestHandler):
 			else:
 				self.response.write(json.dumps({"status": "NOT OK", "message": "The referenced room was not found."}))
 		else:
-			#TODO: Error checking
-			num_songs = int(self.request.get('num_songs',"1000"))
-			songs = []
-			song_pos = 0;
-			song_list = room.queue
+			allowed = utils.checkPassword(self.request.get('password', ''), room.password)
+			if not allowed:
+				if web_app:
+					self.response.write("The correct password was not provided.")
+				else:
+					self.response.write(json.dumps({"status": "NOT OK", "message": "The correct password was not provided."}))
+			else:
+				#TODO: Error checking
+				num_songs = int(self.request.get('num_songs',"1000"))
+				songs = []
+				song_pos = 0;
+				song_list = room.queue
 
-			if self.request.get('type') == 'history':
-				song_list = room.history
-			elif self.request.get('type') == 'both':
-				song_list = song_list + room.history
+				if self.request.get('type') == 'history':
+					song_list = room.history
+				elif self.request.get('type') == 'both':
+					song_list = song_list + room.history
 
-			for song_id in song_list:
-				song = models.Song.get_by_id(int(song_id),parent=room.key)
-				song_dict = song.to_dict()
-				song_dict['timeSubmitted'] = str(song_dict['timeSubmitted'])
-				song_dict['unique_id'] = int(song_id)
-				if song.history == False:
-					song_dict['song_pos'] = song_pos
-					song_pos = song_pos + 1
-				songs.append(song_dict)
-				if len(songs) >= num_songs:
-					break;
+				for song_id in song_list:
+					song = models.Song.get_by_id(int(song_id),parent=room.key)
+					song_dict = song.to_dict()
+					song_dict['timeSubmitted'] = str(song_dict['timeSubmitted'])
+					song_dict['unique_id'] = int(song_id)
+					if song.history == False:
+						song_dict['song_pos'] = song_pos
+						song_pos = song_pos + 1
+					songs.append(song_dict)
+					if len(songs) >= num_songs:
+						break;
 
-			self.response.write(json.dumps({"status": "OK", "data": songs}))
+				self.response.write(json.dumps({"status": "OK", "data": songs}))

@@ -32,23 +32,30 @@ class ReorderSong(webapp2.RequestHandler):
 				else: 
 					self.response.write(json.dumps({"status": "NOT OK", "message": "You can only reorder songs in First Come First Serve mode."}))
 			else:
-				#TODO: Error checking
-				song_id = int(self.request.get('song_id'))
-				if room.queue.count(song_id) == 0:
+				allowed = utils.checkPassword(self.request.get('password', ''), room.password)
+				if not allowed:
 					if web_app:
-						self.response.write("The requested song is not in the Room's queue.")
+						self.response.write("The correct password was not provided.")
 					else:
-						self.response.write(json.dumps({"status": "NOT OK", "message": "The requested song is not in the Room's queue."}))
+						self.response.write(json.dumps({"status": "NOT OK", "message": "The correct password was not provided."}))
 				else:
-					new_pos = int(self.request.get('new_pos'))
-					room.queue.remove(song_id)
-					room.queue.insert(new_pos,song_id)
-					room.put()
-
-					if web_app:
-						self.response.write("You successfully moved song \"" + str(song_id) + "\" to position " + str(new_pos))
+					#TODO: Error checking
+					song_id = int(self.request.get('song_id'))
+					if room.queue.count(song_id) == 0:
+						if web_app:
+							self.response.write("The requested song is not in the Room's queue.")
+						else:
+							self.response.write(json.dumps({"status": "NOT OK", "message": "The requested song is not in the Room's queue."}))
 					else:
-						self.response.write(json.dumps({"status":"OK"}))
+						new_pos = int(self.request.get('new_pos'))
+						room.queue.remove(song_id)
+						room.queue.insert(new_pos,song_id)
+						room.put()
+
+						if web_app:
+							self.response.write("You successfully moved song \"" + str(song_id) + "\" to position " + str(new_pos))
+						else:
+							self.response.write(json.dumps({"status":"OK"}))
 
 		if web_app:
 			self.response.write(forms.RETURN_TO_MAIN)

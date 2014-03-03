@@ -26,18 +26,25 @@ class CheckPlayStatus(webapp2.RequestHandler):
 				self.response.write(json.dumps({"status": "NOT OK", "message": "The requested room was not found."}))
 		else:
 
-			try:
-				playing = room.playing
-			except:
-				playing = True
-
-			if web_app:
-				if playing:
-					self.response.write("The song is playing.")
+			allowed = utils.checkPassword(self.request.get('password', ''), room.password)
+			if not allowed:
+				if web_app:
+					self.response.write("The correct password was not provided.")
 				else:
-					self.response.write("The song is paused.")
-			else:
-				self.response.write(json.dumps({"status":"OK", "data": json.dumps(playing)}))	
+					self.response.write(json.dumps({"status": "NOT OK", "message": "The correct password was not provided."}))
+			else: 
+				try:
+					playing = room.playing
+				except:
+					playing = True
+
+				if web_app:
+					if playing:
+						self.response.write("The song is playing.")
+					else:
+						self.response.write("The song is paused.")
+				else:
+					self.response.write(json.dumps({"status":"OK", "data": json.dumps(playing)}))	
 
 		if web_app:
 			self.response.write(forms.RETURN_TO_MAIN)
