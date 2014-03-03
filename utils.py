@@ -10,6 +10,20 @@ def roomlist_key(roomlist_name=DEFAULT_ROOMLIST_NAME):
 def userlist_key(userlist_name=DEFAULT_USERLIST_NAME):
 	return ndb.Key('UserList',userlist_name)
 
+def is_admin(room,user_id):
+	userlist_name = DEFAULT_USERLIST_NAME
+	user = models.User.get_by_id(int(user_id),parent=userlist_key(userlist_name))
+	
+	if user == None:
+		return False
+
+	guest_query = models.Guest.query(models.Guest.user_id == int(user_id),ancestor=room.key)
+	guests = guest_query.fetch()
+	if len(guests) == 0:
+		return False
+
+	return guests[0].admin
+
 class JSONEncoder(json.JSONEncoder):
 
     def default(self, o):

@@ -82,6 +82,7 @@ REORDER_SONG_FORM = """\
 	Room ID: <input type="text" name="room_id"><br>
 	Song ID: <input type="text" name="song_id"><br>
 	New Pos: <input type="text" name="new_pos"><br>
+	User ID: <input type="text" name="user_id"><br>
 	<input type="hidden" name="web_app" value="true">
 	<input type="submit" value="Reorder Song!">
 	</form>
@@ -111,6 +112,7 @@ DELETE_SONG_FORM = """\
 	Room ID: <input type="text" name="room_id"><br>
 	URL: <input type="text" name="url"><br>
 	Position: <input type="text" name="position"><br>
+	User ID: <input type="text" name="user_id"><br>
 	<input type="hidden" name="web_app" value="true">
 	<input type="submit" value="Delete Song!">
 """
