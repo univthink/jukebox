@@ -12,9 +12,13 @@ class ArchiveSong(webapp2.RequestHandler):
 		if not room_id:
 			room_exists = False
 		else:
-			room = models.Room.get_by_id(int(room_id),parent=utils.roomlist_key(roomlist_name))
-			if room == None:
-				room_exists = False;
+			try:
+				room = models.Room.get_by_id(int(room_id),parent=utils.roomlist_key(roomlist_name))
+				if room == None:
+					room_exists = False
+			except:
+				room_exists = False
+			
 
 		web_app = self.request.get('web_app','false') != 'false'
 
@@ -31,14 +35,18 @@ class ArchiveSong(webapp2.RequestHandler):
 				else:
 					self.response.write(json.dumps({"status": "NOT OK", "message": "The correct password was not provided."}))
 			else: 
-				song_id = int(self.request.get('song_id'))
-				if room.queue.count(song_id) == 0:
+				song_exists = True
+				try:
+					song_id = int(self.request.get('song_id'))
+				except:
+					song_exists = False
+				if not song_exists or room.queue.count(song_id) == 0:
 					if web_app:
 						self.response.write("The requested song is not in the Room's queue.")
 					else:
 						self.response.write(json.dumps({"status": "NOT OK", "message": "The requested song is not in the Room's queue."}))
 				else:
-					song = models.Song.get_by_id(int(song_id),parent=room.key)
+					song = models.Song.get_by_id(song_id,parent=room.key)
 					song.history = True
 					song.put()
 
