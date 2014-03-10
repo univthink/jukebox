@@ -27,9 +27,12 @@ class DeleteSong(webapp2.RequestHandler):
 		if not room_id:
 			room_exists = False
 		else:
-			room = models.Room.get_by_id(int(room_id),parent=utils.roomlist_key(roomlist_name))
-			if room == None:
-				room_exists = False;
+			try: 
+				room = models.Room.get_by_id(int(room_id),parent=utils.roomlist_key(roomlist_name))
+				if room == None:
+					room_exists = False
+			except:
+				room_exists = None
 
 		if not utils.is_admin(room,self.request.get('user_id')):
 			self.response.write(json.dumps({"status": "NOT OK", "message": "You must be an admin to reorder songs."}))
@@ -73,27 +76,30 @@ class DeleteSong(webapp2.RequestHandler):
 								self.response.write(json.dumps({"status": "NOT OK", "message": "Song not found in room."}))
 						else:
 							if self.request.get('position'):
-								position = int(self.request.get('position'))
 								removedSong = False
-								for song in songs:
-									index = room.queue.index(song.key.integer_id())
-									if position == index:
+								try:
+									position = int(self.request.get('position'))
+									for song in songs:
+										index = room.queue.index(song.key.integer_id())
+										if position == index:
 
-										submitter = song.submitter.integer_id()
+											submitter = song.submitter.integer_id()
 
-										room.queue.remove(song.key.integer_id())
+											room.queue.remove(song.key.integer_id())
 
-										if room.mode == 1:
-											fairness_adjustment(room,position,submitter)
+											if room.mode == 1:
+												fairness_adjustment(room,position,submitter)
 
-										song.key.delete()
-										room.put()
-										if web_app:
-											self.response.write("You successfully deleted the song.")
-										else:
-											self.response.write(json.dumps({"status":"OK"}))
-										removedSong = True
-										break
+											song.key.delete()
+											room.put()
+											if web_app:
+												self.response.write("You successfully deleted the song.")
+											else:
+												self.response.write(json.dumps({"status":"OK"}))
+											removedSong = True
+											break
+								except:
+									removedSong = False
 								if not removedSong:
 									if web_app:
 										self.response.write("Song not found at that position in room.")
