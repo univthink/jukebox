@@ -15,15 +15,21 @@ class SearchRoom(webapp2.RequestHandler):
 			room = room.filter(models.Room.name == self.request.get('name'))
 		if self.request.get('user_id'):
 			# bool has_user= False
-			room = room.filter(models.Room.creator==int(self.request.get('user_id')))
+			try:
+				room = room.filter(models.Room.creator==int(self.request.get('user_id')))
+			except:
+				pass
 		filterLon = False
 		lonMin = 0
 		lonMax =0
 		if self.request.get('coordinates'):
 			[lat, lon] = self.request.get('coordinates').split(',')
-			[latMin, latMax, lonMin, lonMax] = utils.boundingBox(float(lat), float(lon), float(self.request.get('distance', '1000')))
-			room = room.filter(models.Room.lat >= latMin, models.Room.lat <= latMax)
-			filterLon = True
+			try:
+				[latMin, latMax, lonMin, lonMax] = utils.boundingBox(float(lat), float(lon), float(self.request.get('distance', '1000')))
+				room = room.filter(models.Room.lat >= latMin, models.Room.lat <= latMax)
+				filterLon = True
+			except:
+				pass
 			# room = room.filter(models.Room.lon >= lonMin, models.Room.lon <= lonMax)
 
 		rooms = room.fetch()
