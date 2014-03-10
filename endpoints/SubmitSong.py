@@ -5,8 +5,11 @@ from sets import Set
 class SubmitSong(webapp2.RequestHandler):
 
 	def get_submitter_id(self,song_id,room):
-		song = models.Song.get_by_id(int(song_id),parent=room.key)
-		return song.submitter.integer_id()
+		try:
+			song = models.Song.get_by_id(int(song_id),parent=room.key)
+			return song.submitter.integer_id()
+		except:
+			return 0
 
 	def fairness_insert(self,room,guest):
 		x = 0
@@ -36,9 +39,12 @@ class SubmitSong(webapp2.RequestHandler):
 		if not room_id:
 			room_exists = False
 		else:
-			room = models.Room.get_by_id(int(room_id),parent=utils.roomlist_key(roomlist_name))
-			if room == None:
-				room_exists = False;
+			try:
+				room = models.Room.get_by_id(int(room_id),parent=utils.roomlist_key(roomlist_name))
+				if room == None:
+					room_exists = False
+			except:
+				room_exists = False
 
 		web_app = self.request.get('web_app','false') != 'false'
 
@@ -57,7 +63,10 @@ class SubmitSong(webapp2.RequestHandler):
 			else:
 				user_id = self.request.get('user_id')
 				userlist_name = self.request.get('userlist_name',utils.DEFAULT_USERLIST_NAME)
-				user = models.User.get_by_id(int(user_id),parent=utils.userlist_key(userlist_name))
+				try:
+					user = models.User.get_by_id(int(user_id),parent=utils.userlist_key(userlist_name))
+				except:
+					user = None
 				if user == None:
 					if web_app:
 						self.response.write("The given user_id is not a valid user.")
@@ -72,7 +81,10 @@ class SubmitSong(webapp2.RequestHandler):
 						else:
 							self.response.write(json.dumps({"status": "NOT OK", "message": "You need to join this room before you can submit a song."}))
 					else:
-						imageStuff = json.loads(urllib2.urlopen("https://embed.spotify.com/oembed/?url="+self.request.get('url')).read())
+						try:
+							imageStuff = json.loads(urllib2.urlopen("https://embed.spotify.com/oembed/?url="+self.request.get('url')).read())
+						else:
+							imageStuff = None
 						# self.response.write(imageStuff)
 						#TODO: Add values necessary for other modes
 						song = models.Song(parent=room.key,
