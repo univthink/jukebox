@@ -13,9 +13,12 @@ class ReorderSong(webapp2.RequestHandler):
 		if not room_id:
 			room_exists = False
 		else:
-			room = models.Room.get_by_id(int(room_id),parent=utils.roomlist_key(roomlist_name))
-			if room == None:
-				room_exists = False;
+			try:
+				room = models.Room.get_by_id(int(room_id),parent=utils.roomlist_key(roomlist_name))
+				if room == None:
+					room_exists = False
+			except:
+				room_exists = False
 
 		if not utils.is_admin(room,self.request.get('user_id')):
 			self.response.write(json.dumps({"status": "NOT OK", "message": "You must be an admin to reorder songs."}))
@@ -44,14 +47,21 @@ class ReorderSong(webapp2.RequestHandler):
 						self.response.write(json.dumps({"status": "NOT OK", "message": "The correct password was not provided."}))
 				else:
 					#TODO: Error checking
-					song_id = int(self.request.get('song_id'))
-					if room.queue.count(song_id) == 0:
+					song_exists = True
+					try:
+						song_id = int(self.request.get('song_id'))
+					except:
+						song_exists = False
+					if not song_exists or room.queue.count(song_id) == 0:
 						if web_app:
 							self.response.write("The requested song is not in the Room's queue.")
 						else:
 							self.response.write(json.dumps({"status": "NOT OK", "message": "The requested song is not in the Room's queue."}))
 					else:
-						new_pos = int(self.request.get('new_pos'))
+						try:
+							new_pos = int(self.request.get('new_pos'))
+						else:
+							new_pos = 0
 						room.queue.remove(song_id)
 						room.queue.insert(new_pos,song_id)
 						room.put()
