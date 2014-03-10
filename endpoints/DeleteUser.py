@@ -13,9 +13,12 @@ class DeleteUser(webapp2.RequestHandler):
 		if not user_id:
 			user_exists = False
 		else:
-			user = models.User.get_by_id(int(user_id),parent=utils.userlist_key(userlist_name))
-			if user == None:
-				user_exists = False;
+			try:
+				user = models.User.get_by_id(int(user_id),parent=utils.userlist_key(userlist_name))
+				if user == None:
+					user_exists = False
+			except:
+				user_exists = False
 
 		web_app = self.request.get('web_app','false') != 'false'
 
