@@ -12,8 +12,11 @@ class JoinRoom(webapp2.RequestHandler):
 		if not room_id:
 			room_exists = False
 		else:
-			room = models.Room.get_by_id(int(room_id), parent=utils.roomlist_key(roomlist_name))
-			if room == None:
+			try:
+				room = models.Room.get_by_id(int(room_id), parent=utils.roomlist_key(roomlist_name))
+				if room == None:
+					room_exists = False
+			except:
 				room_exists = False
 
 		web_app = self.request.get('web_app','false') != 'false'
@@ -39,7 +42,10 @@ class JoinRoom(webapp2.RequestHandler):
 						self.response.write(json.dumps({"status": "NOT OK", "message": "No user_id was provided."}))
 				else:
 					userlist_name = self.request.get('userlist_name', utils.DEFAULT_USERLIST_NAME)
-					user = models.User.get_by_id(int(user_id),parent=utils.userlist_key(userlist_name))
+					try:
+						user = models.User.get_by_id(int(user_id),parent=utils.userlist_key(userlist_name))
+					except:
+						user = None
 					if user == None:
 						self.response.write("Invalid user_id.")
 					else:
