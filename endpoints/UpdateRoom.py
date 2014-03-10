@@ -13,9 +13,12 @@ class UpdateRoom(webapp2.RequestHandler):
 		if not room_id:
 			room_exists = False
 		else:
-			room = models.Room.get_by_id(int(room_id),parent=utils.roomlist_key(roomlist_name))
-			if room == None:
-				room_exists = False;
+			try:
+				room = models.Room.get_by_id(int(room_id),parent=utils.roomlist_key(roomlist_name))
+				if room == None:
+					room_exists = False
+			except:
+				room_exists = False
 
 		web_app = self.request.get('web_app','false') != 'false'
 
