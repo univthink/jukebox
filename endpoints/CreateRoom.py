@@ -9,13 +9,19 @@ class CreateRoom(webapp2.RequestHandler):
 		
 		has_coordinates = True
 		if self.request.get("coordinates") != '':
-			[lat, lon] = self.request.get("coordinates").split(',')
+			try:
+				[lat, lon] = self.request.get("coordinates").split(',')
+			except:
+				has_coordinates = False
 		else:
 			has_coordinates = False
 
 
 		userlist_name = self.request.get('userlist_name', utils.DEFAULT_USERLIST_NAME)
-		user = models.User.get_by_id(int(self.request.get('creator')),parent=utils.userlist_key(userlist_name))
+		try:
+			user = models.User.get_by_id(int(self.request.get('creator')),parent=utils.userlist_key(userlist_name))
+		except:
+			user = None
 		if user == None:
 			toReturn = {"status": "NOT OK", "message": "Invalid user_id."}
 			self.response.write(json.dumps(toReturn))
