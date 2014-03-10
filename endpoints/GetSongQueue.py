@@ -10,9 +10,12 @@ class GetSongQueue(webapp2.RequestHandler):
 		roomlist_name = self.request.get('roomlist_name',utils.DEFAULT_ROOMLIST_NAME)
 		room_id = self.request.get('room_id')
 
-		room = models.Room.get_by_id(int(room_id),parent=utils.roomlist_key(roomlist_name))
-		if room == None:
-			room_exists = False;
+		try:
+			room = models.Room.get_by_id(int(room_id),parent=utils.roomlist_key(roomlist_name))
+			if room == None:
+				room_exists = False
+		except:
+			room_exists = False
 
 		web_app = self.request.get('web_app','false') != 'false'
 
@@ -30,7 +33,10 @@ class GetSongQueue(webapp2.RequestHandler):
 					self.response.write(json.dumps({"status": "NOT OK", "message": "The correct password was not provided."}))
 			else:
 				#TODO: Error checking
-				num_songs = int(self.request.get('num_songs',"1000"))
+				try:
+					num_songs = int(self.request.get('num_songs',"1000"))
+				except:
+					num_songs = 1000
 				songs = []
 				song_pos = 0;
 				song_list = room.queue
@@ -41,15 +47,18 @@ class GetSongQueue(webapp2.RequestHandler):
 					song_list = song_list + room.history
 
 				for song_id in song_list:
-					song = models.Song.get_by_id(int(song_id),parent=room.key)
-					song_dict = song.to_dict()
-					song_dict['timeSubmitted'] = str(song_dict['timeSubmitted'])
-					song_dict['unique_id'] = int(song_id)
-					if song.history == False:
-						song_dict['song_pos'] = song_pos
-						song_pos = song_pos + 1
-					songs.append(song_dict)
-					if len(songs) >= num_songs:
-						break;
+					try:
+						song = models.Song.get_by_id(int(song_id),parent=room.key)
+						song_dict = song.to_dict()
+						song_dict['timeSubmitted'] = str(song_dict['timeSubmitted'])
+						song_dict['unique_id'] = int(song_id)
+						if song.history == False:
+							song_dict['song_pos'] = song_pos
+							song_pos = song_pos + 1
+						songs.append(song_dict)
+						if len(songs) >= num_songs:
+							break;
+					except:
+						pass
 
 				self.response.write(json.dumps({"status": "OK", "data": songs}))
