@@ -8,13 +8,54 @@
     var colors = ['red', 'blue', 'green', 'pink'];
     var usernames = ['Oak', 'Misty', 'Ash', 'Brock', 'Mai'];
 
+// Shared functions
+
+    function getParam(variable) {
+      var query = window.location.search.substring(1);
+      var vars = query.split("&");
+      for (var i = 0; i < vars.length; i++) {
+        var pair = vars[i].split("=");
+        if (pair[0] == variable) { 
+          return pair[1]; 
+        }
+      }
+     return null;
+    }
+
+    function registerUser(username, callback) {
+      $.ajax({
+        type: "POST",
+        url: "/register_user",
+        data: {username: username},
+        success: function(data) {
+          $("#register_flag").html("You are registered.");
+          cur_userID = data["data"];
+          callback();
+        }
+      });
+    }
+
+    function ajaxJoin(roomID, userID, password, callback) {
+      if (password == "null") password = "";
+      $.ajax({
+       type: "POST",
+        url: "/join_room",
+        data: {room_id: roomID, user_id: userID, password: password},
+        success: function(data) {
+          if (data["status"] == "OK") alert("Joined successfully!");
+          callback();
+        }
+      }); 
+    }
+
 // Home.html functions 
 
     function showUsernameUpdateDiv() {
       $("#username_update_div").css("display", "block");
     }
 
-    function submitJoinRoom() {
+    // Function called when join room button is on the join room page
+    function joinSpecificRoom() {
       var form_username = $('input[name="username_join"]').val();
       if (form_username != cur_user) {
         cur_user = form_username;
@@ -26,14 +67,29 @@
       joinRoom(roomID, joinPassword);
     }
 
+    // Function called when the join room button is pressed next a room on the room list
+    function joinRoom(roomID, password) {
+      if (cur_userID == 0) {
+        registerUser(cur_user, function() {
+          ajaxJoin(roomID, cur_userID, password, function() {
+            getMyRooms();
+            getNearbyRooms();
+          });
+        });
+      } else {
+        ajaxJoin(roomID, cur_userID, password, function() {
+          getMyRooms();
+          getNearbyRooms();
+        });
+      }
+    }
+
     function getMyRooms() {
-      //alert("my user id: " + cur_userID);
       $.ajax({
         type: "POST",
         url: "/search_room",
         data: {user_id: cur_userID},
         success: function(data) {
-          //alert(data);
           $("#nearby_rooms").empty();
           if (data["status"] == "OK") {
             $.each(data["data"], function(index, itemData) {
@@ -59,7 +115,6 @@
     }
 
     function getNearbyRooms() {
-      //alert("refreshing your rooms");
       $.ajax({
         type: "POST",
         url: "/search_room",
@@ -78,7 +133,6 @@
                   + '<a href="queue.html?user=' + cur_userID + '&id=' + itemData["id"] + '" class="button action align-right" id="view_queue_button">View Queue</a>'
                   + "</li>"
                 );
-              
             });
           }
           else {
@@ -88,63 +142,13 @@
       });
     }
 
-    function registerUser(username, callback) {
-      $.ajax({
-        type: "POST",
-        url: "/register_user",
-        data: {username: username},
-        success: function(data) {
-          $("#register_flag").html("You are registered.");
-          cur_userID = data["data"];
-          callback();
-          return cur_userID;
-        }
-      });
-    }
-
-    function joinRoom(roomID, password) {
-      if (cur_userID == 0) {
-        registerUser(cur_user, function() {
-          ajaxJoin(roomID, password);
-          getMyRooms();
-          getNearbyRooms();
-        });
-      } else {
-        ajaxJoin(roomID, password);
-      }
-    }
-
-    function ajaxJoin(roomID, password) {
-      if (password == "null") password = "";
-      $.ajax({
-       type: "POST",
-        url: "/join_room",
-        data: {room_id: roomID, user_id: cur_userID, password: password},
-        success: function(data) {
-          if (data["status"]=="OK") alert("Joined successfully!");
-          getMyRooms();
-          getNearbyRooms();
-        }
-      }); 
-    }
-
-    function getQueryVariable(variable) {
-      var query = window.location.search.substring(1);
-      var vars = query.split("&");
-      for (var i = 0; i < vars.length; i++) {
-        var pair = vars[i].split("=");
-        if (pair[0] == variable) { 
-          return pair[1]; 
-        }
-      }
-     return null;
-    }
-
     function homeReady() {
+
       $.UISlideout();
       $.UISlideout.populate([{main:'Home'},{header:'Actions'},{join_room:'Join Room'}]);
 
-      cur_userID = getQueryVariable('user');
+      // Display user information
+      cur_userID = getParam('user');
       if (cur_userID == null) cur_userID = 0;
       $("#username_display").html(cur_user);
       $('input[name="username_join"]').val(cur_user);
@@ -166,27 +170,16 @@
         });
         e.preventDefault();
       });
+
     }
 
 // Queue.html functions
-
-    function getQueryVariable(variable) {
-      var query = window.location.search.substring(1);
-      var vars = query.split("&");
-      for (var i = 0; i < vars.length; i++) {
-        var pair = vars[i].split("=");
-        if (pair[0] == variable) { 
-          return pair[1]; 
-        }
-      }
-      return null;
-    }
 
     function submitSong(roomID, autocompleteData) {
       $.ajax({
         type: "POST",
         url: "/submit_song",
-        data: {room_id: roomID, user_id: cur_userID, url:autocompleteData.url, track:autocompleteData.name, artist:autocompleteData.artist, album:autocompleteData.album},
+        data: {room_id: roomID, user_id: cur_userID, url: autocompleteData.url, track: autocompleteData.name, artist: autocompleteData.artist, album: autocompleteData.album},
         success: function(data) {
           if (data["status"]=="OK") alert("Song added successfully!");
           displayQueue(roomID);
@@ -195,11 +188,12 @@
       });
     }
 
-    function displayQueue(roomID) {
+    function displayQueue(roomID, password) {
+      if (password == null) password = "";
       $.ajax({
         type: "GET",
         url: "/get_song_queue",
-        data: {room_id: roomID},
+        data: {room_id: roomID, web_app: 'true', password: password},
         success: function(data) {
           if (data["status"] == "OK") {
             $("#queue_list").empty();
@@ -240,32 +234,7 @@
       });
     }
 
-    function registerUser(username, callback) {
-      $.ajax({
-        type: "POST",
-        url: "/register_user",
-        data: {username: username},
-        success: function(userID) {
-          cur_userID = userID;
-          callback();
-        }
-      });
-    }
-
-    function ajaxJoin(roomID, userID, password, callback) {
-      if (password == "null") password = "";
-      $.ajax({
-       type: "POST",
-        url: "/join_room",
-        data: {room_id: roomID, user_id: userID, password: password},
-        success: function(data) {
-          callback();
-        }
-      }); 
-    }
-
-    function callbackOnRegister() {
-      ajaxJoin(roomID, cur_userID, "", function() {
+    function prepareSongSearch() {
         $("#homeButton").attr("href", "home.html?user=" + cur_userID);
         $("#spotify_song_search").autocomplete({
           source: function(request, response) {
@@ -273,14 +242,12 @@
                 //currently selected in input
                   q: request.term
               }, function(data) {
-                  //console.log(data)
                   response($.map(data.tracks, function(item) {
                       return {label: item.artists[0].name + " - " + item.name, data: {artist: item.artists[0].name, album: item.album.name, url: item.href, name: item.name}};
                   }));
               });
           },
           select: function(event, ui) {
-            //console.log(ui);
             if (cur_userID == 0) {
               alert("You are not a registered user. You may not add a song to this queue.")
             } else {
@@ -292,7 +259,6 @@
               results: function() {}
           }
         });
-      });
     }
 
     function toggleSortDelete() {
@@ -313,21 +279,24 @@
     }
 
     function queueReady() {
-      cur_userID = getQueryVariable("user");
+
+      cur_userID = getParam("user");
       if (cur_userID == null) cur_userID = 0;
 
-      roomID = getQueryVariable("id");
+      roomID = getParam("id");
       if (roomID) {
         displayQueue(roomID);
       } else {
         $("#queue_list").append('<li class="comp">No room ID provided.</li>');
       }
 
-      if (getQueryVariable("qr")) qr = 1;
+      if (getParam("qr")) qr = 1;
       if (qr) {
-        registerUser("Anonymous", callbackOnRegister);
+        registerUser("Anonymous", function() {
+          ajaxJoin(roomID, cur_userID, "", prepareSongSearch);
+        });
       } else {
-        callbackOnRegister();
+        ajaxJoin(roomID, cur_userID, "", prepareSongSearch);
       }
 
       $('.sortable').sortable();
@@ -342,5 +311,6 @@
         $(curCB).css("border-color", color);
         $("#colorPopover").hide();
       });
+
     }
 
