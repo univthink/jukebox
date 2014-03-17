@@ -6,197 +6,22 @@
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="msapplication-tap-highlight" content="no">
-  <title>MusicViz Homepage</title>
+  <title>Pick Play Home</title>
   <link rel="stylesheet" href="../chui/chui-ios-3.5.2.css">
+  <link rel="stylesheet" type="text/css" href="../stylesheets/style.css">
   <script src="http://code.jquery.com/jquery-2.0.3.min.js"></script>
   <script src="../chui/chui-3.5.2.js"></script>
-  <style>
-    .button.action {
-      min-width: 200px;
-      max-width: 300px;
-      margin: 20px auto;
-      display: block;
-    }
-    #username_display {
-      font-weight: bold;
-    }
-    #username_update_div {
-      display: none;
-    }
-    .align-right {
-      display: inline;
-      float: left;
-    }
-    li {
-      overflow: auto;
-    }
-    a {
-      text-decoration: none;
-    }
-  </style>
+  <script src="../js/app.js"></script>
   <script type="text/javascript">
-    function showUsernameUpdateDiv() {
-      $("#username_update_div").css("display", "block");
-    };
-    function submitJoinRoom() {
-      var form_username = $('input[name="username_join"]').val();
-      if (form_username != cur_user) {
-        cur_user = form_username;
-        cur_userID = 0;
-        $("#username_display").html(cur_user);
-      }
-      var roomID = $("#id_join").val();
-      var joinPassword = $("#password_join").val();
-      joinRoom(roomID, joinPassword);
-    };
-    function getMyRooms() {
-      //alert("my user id: " + cur_userID);
-      $.ajax({
-        type: "POST",
-        url: "/search_room",
-        data: {user_id: cur_userID},
-        success: function(data) {
-          //alert(data);
-          $("#nearby_rooms").empty();
-          if (data["status"] == "OK") {
-            $.each(data["data"], function(index, itemData) {
-                itemData = itemData["data"];
-                var password = itemData["password"];
-                if (password == "") password = "null"
-                $("#nearby_rooms").append(
-                  "<li>"
-                  + "Room Name: " + itemData["name"] + "<br>"
-                  + "Creator: " + itemData["creator_name"] + "<br>"
-                  + '<a href="javascript:joinRoom(' + itemData["id"] + ',' + password + ');" class="button action align-right" id="join_room_button">Join Room</a>'
-                  + '<a href="queue.html?user=' + cur_userID + '&id=' + itemData["id"] + '" class="button action align-right" id="view_queue_button">View Queue</a>'
-                  + "</li>"
-                );
-              
-            });
-          }
-          else {
-            console.log(data["message"]);
-          }
-        }
-      });
-    };
-    function getNearbyRooms() {
-      //alert("refreshing your rooms");
-      $.ajax({
-        type: "POST",
-        url: "/search_room",
-        data: {},
-        success: function(data) {
-          $("#nearby_rooms").empty();
-          if (data["status"] == "OK") {
-            $.each(data["data"], function(index, itemData) {
-                var password = itemData["password"];
-                if (password == "") password = "null"
-                $("#nearby_rooms").append(
-                  "<li>"
-                  + "Room Name: " + itemData["name"] + "<br>"
-                  + "Creator: " + itemData["creator_name"] + "<br>"
-                  + '<a href="javascript:joinRoom(' + itemData["id"] + ',' + password + ');" class="button action align-right" id="join_room_button">Join Room</a>'
-                  + '<a href="queue.html?user=' + cur_userID + '&id=' + itemData["id"] + '" class="button action align-right" id="view_queue_button">View Queue</a>'
-                  + "</li>"
-                );
-              
-            });
-          }
-          else {
-            console.log(data["message"]);
-          }
-        }
-      });
-    };
-    function registerUser(username, callback) {
-      $.ajax({
-        type: "POST",
-        url: "/register_user",
-        data: {username: username},
-        success: function(data) {
-          $("#register_flag").html("You are registered.");
-          cur_userID = data["data"];
-          callback();
-          return cur_userID;
-        }
-      });
-    };
-    function joinRoom(roomID, password) {
-      if (cur_userID == 0) {
-        registerUser(cur_user, function() {
-          ajaxJoin(roomID, password);
-          getMyRooms();
-          getNearbyRooms();
-        });
-      } else {
-        ajaxJoin(roomID, password);
-      }
-    };
-    function ajaxJoin(roomID, password) {
-      if (password == "null") password = "";
-      $.ajax({
-       type: "POST",
-        url: "/join_room",
-        data: {room_id: roomID, user_id: cur_userID, password: password},
-        success: function(data) {
-          if (data["status"]=="OK") alert("Joined successfully!");
-          getMyRooms();
-          getNearbyRooms();
-        }
-      }); 
-    };
-    function getQueryVariable(variable) {
-      var query = window.location.search.substring(1);
-      var vars = query.split("&");
-      for (var i = 0; i < vars.length; i++) {
-        var pair = vars[i].split("=");
-        if (pair[0] == variable) { 
-          return pair[1]; 
-        }
-      }
-     return null;
-    }
-
-    // global vars
-    var cur_user = "Anonymous";
-    var cur_userID;
-
-    $(function() {
-      $.UISlideout();
-      $.UISlideout.populate([{main:'Home'},{header:'Actions'},{join_room:'Join Room'}]);
-
-      cur_userID = getQueryVariable('user');
-      if (cur_userID == null) cur_userID = 0;
-      $("#username_display").html(cur_user);
-      $('input[name="username_join"]').val(cur_user);
-
-      getMyRooms();
-      getNearbyRooms();
-
-      $("#username_update_form").submit(function(e) {
-        var newUsername = $("#username_input").val()
-        $("#username_display").html(newUsername);
-        $('input[name="username_join"]').val(newUsername);
-        cur_user = newUsername;
-        cur_userID = 0;
-        $("#username_input").val('');
-        $("#username_update_div").css("display", "none");
-        registerUser(newUsername, function() {
-          getMyRooms();
-          getNearbyRooms();
-        });
-        e.preventDefault();
-      });
-
+    $(document).ready(function(){
+      homeReady();
     });
-
   </script>
 </head>
 <body>
 
     <nav>
-      <h1>WELCOME TO MUSIC VIZ</h1>
+      <h1>PICK PLAY</h1>
       <!-- <a class='button' id='editButton'>Settings</a> -->
     </nav>
     <article id="main">

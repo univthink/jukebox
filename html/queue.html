@@ -1,4 +1,4 @@
-r<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="utf-8">
@@ -6,275 +6,23 @@ r<!DOCTYPE html>
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="msapplication-tap-highlight" content="no">
-  <title>MusicViz Homepage</title>
+  <title>Pick Play Room</title>
   <link rel="stylesheet" href="../chui/chui-ios-3.5.2.css">
+  <link rel="stylesheet" type="text/css" href="../stylesheets/style.css">
   <link rel="stylesheet" href="//code.jquery.com/ui/1.10.4/themes/smoothness/jquery-ui.css">
   <script src="http://code.jquery.com/jquery-2.0.3.min.js"></script>
   <script src="../chui/chui-3.5.2.js"></script>
   <script src="../js/jquery.sortable.js"></script>
   <script src="http://code.jquery.com/ui/1.10.4/jquery-ui.js"></script>
-  <style>
-    #main h2 {
-      text-align: center;
-    }
-    .square {
-      width: 54px;
-      height: 54px;   
-      border: 3px dashed red;
-      border-radius: 10px;
-    }
-    .miniSquare {
-      width: 60px;
-      height: 60px;   
-      border-radius: 10px;
-    }
-    .squareButton {
-      margin-left: 5px;
-      margin-right: 5px;
-    }
-    a.squareButton {
-      padding: 0;
-    }
-    #colorPickerList {
-      list-style-type: none;
-      padding: 0;
-      margin: 0;
-    }
-    #colorPickerList li {
-      display: block;
-      float: left;
-      padding-left: 10px;
-      padding-top: 10px;
-      padding-bottom: 0px;
-    }
-    #colorPopover {
-      zoom: 1;
-      width: 220px;
-      height: 220px;
-      background: white;
-      border: 16px solid rgb(219,73,56);
-      border-radius: 10px;
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      margin-left: -125px;
-      margin-top: -110px;
-      z-index: 0;
-
-    }
-    .fitParent {
-      display: block;
-      width: 100%;
-      height: 100%;
-    }
-    #spotify_song_search {
-      text-align: center;
-      font-size: 10pt;
-      margin-top: 13px;
-      margin-left: 13px;
-      width: 90%;
-
-      padding: 5px;
-      padding-left: 24px; /* to center */
-      outline: none;
-      border: 2px inset;
-      border-radius: 8px;
-    }
-    .ui-autocomplete-input {
-      /* No longer necessary, rules moved to #spotify_song_search */
-    }
-    .ui-autocomplete-input:focus {
-      box-shadow: 0 0 0 2px rgb(154,192,235);
-    }
-    .ui-menu .ui-menu-item:nth-child(even) {
-      background-color: rgb(239,239,244);
-    }
-    .ui-menu .ui-menu-item .ui-state-hover {
-      background: rgb(154,192,235);
-    }
-    .ui-menu .ui-menu-item .ui-state-focus {
-      background: rgb(154,192,235);
-    }
-  </style>
-  <script type="text/javascript">
-    // global vars
-    var cur_user;
-    var cur_userID;
-    var roomID;
-    var qr = 0;
-    var sortable = false;
-    var curE;
-    var colors = ['red', 'blue', 'green', 'pink'];
-    var usernames = ['Oak', 'Misty', 'Ash', 'Brock', 'Mai']
-    function getQueryVariable(variable) {
-      var query = window.location.search.substring(1);
-      var vars = query.split("&");
-      for (var i = 0; i < vars.length; i++) {
-        var pair = vars[i].split("=");
-        if (pair[0] == variable) { 
-          return pair[1]; 
-        }
-      }
-      return null;
-    }
-    function submitSong(roomID, autocompleteData) {
-      $.ajax({
-        type: "POST",
-        url: "/submit_song",
-        data: {room_id: roomID, user_id: cur_userID, url:autocompleteData.url, track:autocompleteData.name, artist:autocompleteData.artist, album:autocompleteData.album},
-        success: function(data) {
-          if (data["status"]=="OK") alert("Song added successfully!");
-          displayQueue(roomID);
-          $("#spotify_song_search").val('');
-        }
-      });
-    }
-    function displayQueue(roomID) {
-      $.ajax({
-        type: "GET",
-        url: "/get_song_queue",
-        data: {room_id: roomID},
-        success: function(data) {
-          if (data["status"] == "OK") {
-            $("#queue_list").empty();
-            $.each(data["data"], function(index, song) {
-              var sColor = colors[Math.floor((Math.random()*colors.length))];
-              $("#queue_list").append(
-                '<li class="comp">'
-                + '<aside>'
-                //+ '<div class="square" style="background:' + sColor + ';">'
-                + '<a class="squareButton" href="javascript:void(null)">'
-                + (song["image_url"] ?'<img src="'+song["image_url"]+'" style="width:60px; height=60px;"/></a>' : '<div class="square"><img></div></a>')
-                + '</aside>'
-                + '<div>'
-                + '<h3>' + song["track"] + '</h3>'
-                + '<h4>' + song["artist"] + '</h4>'
-                + '<p>' + song["album"] + '</p>'
-                + '<span style="display:none;">' + song["url"] + '</span>'
-                + '</div>'
-                + '</li>'
-              );
-            });
-            $.UIDeletable({
-              list: '#queue_list', 
-              callback: function(item) {
-                var url = $(item).siblings('div').find('span').text(); //url is not unique (think: duplicates)
-                alert("You deleted " + url);
-              }
-            });
-            $(".squareButton").click(function(event) {
-              console.log(event);
-              curCB = event.target;
-              $("#colorPopover").show();
-            });
-          } else {
-            $("#queue_list").append('<li class="comp">' +data["message"]+'</li>');
-          }
-        }
-      });
-    }
-    function registerUser(username, callback) {
-      $.ajax({
-        type: "POST",
-        url: "/register_user",
-        data: {username: username},
-        success: function(userID) {
-          cur_userID = userID;
-          callback();
-        }
-      });
-    };
-    function ajaxJoin(roomID, userID, password, callback) {
-      if (password == "null") password = "";
-      $.ajax({
-       type: "POST",
-        url: "/join_room",
-        data: {room_id: roomID, user_id: userID, password: password},
-        success: function(data) {
-          callback();
-        }
-      }); 
-    };
-    function callbackOnRegister() {
-      ajaxJoin(roomID, cur_userID, "", function() {
-        $("#homeButton").attr("href", "home.html?user=" + cur_userID);
-        $("#spotify_song_search").autocomplete({
-          source: function(request, response) {
-              $.get("http://ws.spotify.com/search/1/track.json", {
-                //currently selected in input
-                  q: request.term
-              }, function(data) {
-                  //console.log(data)
-                  response($.map(data.tracks, function(item) {
-                      return {label: item.artists[0].name + " - " + item.name, data: {artist: item.artists[0].name, album: item.album.name, url: item.href, name: item.name}};
-                  }));
-              });
-          },
-          select: function(event, ui) {
-            //console.log(ui);
-            if (cur_userID == 0) {
-              alert("You are not a registered user. You may not add a song to this queue.")
-            } else {
-              submitSong(roomID, ui.item.data);
-            }
-          },
-          messages: {
-              noResults: '',
-              results: function() {}
-          }
-        });
-      });
-    }
-    function toggleSortDelete() {
-      sortable = !sortable;
-      if (sortable) {
-        $('.sortable').sortable('enable');
-      } else {
-        $('.sortable').sortable('disable');
-      }
-    }
-    function populateColorPicker() {
-      var colors = ['red','orange','yellow','green','blue','indigo','violet','pink','black'];
-      $.each(colors, function(index, color) {
-        $("#colorPickerList").append('<li><a class="miniSquareButton" href="javascript:void(null)"><div class="miniSquare" style="background:' + color + ';"><img /></div></a></li>');
-      });
-      $("#colorPopover").hide();
-    }
-    $(function() {
-      cur_userID = getQueryVariable("user");
-      if (cur_userID == null) cur_userID = 0;
-
-      roomID = getQueryVariable("id");
-      if (roomID) {
-        displayQueue(roomID);
-      } else {
-        $("#queue_list").append('<li class="comp">No room ID provided.</li>');
-      }
-
-      if (getQueryVariable("qr")) qr = 1;
-      if (qr) {
-        registerUser("Anonymous", callbackOnRegister);
-      } else {
-        callbackOnRegister();
-      }
-
-      $('.sortable').sortable();
-      $('.sortable').sortable('disable');
-
-      populateColorPicker();
-
-      $(".miniSquareButton").click(function(event) {
-        var color = $(event.target).css("background-color");
-        $(curCB).css("background-color", color);
-        $(curCB).css("border", "3px solid");
-        $(curCB).css("border-color", color);
-        $("#colorPopover").hide();
-      });
-
+  <script src="../js/app.js"></script>
+    <script type="text/javascript">
+    $(document).ready(function(){
+      queueReady();
     });
   </script>
 </head>
 <body>
+
   <nav>
     <a href="home.html" class='button' id='homeButton'>Home</a> 
     <h1>QUEUE</h1>

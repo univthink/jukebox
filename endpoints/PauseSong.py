@@ -17,8 +17,8 @@ class PauseSong(webapp2.RequestHandler):
 				room = models.Room.get_by_id(int(room_id),parent=utils.roomlist_key(roomlist_name))
 				if room == None:
 					room_exists = False
-				except:
-					room_exists = False
+			except: # fixed a syntax error you had here
+				room_exists = False
 
 		web_app = self.request.get('web_app','false') != 'false'
 

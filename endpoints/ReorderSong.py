@@ -60,7 +60,7 @@ class ReorderSong(webapp2.RequestHandler):
 					else:
 						try:
 							new_pos = int(self.request.get('new_pos'))
-						else:
+						except: # originally a else, getting a syntax error
 							new_pos = 0
 						room.queue.remove(song_id)
 						room.queue.insert(new_pos,song_id)

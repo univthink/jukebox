@@ -83,10 +83,11 @@ class SubmitSong(webapp2.RequestHandler):
 					else:
 						try:
 							imageStuff = json.loads(urllib2.urlopen("https://embed.spotify.com/oembed/?url="+self.request.get('url')).read())
-						else:
+						except: # originally a else, getting a syntax error
 							imageStuff = None
+
 						# self.response.write(imageStuff)
-						#TODO: Add values necessary for other modes
+						# TODO: Add values necessary for other modes
 						song = models.Song(parent=room.key,
 										   url=self.request.get('url'),
 										   track=self.request.get('track'),

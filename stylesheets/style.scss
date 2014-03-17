@@ -1,0 +1,134 @@
+/* -------------------- *
+ * Rules for home.html *
+ * -------------------- */
+
+.button.action {
+  min-width: 200px;
+  max-width: 300px;
+  margin: 20px auto;
+  display: block;
+}
+
+#username_display {
+  font-weight: bold;
+}
+
+#username_update_div {
+  display: none;
+}
+
+.align-right {
+  display: inline;
+  float: left;
+}
+
+li {
+  overflow: auto;
+}
+
+a {
+  text-decoration: none;
+}
+
+/* -------------------- *
+ * Rules for queue.html *
+ * -------------------- */
+
+#main h2 {
+  text-align: center;
+}
+
+.square {
+  width: 54px;
+  height: 54px;   
+  border: 3px dashed red;
+  border-radius: 10px;
+}
+
+.miniSquare {
+  width: 60px;
+  height: 60px;   
+  border-radius: 10px;
+}
+
+.squareButton {
+  margin-left: 5px;
+  margin-right: 5px;
+}
+
+a.squareButton {
+  padding: 0;
+}
+
+#colorPickerList {
+  list-style-type: none;
+  padding: 0;
+  margin: 0;
+  li {
+    display: block;
+    float: left;
+    padding-left: 10px;
+    padding-top: 10px;
+    padding-bottom: 0px;
+  }
+}
+
+#colorPopover {
+  zoom: 1;
+  width: 220px;
+  height: 220px;
+  background: white;
+  border: 16px solid rgb(219,73,56);
+  border-radius: 10px;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  margin-left: -125px;
+  margin-top: -110px;
+  z-index: 0;
+}
+
+.fitParent {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+#spotify_song_search {
+  text-align: center;
+  font-size: 10pt;
+  margin-top: 13px;
+  margin-left: 13px;
+  width: 90%;
+  padding: 5px;
+  padding-left: 24px; // to center
+  outline: none;
+  border: 2px inset;
+  border-radius: 8px;
+}
+
+.ui-autocomplete-input {
+  // No longer necessary, rules moved to #spotify_song_search
+}
+
+.ui-autocomplete-input:focus {
+  box-shadow: 0 0 0 2px rgb(154,192,235);
+}
+
+$light_blue: rgb(239,239,244);
+
+.ui-menu {
+
+  .ui-menu-item:nth-child(even) {
+    background-color: $light_blue;
+  }
+
+  .ui-menu-item .ui-state-hover {
+    background: $light_blue;
+  }
+
+  .ui-menu-item .ui-state-focus {
+    background: $light_blue;
+  }
+
+}
