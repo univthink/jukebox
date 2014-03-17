@@ -1,14 +1,21 @@
 // Global vars
-
-    var cur_user = "Anonymous";
-    var cur_userID;
+    var cur_user = null;
+    var cur_userID = null;
     var roomID = null;
-    var qr = 0;
     var sortable = false;
     var colors = ['red', 'blue', 'green', 'pink'];
-    var usernames = ['Oak', 'Misty', 'Ash', 'Brock', 'Mai'];
+    var username_arr = ['Banana', 'Apple', 'Peach', 'Mango', 'Cherry', 'Grape', 'Pear', 'Plum'];
+    var NUM_DAYS_TO_KEEP_COOKIES = 1;
 
 // Shared functions
+
+    function setCookie(name, value) {
+      $.cookie(name, value, NUM_DAYS_TO_KEEP_COOKIES);
+    }
+
+    function getCookie(name) {
+      return $.cookie(name);
+    }
 
     function getParam(variable) {
       var query = window.location.search.substring(1);
@@ -22,15 +29,26 @@
      return null;
     }
 
+    function assignUsername(callback) {
+      var sUsername = username_arr[Math.floor((Math.random()*username_arr.length))];
+      cur_user = sUsername;
+      registerUser(cur_user, function() {
+        setCookie("username", cur_user);
+        setCookie("user_id", cur_userID);
+        callback();
+      });
+    }
+
     function registerUser(username, callback) {
       $.ajax({
         type: "POST",
         url: "/register_user",
         data: {username: username},
         success: function(data) {
-          $("#register_flag").html("You are registered.");
-          cur_userID = data["data"];
-          callback();
+          if (data["status"] == "OK") {
+            cur_userID = data["data"];
+            callback();
+          }
         }
       });
     }
@@ -42,8 +60,10 @@
         url: "/join_room",
         data: {room_id: roomID, user_id: userID, password: password},
         success: function(data) {
-          if (data["status"] == "OK") alert("Joined successfully!");
-          callback();
+          if (data["status"] == "OK") {
+            alert("Joined successfully!");
+            callback();
+          }
         }
       }); 
     }
@@ -94,13 +114,15 @@
           if (data["status"] == "OK") {
             $.each(data["data"], function(index, itemData) {
                 itemData = itemData["data"];
-                var password = itemData["password"];
-                if (password == "") password = "null"
+                //var password = itemData["password"];
+                //if (password == "") password = "null";
+                console.log(data);
                 $("#nearby_rooms").append(
                   "<li>"
                   + "Room Name: " + itemData["name"] + "<br>"
                   + "Creator: " + itemData["creator_name"] + "<br>"
-                  + '<a href="javascript:joinRoom(' + itemData["id"] + ',' + password + ');" class="button action align-right" id="join_room_button">Join Room</a>'
+                  //+ '<a href="javascript:joinRoom(' + itemData["id"] + ',' + password + ');" class="button action align-right" id="join_room_button">Join Room</a>'
+                  + '<a href="javascript:joinRoom(' + itemData["id"] + ');" class="button action align-right" id="join_room_button">Join Room</a>'
                   + '<a href="queue.html?user=' + cur_userID + '&id=' + itemData["id"] + '" class="button action align-right" id="view_queue_button">View Queue</a>'
                   + "</li>"
                 );
@@ -148,28 +170,39 @@
       $.UISlideout.populate([{main:'Home'},{header:'Actions'},{join_room:'Join Room'}]);
 
       // Display user information
-      cur_userID = getParam('user');
-      if (cur_userID == null) cur_userID = 0;
-      $("#username_display").html(cur_user);
-      $('input[name="username_join"]').val(cur_user);
-
-      getMyRooms();
-      getNearbyRooms();
-
-      $("#username_update_form").submit(function(e) {
-        var newUsername = $("#username_input").val()
-        $("#username_display").html(newUsername);
-        $('input[name="username_join"]').val(newUsername);
-        cur_user = newUsername;
-        cur_userID = 0;
-        $("#username_input").val('');
-        $("#username_update_div").css("display", "none");
-        registerUser(newUsername, function() {
+      cur_user = getCookie("username");
+      if (!cur_user) {
+        assignUsername(function() {
+          $("#username_display").html(cur_user);
+          $('input[name="username_join"]').val(cur_user);
           getMyRooms();
           getNearbyRooms();
         });
-        e.preventDefault();
-      });
+      } else {
+        cur_userID = getCookie("user_id");
+        $("#username_tag").html("Welcome back ");
+        $("#username_display").html(cur_user);
+        $('input[name="username_join"]').val(cur_user);
+        getMyRooms();
+        getNearbyRooms();
+      }
+      console.log('User: ' + cur_user);
+      console.log('User ID: ' + cur_userID);
+
+      // $("#username_update_form").submit(function(e) {
+      //   var newUsername = $("#username_input").val()
+      //   $("#username_display").html(newUsername);
+      //   $('input[name="username_join"]').val(newUsername);
+      //   cur_user = newUsername;
+      //   cur_userID = 0;
+      //   $("#username_input").val('');
+      //   $("#username_update_div").css("display", "none");
+      //   registerUser(newUsername, function() {
+      //     getMyRooms();
+      //     getNearbyRooms();
+      //   });
+      //   e.preventDefault();
+      // });
 
     }
 
@@ -204,7 +237,7 @@
                 + '<aside>'
                 //+ '<div class="square" style="background:' + sColor + ';">'
                 + '<a class="squareButton" href="javascript:void(null)">'
-                + (song["image_url"] ?'<img src="'+song["image_url"]+'" style="width:60px; height=60px;"/></a>' : '<div class="square"><img></div></a>')
+                + song["image_url"] ? '<img src="'+song["image_url"]+'" style="width:60px; height=60px;"/></a>' : '<div class="square"><img></div></a>'
                 + '</aside>'
                 + '<div>'
                 + '<h3>' + song["track"] + '</h3>'
@@ -280,9 +313,6 @@
 
     function queueReady() {
 
-      cur_userID = getParam("user");
-      if (cur_userID == null) cur_userID = 0;
-
       roomID = getParam("id");
       if (roomID) {
         displayQueue(roomID);
@@ -290,14 +320,15 @@
         $("#queue_list").append('<li class="comp">No room ID provided.</li>');
       }
 
-      if (getParam("qr")) qr = 1;
-      if (qr) {
-        registerUser("Anonymous", function() {
-          ajaxJoin(roomID, cur_userID, "", prepareSongSearch);
-        });
+      // Get user information
+      cur_user = getCookie("username");
+      if (!cur_user) {
+        assignUsername();
       } else {
-        ajaxJoin(roomID, cur_userID, "", prepareSongSearch);
+        cur_userID = getCookie("user_id");
       }
+      console.log('User: ' + cur_user);
+      console.log('User ID: ' + cur_userID);
 
       $('.sortable').sortable();
       $('.sortable').sortable('disable');

@@ -12,6 +12,7 @@
   <script src="http://code.jquery.com/jquery-2.0.3.min.js"></script>
   <script src="../chui/chui-3.5.2.js"></script>
   <script src="../js/app.js"></script>
+  <script src="../js/jquery.cookie.js"></script>
   <script type="text/javascript">
     $(document).ready(function(){
       homeReady();
@@ -27,12 +28,10 @@
     <article id="main">
       <section>
         <p style="text-align: center;">
-            Your username is <span id="username_display"></span>
+            <span id="username_tag">Your username is </span><span id="username_display"></span>
             <a href="javascript:showUsernameUpdateDiv();" id="open_user_popup">
               <label>(edit)</label>
             </a>
-            <br>
-            <span id="register_flag">You are <b>not</b> registered.</span>
         </p>
         <div style="text-align: center;" id="username_update_div">
             <form id="username_update_form">
@@ -40,7 +39,7 @@
               <input type="submit" value="Update">
             </form>
         </div>
-        <h2>My Rooms</h2>
+        <h2>Your Rooms</h2>
         <ul class='list' id="my_rooms">
         </ul>
         <h2>Nearby Rooms</h2>
