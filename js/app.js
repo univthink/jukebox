@@ -226,7 +226,7 @@
       $.ajax({
         type: "GET",
         url: "/get_song_queue",
-        data: {room_id: roomID, web_app: 'true', password: password},
+        data: {room_id: roomID},
         success: function(data) {
           if (data["status"] == "OK") {
             $("#queue_list").empty();
@@ -323,9 +323,12 @@
       // Get user information
       cur_user = getCookie("username");
       if (!cur_user) {
-        assignUsername();
+        assignUsername(function() {
+          prepareSongSearch();
+        });
       } else {
         cur_userID = getCookie("user_id");
+        prepareSongSearch();
       }
       console.log('User: ' + cur_user);
       console.log('User ID: ' + cur_userID);
