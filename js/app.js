@@ -71,7 +71,6 @@
             alert("Joined successfully!");
             if (callbackOnSuccess) callbackOnSuccess();
           } else {
-            alert(data["message"]);
             if (callbackOnFailure) callbackOnFailure();
           }
         }
@@ -118,6 +117,7 @@
           getAndDisplayNearbyRooms();
         },
         function() {
+          alert(data["message"]);
           if (data["message"].indexOf("password") != -1) {
             console.log("Provided password was incorrect.");
             removeCookie(roomID);
