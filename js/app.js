@@ -1,7 +1,7 @@
 // Global vars
     var cur_user = null;
     var cur_userID = null;
-    var roomID = null;
+    var cur_roomID = null;
     var sortable = false;
     var coordinates = null;
     var colors = ['red', 'blue', 'green', 'pink'];
@@ -42,7 +42,7 @@
       registerUser(cur_user, function() {
         setCookie("username", cur_user);
         setCookie("user_id", cur_userID);
-        callback();
+        if (callback) callback();
       });
     }
 
@@ -54,13 +54,13 @@
         success: function(data) {
           if (data["status"] == "OK") {
             cur_userID = data["data"];
-            callback();
+            if (callback) callback();
           }
         }
       });
     }
 
-    function ajaxJoin(roomID, userID, password, callback) {
+    function ajaxJoin(roomID, userID, password, callbackOnSuccess, callbackOnFailure) {
       if (!password) password = "";
       $.ajax({
        type: "POST",
@@ -69,13 +69,10 @@
         success: function(data) {
           if (data["status"] == "OK") {
             alert("Joined successfully!");
-            callback();
+            if (callbackOnSuccess) callbackOnSuccess();
           } else {
             alert(data["message"]);
-            if (data["message"].indexOf("password") != -1) {
-              console.log("Provided password was incorrect.");
-              removeCookie(roomID);
-            }
+            if (callbackOnFailure) callbackOnFailure();
           }
         }
       }); 
@@ -115,10 +112,18 @@
         password = prompt("Please enter the room password:");
         setCookie(roomID, password);
       }
-      ajaxJoin(roomID, cur_userID, password, function() {
-        getAndDisplayMyRooms();
-        getAndDisplayNearbyRooms();
-      });
+      ajaxJoin(roomID, cur_userID, password,
+        function() {
+          getAndDisplayMyRooms();
+          getAndDisplayNearbyRooms();
+        },
+        function() {
+          if (data["message"].indexOf("password") != -1) {
+            console.log("Provided password was incorrect.");
+            removeCookie(roomID);
+          }
+        }
+      );
     }
 
     function getAndDisplayMyRooms() {
@@ -182,16 +187,16 @@
             var lng = position.coords.longitude;
             coordinates = [lat, lng];
             console.log(coordinates[0] + ',' + coordinates[1]);
-            callbackOnSuccess();
+            if (callbackOnSuccess) callbackOnSuccess();
           },
           function() {
-            callbackOnFailure();
+            if (callbackOnFailure) callbackOnFailure();
           },
           { timeout: GEOLOCATION_TIMEOUT * 1000 },
           { maximumAge: OLDEST_CACHED_GEOLOCATION_TO_ACCEPT * 1000 } // I'm not sure if this is helpful
         );
       } else {
-        callbackOnFailure(); // browser/device does not support geolocation 
+        if (callbackOnFailure) callbackOnFailure(); // browser/device does not support geolocation 
       }
     }
 
@@ -251,13 +256,14 @@
 // Queue.html functions
 
     function submitSong(roomID, autocompleteData) {
+      var password = getCookie(roomID);
+      if (!password) password = "";
       $.ajax({
         type: "POST",
         url: "/submit_song",
-        data: {room_id: roomID, user_id: cur_userID, url: autocompleteData.url, track: autocompleteData.name, artist: autocompleteData.artist, album: autocompleteData.album},
+        data: {room_id: roomID, user_id: cur_userID, password: password, url: autocompleteData.url, track: autocompleteData.name, artist: autocompleteData.artist, album: autocompleteData.album},
         success: function(data) {
           if (data["status"]=="OK") alert("Song added successfully!");
-          var password = getCookie(roomID);
           displayQueue(roomID, password);
           $("#spotify_song_search").val('');
         }
@@ -269,7 +275,7 @@
       $.ajax({
         type: "GET",
         url: "/get_song_queue",
-        data: {room_id: roomID},
+        data: {room_id: roomID, password: password},
         success: function(data) {
           if (data["status"] == "OK") {
             $("#queue_list").empty();
@@ -304,7 +310,7 @@
               $("#colorPopover").show();
             });
           } else {
-            $("#queue_list").append('<li class="comp">' +data["message"]+'</li>');
+            $("#queue_list").append('<li class="comp">Error in displaying queue: ' +data["message"]+'</li>');
           }
         }
       });
@@ -326,7 +332,7 @@
           if (cur_userID == 0) {
             alert("You are not a registered user. You may not add a song to this queue.")
           } else {
-            submitSong(roomID, ui.item.data);
+            submitSong(cur_roomID, ui.item.data);
           }
         },
         messages: {
@@ -353,25 +359,50 @@
       $("#colorPopover").hide();
     }
 
+    function ifPasswordPromptAndDisplay() {
+      var password = getCookie(cur_roomID);
+      ajaxJoin(cur_roomID, cur_userID, password, 
+        function() {
+          displayQueue(cur_roomID, password);
+          prepareSongSearch();
+        },
+        function() {
+          var password = prompt("Please enter the room password:");
+          setCookie(cur_roomID, password);
+          ajaxJoin(cur_roomID, cur_userID, password, 
+            function() {
+              $("#queue_list").empty();
+              $("#spotify_song_search").removeAttr("disabled");
+              displayQueue(cur_roomID, password);
+              prepareSongSearch();
+            },
+            function() {
+              removeCookie(cur_roomID);
+              $("#queue_list").html('<li class="comp">Incorrect password provided. <a href="javascript:ifPasswordPromptAndDisplay();" <label>try again?</label></a> </li>');
+              $("#spotify_song_search").attr("disabled", "disabled");
+            }
+          );
+        }
+      );
+    }
+
     function queueReady() {
 
-      roomID = getParam("id");
-      if (roomID) {
-        displayQueue(roomID);
-      } else {
+      cur_roomID = getParam("id");
+      if (!cur_roomID) {
         $("#queue_list").append('<li class="comp">No room ID provided.</li>');
+        return;
       }
 
       // Get user information
       cur_user = getCookie("username");
       if (!cur_user) {
         assignUsername(function() {
-          prepareSongSearch();
+          ifPasswordPromptAndDisplay();
         });
       } else {
         cur_userID = getCookie("user_id");
-
-        prepareSongSearch();
+        ifPasswordPromptAndDisplay();
       }
       console.log('User: ' + cur_user);
       console.log('User ID: ' + cur_userID);
