@@ -61,7 +61,7 @@
     }
 
     function ajaxJoin(roomID, userID, password, callback) {
-      if (password == "null") password = "";
+      if (!password) password = "";
       $.ajax({
        type: "POST",
         url: "/join_room",
@@ -111,7 +111,6 @@
     // Join room with a password
     function joinRoom_p(roomID) {
       var password = getCookie(roomID);
-      console.log(password);
       if (!password) {
         password = prompt("Please enter the room password:");
         setCookie(roomID, password);
@@ -258,14 +257,15 @@
         data: {room_id: roomID, user_id: cur_userID, url: autocompleteData.url, track: autocompleteData.name, artist: autocompleteData.artist, album: autocompleteData.album},
         success: function(data) {
           if (data["status"]=="OK") alert("Song added successfully!");
-          displayQueue(roomID);
+          var password = getCookie(roomID);
+          displayQueue(roomID, password);
           $("#spotify_song_search").val('');
         }
       });
     }
 
     function displayQueue(roomID, password) {
-      if (password == null) password = "";
+      if (!password) password = "";
       $.ajax({
         type: "GET",
         url: "/get_song_queue",
