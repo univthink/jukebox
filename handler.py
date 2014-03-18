@@ -27,9 +27,12 @@ class Main(webapp2.RequestHandler):
 
 			self.response.write("<br>Songs:<br>")
 			for song_id in room.queue:
-				song = models.Song.get_by_id(int(song_id),parent=room.key)
-				self.response.write(song)
-				self.response.write("<br>")
+				try:
+					song = models.Song.get_by_id(int(song_id),parent=room.key)
+					self.response.write(song)
+					self.response.write("<br>")
+				except:
+					pass
 
 			self.response.write("<br><br>")
 
