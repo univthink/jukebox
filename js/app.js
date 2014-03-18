@@ -13,11 +13,15 @@
 // Shared functions
 
     function setCookie(name, value) {
-      $.cookie(name, value, NUM_DAYS_TO_KEEP_COOKIES);
+      $.cookie(name.toString(), value.toString(), NUM_DAYS_TO_KEEP_COOKIES);
     }
 
     function getCookie(name) {
-      return $.cookie(name);
+      return $.cookie(name.toString());
+    }
+
+    function removeCookie(name) {
+      $.removeCookie(name.toString());
     }
 
     function getParam(variable) {
@@ -68,6 +72,10 @@
             callback();
           } else {
             alert(data["message"]);
+            if (data["message"].indexOf("password") != -1) {
+              console.log("Provided password was incorrect.");
+              removeCookie(roomID);
+            }
           }
         }
       }); 
@@ -95,17 +103,22 @@
     // Function called when the join room button is pressed next a room on the room list (no password)
     function joinRoom(roomID) {
       ajaxJoin(roomID, cur_userID, null, function() {
-        getMyRooms();
-        getNearbyRooms();
+        getAndDisplayMyRooms();
+        getAndDisplayNearbyRooms();
       });
     }
 
     // Join room with a password
     function joinRoom_p(roomID) {
-      var password = prompt("Please enter the room password:");
+      var password = getCookie(roomID);
+      console.log(password);
+      if (!password) {
+        password = prompt("Please enter the room password:");
+        setCookie(roomID, password);
+      }
       ajaxJoin(roomID, cur_userID, password, function() {
-        getMyRooms();
-        getNearbyRooms();
+        getAndDisplayMyRooms();
+        getAndDisplayNearbyRooms();
       });
     }
 
