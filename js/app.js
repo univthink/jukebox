@@ -3,9 +3,12 @@
     var cur_userID = null;
     var roomID = null;
     var sortable = false;
+    var coordinates = null;
     var colors = ['red', 'blue', 'green', 'pink'];
     var username_arr = ['Banana', 'Apple', 'Peach', 'Mango', 'Cherry', 'Grape', 'Pear', 'Plum'];
     var NUM_DAYS_TO_KEEP_COOKIES = 1;
+    var GEOLOCATION_TIMEOUT = 30; // in seconds
+    var OLDEST_CACHED_GEOLOCATION_TO_ACCEPT = 60; // in seconds
 
 // Shared functions
 
@@ -106,25 +109,40 @@
       });
     }
 
-    function getMyRooms() {
-      $.ajax({
+    function getAndDisplayMyRooms() {
+     $.ajax({
         type: "POST",
         url: "/search_room",
         data: {user_id: cur_userID},
-        success: function(data) {}
+        success: function(data) {
+          $("#my_rooms").empty();
+          if (data["status"] == "OK") {
+            $.each(data["data"], function(index, itemData) {
+                $("#nearby_rooms").append(
+                    "<li>"
+                  + "Room Name: " + itemData["name"] + "<br>"
+                  + "Creator: " + itemData["creator_name"] + "<br>"
+                  + '<a href="queue.html?id=' + itemData["id"] + '" class="button action align-right" id="view_queue_button">View Queue</a>'
+                  + "</li>"
+                );
+            });
+          }
+          else {
+            console.log(data["message"]);
+          }
+        }
       });
     }
 
-    function getNearbyRooms() {
+    function getAndDisplayNearbyRooms() {
       $.ajax({
         type: "POST",
         url: "/search_room",
-        data: {},
+        data: {coordinates: coordinates[0] + ',' + coordinates[1]},
         success: function(data) {
           $("#nearby_rooms").empty();
           if (data["status"] == "OK") {
             $.each(data["data"], function(index, itemData) {
-                console.log(itemData);
                 $("#nearby_rooms").append(
                     "<li>"
                   + "Room Name: " + itemData["name"] + "<br>"
@@ -143,6 +161,39 @@
       });
     }
 
+    function getLocation(callbackOnSuccess, callbackOnFailure) {
+      if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(
+          function(position) {
+            console.log('Location acquired.');
+            var lat = position.coords.latitude;
+            var lng = position.coords.longitude;
+            coordinates = [lat, lng];
+            console.log(coordinates[0] + ',' + coordinates[1]);
+            callbackOnSuccess();
+          },
+          function() {
+            callbackOnFailure();
+          },
+          { timeout: GEOLOCATION_TIMEOUT * 1000 },
+          { maximumAge: OLDEST_CACHED_GEOLOCATION_TO_ACCEPT * 1000 } // I'm not sure if this is helpful
+        );
+      } else {
+        callbackOnFailure(); // browser/device does not support geolocation 
+      }
+    }
+
+    function getLocationAndDisplayNearbyRooms() {
+      console.log("Getting location...");
+      getLocation(
+        function() { // success
+          getAndDisplayNearbyRooms();
+        },
+        function() { // failure
+          $("#nearby_rooms").append('<li>Cannot retrieve nearby rooms without location services enabled.</li>');
+        });
+    }
+
     function homeReady() {
 
       $.UISlideout();
@@ -154,16 +205,16 @@
         assignUsername(function() {
           $("#username_display").html(cur_user);
           $('input[name="username_join"]').val(cur_user);
-          getMyRooms();
-          getNearbyRooms();
+          getAndDisplayMyRooms();
+          getLocationAndDisplayNearbyRooms();
         });
       } else {
         cur_userID = getCookie("user_id");
         $("#username_tag").html("Welcome back ");
         $("#username_display").html(cur_user);
         $('input[name="username_join"]').val(cur_user);
-        getMyRooms();
-        getNearbyRooms();
+        getAndDisplayMyRooms();
+        getLocationAndDisplayNearbyRooms();
       }
       console.log('User: ' + cur_user);
       console.log('User ID: ' + cur_userID);
@@ -247,29 +298,29 @@
     }
 
     function prepareSongSearch() {
-        $("#spotify_song_search").autocomplete({
-          source: function(request, response) {
-              $.get("http://ws.spotify.com/search/1/track.json", {
-                //currently selected in input
-                  q: request.term
-              }, function(data) {
-                  response($.map(data.tracks, function(item) {
-                      return {label: item.artists[0].name + " - " + item.name, data: {artist: item.artists[0].name, album: item.album.name, url: item.href, name: item.name}};
-                  }));
-              });
-          },
-          select: function(event, ui) {
-            if (cur_userID == 0) {
-              alert("You are not a registered user. You may not add a song to this queue.")
-            } else {
-              submitSong(roomID, ui.item.data);
-            }
-          },
-          messages: {
-              noResults: '',
-              results: function() {}
+      $("#spotify_song_search").autocomplete({
+        source: function(request, response) {
+            $.get("http://ws.spotify.com/search/1/track.json", {
+              //currently selected in input
+                q: request.term
+            }, function(data) {
+                response($.map(data.tracks, function(item) {
+                    return {label: item.artists[0].name + " - " + item.name, data: {artist: item.artists[0].name, album: item.album.name, url: item.href, name: item.name}};
+                }));
+            });
+        },
+        select: function(event, ui) {
+          if (cur_userID == 0) {
+            alert("You are not a registered user. You may not add a song to this queue.")
+          } else {
+            submitSong(roomID, ui.item.data);
           }
-        });
+        },
+        messages: {
+            noResults: '',
+            results: function() {}
+        }
+      });
     }
 
     function toggleSortDelete() {
@@ -306,6 +357,7 @@
         });
       } else {
         cur_userID = getCookie("user_id");
+
         prepareSongSearch();
       }
       console.log('User: ' + cur_user);
