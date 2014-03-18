@@ -63,6 +63,8 @@
           if (data["status"] == "OK") {
             alert("Joined successfully!");
             callback();
+          } else {
+            alert(data["message"]);
           }
         }
       }); 
@@ -87,21 +89,21 @@
       joinRoom(roomID, joinPassword);
     }
 
-    // Function called when the join room button is pressed next a room on the room list
-    function joinRoom(roomID, password) {
-      if (cur_userID == 0) {
-        registerUser(cur_user, function() {
-          ajaxJoin(roomID, cur_userID, password, function() {
-            getMyRooms();
-            getNearbyRooms();
-          });
-        });
-      } else {
-        ajaxJoin(roomID, cur_userID, password, function() {
-          getMyRooms();
-          getNearbyRooms();
-        });
-      }
+    // Function called when the join room button is pressed next a room on the room list (no password)
+    function joinRoom(roomID) {
+      ajaxJoin(roomID, cur_userID, null, function() {
+        getMyRooms();
+        getNearbyRooms();
+      });
+    }
+
+    // Join room with a password
+    function joinRoom_p(roomID) {
+      var password = prompt("Please enter the room password:");
+      ajaxJoin(roomID, cur_userID, password, function() {
+        getMyRooms();
+        getNearbyRooms();
+      });
     }
 
     function getMyRooms() {
@@ -109,30 +111,7 @@
         type: "POST",
         url: "/search_room",
         data: {user_id: cur_userID},
-        success: function(data) {
-          $("#nearby_rooms").empty();
-          if (data["status"] == "OK") {
-            $.each(data["data"], function(index, itemData) {
-                itemData = itemData["data"];
-                //var password = itemData["password"];
-                //if (password == "") password = "null";
-                console.log(data);
-                $("#nearby_rooms").append(
-                  "<li>"
-                  + "Room Name: " + itemData["name"] + "<br>"
-                  + "Creator: " + itemData["creator_name"] + "<br>"
-                  //+ '<a href="javascript:joinRoom(' + itemData["id"] + ',' + password + ');" class="button action align-right" id="join_room_button">Join Room</a>'
-                  + '<a href="javascript:joinRoom(' + itemData["id"] + ');" class="button action align-right" id="join_room_button">Join Room</a>'
-                  + '<a href="queue.html?user=' + cur_userID + '&id=' + itemData["id"] + '" class="button action align-right" id="view_queue_button">View Queue</a>'
-                  + "</li>"
-                );
-              
-            });
-          }
-          else {
-            console.log(data["message"]);
-          }
-        }
+        success: function(data) {}
       });
     }
 
@@ -145,14 +124,14 @@
           $("#nearby_rooms").empty();
           if (data["status"] == "OK") {
             $.each(data["data"], function(index, itemData) {
-                var password = itemData["password"];
-                if (password == "") password = "null"
+                console.log(itemData);
                 $("#nearby_rooms").append(
-                  "<li>"
+                    "<li>"
                   + "Room Name: " + itemData["name"] + "<br>"
                   + "Creator: " + itemData["creator_name"] + "<br>"
-                  + '<a href="javascript:joinRoom(' + itemData["id"] + ',' + password + ');" class="button action align-right" id="join_room_button">Join Room</a>'
-                  + '<a href="queue.html?user=' + cur_userID + '&id=' + itemData["id"] + '" class="button action align-right" id="view_queue_button">View Queue</a>'
+                  + ( itemData["password"] ? '<a href="javascript:joinRoom_p(' + itemData["id"] + ');" ' : '<a href="javascript:joinRoom(' + itemData["id"] + ');" ' )
+                  + 'class="button action align-right" id="join_room_button">Join Room</a>'
+                  + '<a href="queue.html?id=' + itemData["id"] + '" class="button action align-right" id="view_queue_button">View Queue</a>'
                   + "</li>"
                 );
             });
@@ -237,7 +216,7 @@
                 + '<aside>'
                 //+ '<div class="square" style="background:' + sColor + ';">'
                 + '<a class="squareButton" href="javascript:void(null)">'
-                + song["image_url"] ? '<img src="'+song["image_url"]+'" style="width:60px; height=60px;"/></a>' : '<div class="square"><img></div></a>'
+                + ( song["image_url"] ? '<img src="'+song["image_url"]+'" style="width:60px; height=60px;"/></a>' : '<div class="square"><img></div></a>' )
                 + '</aside>'
                 + '<div>'
                 + '<h3>' + song["track"] + '</h3>'
@@ -268,7 +247,6 @@
     }
 
     function prepareSongSearch() {
-        $("#homeButton").attr("href", "home.html?user=" + cur_userID);
         $("#spotify_song_search").autocomplete({
           source: function(request, response) {
               $.get("http://ws.spotify.com/search/1/track.json", {
