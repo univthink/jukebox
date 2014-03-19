@@ -28,8 +28,8 @@ class JSONEncoder(json.JSONEncoder):
 
     def default(self, o):
         # If this is a key, you might want to grab the actual model.
-        if isinstance(o, ndb.Key):
-            o = ndb.get(o)
+        #if isinstance(o, ndb.Key):
+        #    o = ndb.get(o)
         if isinstance(o, ndb.Model):
         	obj = o.to_dict()
         	obj['id'] = o.key.integer_id()
