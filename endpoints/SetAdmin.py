@@ -5,8 +5,13 @@ from google.appengine.ext import ndb
 class SetAdmin(webapp2.RequestHandler):
 
 	def post(self):
+
 		room_exists = True
 		self.response.headers['Content-Type'] = 'application/json'
+
+		self.response.write({"status": "NOT OK", "message": "Set Admin is not available."})
+		return
+
 		roomlist_name = self.request.get('roomlist_name', utils.DEFAULT_ROOMLIST_NAME)
 		room_id = self.request.get('room_id')
 		if not room_id:
