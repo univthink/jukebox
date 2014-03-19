@@ -49,7 +49,10 @@ class JoinRoom(webapp2.RequestHandler):
 					if user == None:
 						self.response.write("Invalid user_id.")
 					else:
-						guest = models.Guest(parent=room.key,user_id=int(user_id))
+						if room.all_admin == 0:
+							guest = models.Guest(parent=room.key,user_id=int(user_id))
+						else:
+							guest = models.Guest(parent=room.key,user_id=int(user_id),admin=True)
 						guest_key = guest.put()
 						#TODO: Consdier adding detail to "Guest"
 

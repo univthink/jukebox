@@ -32,6 +32,11 @@ class CreateRoom(webapp2.RequestHandler):
 			except:
 				mode = 0
 
+			try:
+				all_admin = int(self.request.get('all_admin'))
+			except:
+				all_admin = 0
+
 			password = self.request.get('password', '')
 			hashed_password = hashlib.sha512(password).hexdigest() if password else ''
 
@@ -39,6 +44,7 @@ class CreateRoom(webapp2.RequestHandler):
 							   creator=int(self.request.get('creator')),
 							   name=self.request.get('room_name'),
 							   mode=mode,
+							   all_admin=all_admin,
 							   password= hashed_password,
 							   queue=[],
 							   history=[])

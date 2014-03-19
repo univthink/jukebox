@@ -5,6 +5,7 @@ class Room(ndb.Model):
 	creator = ndb.IntegerProperty(required=True)
 	name = ndb.StringProperty(required=True)
 	mode = ndb.IntegerProperty(required=True,default=0)
+	all_admin = ndb.IntegerProperty(required=True,default=0)
 	lat = ndb.FloatProperty()
 	lon = ndb.FloatProperty()
 	queue = ndb.IntegerProperty(repeated=True)
