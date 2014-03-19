@@ -34,9 +34,10 @@ class DeleteSong(webapp2.RequestHandler):
 			except:
 				room_exists = None
 
-		if not utils.is_admin(room,self.request.get('user_id')):
-			self.response.write(json.dumps({"status": "NOT OK", "message": "You must be an admin to reorder songs."}))
-			return
+		if room_exists:
+			if not utils.is_admin(room,self.request.get('user_id')):
+				self.response.write(json.dumps({"status": "NOT OK", "message": "You must be an admin to reorder songs."}))
+				return
 
 		web_app = self.request.get('web_app','false') != 'false'
 
