@@ -70,6 +70,9 @@ class Main(webapp2.RequestHandler):
 		self.response.write("<br><br>Delete Song!<br>")
 		self.response.write(forms.DELETE_SONG_FORM)
 
+		self.response.write("<br><br>Search Room!<br>")
+		self.response.write(forms.SEARCH_ROOM_FORM)
+
 
 application = webapp2.WSGIApplication([
 	('/', Main),

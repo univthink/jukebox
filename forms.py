@@ -115,4 +115,12 @@ DELETE_SONG_FORM = """\
 	User ID: <input type="text" name="user_id"><br>
 	<input type="hidden" name="web_app" value="true">
 	<input type="submit" value="Delete Song!">
+	</form>
+"""
+
+SEARCH_ROOM_FORM = """\
+	<form action="search_room" method="post">
+	Member ID: <input type="text" name="member_id"><br>
+	<input type="submit" value="Search Room!">
+	</form>
 """

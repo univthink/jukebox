@@ -5,7 +5,25 @@ from google.appengine.ext import ndb
 class SearchRoom(webapp2.RequestHandler):
 
 	def post(self):
-		# room_exists = True
+		if self.request.get('member_id'):
+			try:
+				roomlist_name = self.request.get('roomlist_name', utils.DEFAULT_ROOMLIST_NAME)
+				room_query = models.Room.query(ancestor=utils.roomlist_key(roomlist_name))
+				test_rooms = room_query.fetch()
+				member_id = int(self.request.get('member_id'))
+
+				rooms = []
+
+				for test_room in test_rooms:
+					guest_query = models.Guest.query(models.Guest.user_id == member_id, ancestor=test_room.key)
+					guest = guest_query.fetch()
+					if len(guest) != 0:
+						room.append(test_room)
+
+				self.response.write(utils.JSONEncoder().encode({"status":"OK", "data": rooms}))
+				return
+			except:
+				pass
 
 		self.response.headers['Content-Type'] = 'application/json'
 		roomlist_name = self.request.get('roomlist_name', utils.DEFAULT_ROOMLIST_NAME)
