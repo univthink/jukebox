@@ -71,10 +71,13 @@ class CreateRoom(webapp2.RequestHandler):
 					for song in json.loads(self.request.get('initial_playlist')):
 
 						try:
-							imageStuff = None
-							#imageStuff = json.loads(urllib2.urlopen("https://embed.spotify.com/oembed/?url="+song['url']).read())
+							imageStuff = json.loads(urllib2.urlopen("https://embed.spotify.com/oembed/?url="+song['url']).read())
 						except:
+							continue
 							imageStuff = None
+
+						if len(song['track']) > 100 or len(song['artist']) > 100 or len(song['album']) > 100:
+							continue
 
 						song = models.Song(parent=room_key,
 										   url=song['url'],
