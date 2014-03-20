@@ -130,7 +130,8 @@ a {
   width: 54px;
   height: 54px;
   border: 3px dashed red;
-  border-radius: 10px; }
+  border-radius: 10px;
+  margin-top: 8px; }
 
 .miniSquare {
   width: 60px;
