@@ -81,9 +81,10 @@ class SubmitSong(webapp2.RequestHandler):
 						else:
 							self.response.write(json.dumps({"status": "NOT OK", "message": "You need to join this room before you can submit a song."}))
 					else:
+						#Use Spotify Metadata API to get album art image urls.
 						try:
 							imageStuff = json.loads(urllib2.urlopen("https://embed.spotify.com/oembed/?url="+self.request.get('url')).read())
-						except: # originally a else, getting a syntax error
+						except: 
 							self.response.write(json.dumps({"status":"NOT OK","message":"The requested spotify url could not be accessed"}))
 							return
 							imageStuff = None
@@ -92,8 +93,6 @@ class SubmitSong(webapp2.RequestHandler):
 							self.response.write(json.dumps({"status":"NOT OK","message":"Track name, artist, or album cannot be more than 100 characters."}))
 							return
 
-						# self.response.write(imageStuff)
-						# TODO: Add values necessary for other modes
 						song = models.Song(parent=room.key,
 										   url=self.request.get('url'),
 										   track=self.request.get('track'),
@@ -106,8 +105,6 @@ class SubmitSong(webapp2.RequestHandler):
 
 						song_key = song.put()
 
-						#TODO: Order differently based on mode
-						#TODO: Delete/Reorder for Fairness?
 						if room.mode == 1:
 							insert_pos = self.fairness_insert(room,guest[0])
 							room.queue.insert(insert_pos,song_key.integer_id())

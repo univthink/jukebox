@@ -45,6 +45,8 @@ class SearchRoom(webapp2.RequestHandler):
 			try:
 				[lat, lon] = self.request.get('coordinates').split(',')
 				[latMin, latMax, lonMin, lonMax] = utils.boundingBox(float(lat), float(lon), float(self.request.get('distance', '1000')))
+				#Because ndb doesn't allow filtering on multiple inequalities, latitude is filtered using ndb, and longitude is filtered 
+				#later programtically.
 				room = room.filter(models.Room.lat >= latMin, models.Room.lat <= latMax)
 				filterLon = True
 			except:
@@ -52,6 +54,7 @@ class SearchRoom(webapp2.RequestHandler):
 			# room = room.filter(models.Room.lon >= lonMin, models.Room.lon <= lonMax)
 
 		rooms = room.fetch()
+		#Programatically filtering by longitude.
 		if filterLon:
 			rooms = [p for p in rooms if (p.lon != None and p.lon>= lonMin and p.lon <= lonMax)]
 

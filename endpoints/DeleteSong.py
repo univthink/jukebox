@@ -82,12 +82,14 @@ class DeleteSong(webapp2.RequestHandler):
 									position = int(self.request.get('position'))
 									for song in songs:
 										index = room.queue.index(song.key.integer_id())
+										#If a valid position is specified, removes that particular instance of the song.
 										if position == index:
 
 											submitter = song.submitter.integer_id()
 
 											room.queue.remove(song.key.integer_id())
 
+											#If the room is in fairness mode, adjust accordingly.
 											if room.mode == 1:
 												fairness_adjustment(room,position,submitter)
 
@@ -107,12 +109,14 @@ class DeleteSong(webapp2.RequestHandler):
 									else:
 										self.response.write(json.dumps({"status": "NOT OK", "message": "Song not found at that position in room."}))
 							else:
+								#If a position is not specified, remove the first instance of that song, deleting from both queue and song list.
 								submitter = songs[0].submitter.integer_id()
 								position = room.queue.index(songs[0].key.integer_id())
 
 								room.queue.remove(songs[0].key.integer_id())
 								songs[0].key.delete()
 
+								#If the room is in fairness mode, adjust accordingly.
 								if room.mode == 1:
 									fairness_adjustment(room,position,submitter)
 

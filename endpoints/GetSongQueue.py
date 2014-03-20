@@ -32,7 +32,6 @@ class GetSongQueue(webapp2.RequestHandler):
 				else:
 					self.response.write(json.dumps({"status": "NOT OK", "message": "The correct password was not provided."}))
 			else:
-				#TODO: Error checking
 				try:
 					num_songs = int(self.request.get('num_songs',"1000"))
 				except:
@@ -41,6 +40,7 @@ class GetSongQueue(webapp2.RequestHandler):
 				song_pos = 0;
 				song_list = room.queue
 
+				# Returns appropriate type of queue.
 				if self.request.get('type') == 'history':
 					song_list = room.history
 				elif self.request.get('type') == 'both':
@@ -48,6 +48,7 @@ class GetSongQueue(webapp2.RequestHandler):
 
 				for song_id in song_list:
 					try:
+						# Sets up song dictionaries for pretty printing.
 						song = models.Song.get_by_id(int(song_id),parent=room.key)
 						song_dict = song.to_dict()
 						try:
