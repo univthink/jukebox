@@ -44,6 +44,18 @@ a {
 /* -------------------- *
  * Rules for queue.html *
  * -------------------- */
+#notification_div {
+  z-index: 1001;
+  position: relative;
+  color: #ffffff;
+  background: #d64031;
+  text-align: center;
+  margin-top: -140px;
+  padding-top: 94px;
+  padding-bottom: 5px;
+  border-bottom: solid #d7d7d7 2px;
+  -webkit-transition: margin 1.5s; }
+
 #queue_list li aside {
   margin-right: 10px; }
 
@@ -160,6 +172,9 @@ a.squareButton {
   margin-left: -125px;
   margin-top: -110px;
   z-index: 0; }
+
+#song_section h2 {
+  width: 92%; }
 
 #spotify_song_search {
   text-align: center;

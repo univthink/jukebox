@@ -7,7 +7,7 @@
     var joined_rooms = Object.create(null);
     var colors = ['red', 'blue', 'green', 'pink'];
     var username_arr = ['Banana', 'Apple', 'Peach', 'Mango', 'Cherry', 'Grape', 'Pear', 'Plum', 'Pineapple', 'Lychee', 'Kiwi'];
-    var NUM_DAYS_TO_KEEP_COOKIES = 1;
+    var NUM_DAYS_TO_KEEP_COOKIES = 1/12; // 2 hours
     var GEOLOCATION_TIMEOUT = 30; // in seconds
     var OLDEST_CACHED_GEOLOCATION_TO_ACCEPT = 60; // in seconds
     var NUM_SECONDS_UNTIL_QUEUE_REFRESH = 5;
@@ -40,8 +40,11 @@
      return null;
     }
 
-    function auto_refresh() {
-      window.location.reload();
+    function showNotification() {
+      $("#notification_div").css("margin-top","-22px");
+      setTimeout(function() {
+        $("#notification_div").css("margin-top","-140px");
+      }, 1500);
     }
 
     function assignUsername(callback) {
@@ -242,7 +245,8 @@
     }
 
     function refresh_rooms() {
-
+      getAndDisplayNearbyRooms();
+      console.log("Refreshing rooms...");
     }
 
     function homeReady() {
@@ -427,11 +431,8 @@
             });
         },
         select: function(event, ui) {
-          if (cur_userID == 0) {
-            alert("You are not a registered user. You may not add a song to this queue.")
-          } else {
-            submitSong(cur_roomID, ui.item.data);
-          }
+          showNotification();
+          submitSong(cur_roomID, ui.item.data);
         },
         messages: {
             noResults: '',
@@ -478,8 +479,10 @@
     function refresh_queue() {
       var password = getCookie(cur_roomID);
       if (!password) password = "";
-      displayQueue(cur_roomID, password);
-      console.log("Refreshing queue...");
+      if (!editMode) {
+        displayQueue(cur_roomID, password);
+        console.log("Refreshing queue...");
+      }
     }
 
     function queueReady() {

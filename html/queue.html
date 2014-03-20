@@ -30,7 +30,10 @@
     <a onclick="toggleSortDelete();" ontouchend="toggleSortDelete();" class='button' style='display: none;' id='editButton'>Edit</a>
   </nav>
   <article id="main" class="current">
-    <section>
+    <section id="notification_area">
+      <div id="notification_div">You successfully added a song!</div>
+    </section>
+    <section id="song_section">
         <h2>Add A Song</h2>
         <input class="fitParent" id="spotify_song_search" placeholder="Search for a song..." onfocus="this.placeholder=''" onblur="this.placeholder='Search for a song...'">
         <h2>Music Playlist</h2>
