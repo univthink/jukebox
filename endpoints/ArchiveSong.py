@@ -1,6 +1,14 @@
 import webapp2, models, forms, json, endpoints, utils
 from google.appengine.ext import ndb
 
+#Parameters
+#room_id: the room for which a song will be archived
+#song_id: the id of the song which will be archived
+#password: password for validation purposes
+
+#Archive songs takes the given song in a room's queue and
+#moves it to the "history" to represent that it has
+#alredy been played.
 class ArchiveSong(webapp2.RequestHandler):
 
 	def post(self):
@@ -8,56 +16,49 @@ class ArchiveSong(webapp2.RequestHandler):
 		room_exists = True
 
 		roomlist_name = utils.DEFAULT_ROOMLIST_NAME
-		room_id = self.request.get('room_id')
-		if not room_id:
-			room_exists = False
-		else:
-			try:
-				room = models.Room.get_by_id(int(room_id),parent=utils.roomlist_key(roomlist_name))
-				if room == None:
-					room_exists = False
-			except:
-				room_exists = False
+
+		try:
+			room_id = int(self.request.get('room_id'))
+		except:
+			self.response.write(json.dumps({"status": "NOT OK", "message": "room_id is not a valid integer"}))
+			return
+
+		try:
+			room = models.Room.get_by_id(room_id,parent=utils.roomlist_key(roomlist_name))
+			if room == None:
+				self.response.write(json.dumps({"status": "NOT OK", "message": "The requested Room was not found."}))
+				return
+		except:
+			self.response.write(json.dumps({"status": "NOT OK", "message": "The requested Room was not found."}))
+			return
 			
+		if not utils.checkPassword(self.request.get('password', ''), room.password):
+			self.response.write(json.dumps({"status": "NOT OK", "message": "The correct password was not provided."}))
+			return
 
-		web_app = self.request.get('web_app','false') != 'false'
+		if not room.creator == self.request.get('user_id'):
+			self.response.write(json.dumps({"status": "NOT OK", "message": "Only the creator of a room can archive a song."}))
+			return
 
-		if not room_exists:
-			if web_app:
-				self.response.write("The referenced room was not found.")
-			else:
-				self.response.write(json.dumps({"status": "NOT OK", "message": "The requested room was not found."}))
-		else:
-			allowed = utils.checkPassword(self.request.get('password', ''), room.password)
-			if not allowed:
-				if web_app:
-					self.response.write("The correct password was not provided.")
-				else:
-					self.response.write(json.dumps({"status": "NOT OK", "message": "The correct password was not provided."}))
-			else: 
-				song_exists = True
-				try:
-					song_id = int(self.request.get('song_id'))
-				except:
-					song_exists = False
-				if not song_exists or room.queue.count(song_id) == 0:
-					if web_app:
-						self.response.write("The requested song is not in the Room's queue.")
-					else:
-						self.response.write(json.dumps({"status": "NOT OK", "message": "The requested song is not in the Room's queue."}))
-				else:
-					song = models.Song.get_by_id(song_id,parent=room.key)
-					song.history = True
-					song.put()
+		try:
+			song_id = int(self.request.get('song_id'))
+		except:
+			self.response.write(json.dumps({"status": "NOT OK", "message": "You did not submit a valid song id."}))
+			return
 
-					room.queue.remove(song_id)
-					room.history.append(song_id)
-					room.put()
+		if room.queue.count(song_id) == 0:
+			self.response.write(json.dumps({"status": "NOT OK", "message": "The requested song is not in the Room's queue."}))
+			return
 
-					if web_app:
-						self.response.write("You successfully archived song \"" + str(song_id) + ".\"")
-					else:
-						self.response.write(json.dumps({"status":"OK"}))
+		song = models.Song.get_by_id(song_id,parent=room.key)
+		song.history = True
 
-		if web_app:
-			self.response.write(forms.RETURN_TO_MAIN)
+		room.queue.remove(song_id)
+		room.history.append(song_id)
+		try:
+			utils.transactional_put(song,room)
+		except Exception as e:
+			self.response.write(json.dumps({"status": "NOT OK", "message": e}))
+			return
+
+		self.response.write(json.dumps({"status":"OK"}))
