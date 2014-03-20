@@ -4,18 +4,23 @@ import json, math, models, hashlib
 DEFAULT_ROOMLIST_NAME = "default_roomlist"
 DEFAULT_USERLIST_NAME = "default_userlist"
 
+# Allows us to do multiple datastore puts
+# in one atomic transaction.
 @ndb.transactional
 def transactional_put(*args):
 	for obj in args:
 		if isinstance(obj, ndb.Model):
 			obj.put()
 
+# Returns roomlist from key.
 def roomlist_key(roomlist_name=DEFAULT_ROOMLIST_NAME):
 	return ndb.Key('RoomList',roomlist_name)
 
+# Returns userlist from key.
 def userlist_key(userlist_name=DEFAULT_USERLIST_NAME):
 	return ndb.Key('UserList',userlist_name)
 
+# Returns user associated with a guest_id.
 def get_user_by_guest_id(room,guest_id,userlist_name=DEFAULT_USERLIST_NAME):
 	guest = models.Guest.get_by_id(int(guest_id),parent=room.key)
 	if guest == None:
@@ -25,9 +30,11 @@ def get_user_by_guest_id(room,guest_id,userlist_name=DEFAULT_USERLIST_NAME):
 		user = models.User.get_by_id(int(user_id),parent=userlist_key(userlist_name))
 		return user
 
+# Returns user associated with a user_id.
 def get_user_by_id(user_id,userlist_name=DEFAULT_USERLIST_NAME):
 	return models.User.get_by_id(int(user_id),parent=userlist_key(userlist_name))
 
+# Checks whether a user is an admin.
 def is_admin(room,user_id):
 	userlist_name = DEFAULT_USERLIST_NAME
 	user = models.User.get_by_id(int(user_id),parent=userlist_key(userlist_name))
@@ -43,6 +50,7 @@ def is_admin(room,user_id):
 
 	return guests[0].admin
 
+# Subclass of JSONEncoder that we intercept in order to add/censor values.
 class JSONEncoder(json.JSONEncoder):
 
     def default(self, o):
@@ -53,6 +61,7 @@ class JSONEncoder(json.JSONEncoder):
         	obj = o.to_dict()
         	obj['id'] = o.key.integer_id()
         	if isinstance(o, models.Room):
+        		#Removes song queue and song history, changes creator_id to creator, changes password hash to existence of password.
         		user = models.User.get_by_id(int(obj['creator']),parent=userlist_key(DEFAULT_USERLIST_NAME))
         		del obj['creator']
         		del obj['queue']
@@ -63,6 +72,7 @@ class JSONEncoder(json.JSONEncoder):
         elif isinstance(o, (ndb.GeoPt)):
             return str(o)  # Or whatever other date format you're OK with...
 
+# Finds the distance between two points in meters using the Haversine formula.
 def distanceBetween(lat1, lon1, lat2, lon2):
 	R = 6371000; #earth radius in meters
 	dLat = toRad(lat2-lat1);
@@ -75,6 +85,7 @@ def distanceBetween(lat1, lon1, lat2, lon2):
 	d = R * c;
 	return d;
 
+# Creates a rough bounding box given a central lat/long and a distance in meters.
 def boundingBox (lat, lon, dist):
 	R = 6371000.0; #earth radius in meters
 	r=dist/R
@@ -97,5 +108,6 @@ def toRad(value):
 def toDeg(value):
 	return value * 180 / math.pi
 
+# Checks password against hash using standard SHA-512 hashing.
 def checkPassword (submitted, passHash):
 	return not passHash or passHash == hashlib.sha512(submitted).hexdigest()
