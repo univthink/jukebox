@@ -41,7 +41,8 @@
      return null;
     }
 
-    function showNotification() {
+    function showNotification(msg) {
+      $("#notification_div").html(msg);
       $("#notification_div").css("margin-top","-22px");
       setTimeout(function() {
         $("#notification_div").css("margin-top","-140px");
@@ -324,7 +325,7 @@
         success: function(data) {
           if (data["status"]=="OK") {
             console.log("Song successfully reordered.");
-            displayQueue(cur_roomID, password, toggleSortDelete);
+            displayQueue(cur_roomID, password, true);
           } else {
             console.log(data["message"]);
           }
@@ -335,6 +336,7 @@
     function deleteSong(index, song_url) {
       var password = getCookie(cur_roomID);
       if (!password) password = "";
+      showNotification("Deleted successfully.");
       $.ajax({
         type: "POST",
         url: "/delete_song",
@@ -342,7 +344,7 @@
         success: function(data) {
           if (data["status"]=="OK") {
             console.log("Song successfully deleted.");
-            displayQueue(cur_roomID, password);
+            displayQueue(cur_roomID, password, true);
           } else {
             console.log(data["message"]);
           }
@@ -350,7 +352,8 @@
       });
     }
 
-    function displayQueue(roomID, password, callback) {
+    function displayQueue(roomID, password, editMode) {
+      if (editMode === undefined) editMode = false;
       if (!password) password = "";
       $.ajax({
         type: "GET",
@@ -364,28 +367,53 @@
             $("#queue_list").empty();
             $.each(data["data"], function(index, song) {
               var sColor = colors[Math.floor((Math.random()*colors.length))];
-              $("#queue_list").append(
-                '<li class="comp' + ( index == 0 ? ' unsortable">' : '">' )
-                //+ '<div class="square" style="background:' + sColor + ';">'
-                + ( index == 0 ? '' : '<span class="trash_container"><a class="delete_icon" href=\'javascript:deleteSong(' + index + ',"' + song["url"] + '");\'><img src="../images/icons/trash_red.png"/></a></span>' )
-                + '<aside>'
-                + '<a class="squareButton" href="javascript:void(null)">'
-                + ( song["image_url"] ? '<img src="'+song["image_url"]+'" style="width:70px; height=70px;"/></a>' : '<div class="square"><img></div></a>' )
-                + '</aside>'
-                + '<div>'
-                + '<h3>' + song["track"] + '</h3>'
-                + '<h4>' + song["artist"] 
-                + '</h4>'
-                + '<p>' + song["album"] + '</p>'
-                + '<p class="suggested_by">Added by <span>' + song["submitter"] + '</span></p>'
-                + '<span class="song_url" style="display:none;">' + song["url"] + '</span>'
-                + '<span class="song_id" style="display:none;">' + song["unique_id"] + '</span>'
-                + '</div>'
-                + '<div class="editSong">'
-                + ( index == 0 ? '<a class="playing_icon"><img src="../images/icons/playing_red.png"/></a>' : '<a class="swap_icon handle"><img src="../images/icons/vertical_drag_red.png"/></a>' )
-                + '</div>'
-                + '</li>'
-              );
+              if (!editMode) {
+                $("#queue_list").append(
+                  '<li class="comp' + ( index == 0 ? ' unsortable">' : '">' )
+                  //+ '<div class="square" style="background:' + sColor + ';">'
+                  + ( index == 0 ? '' : '<span class="trash_container"><a class="delete_icon" style="display:none;" href=\'javascript:deleteSong(' + index + ',"' + song["url"] + '");\'><img src="../images/icons/trash_red.png"/></a></span>' )
+                  + '<aside>'
+                  + '<a class="squareButton" href="javascript:void(null)">'
+                  + ( song["image_url"] ? '<img src="'+song["image_url"]+'" style="width:70px; height=70px;"/></a>' : '<div class="square"><img></div></a>' )
+                  + '</aside>'
+                  + '<div>'
+                  + '<h3>' + song["track"] + '</h3>'
+                  + '<h4>' + song["artist"] 
+                  + '</h4>'
+                  + '<p>' + song["album"] + '</p>'
+                  + '<p class="suggested_by">Added by <span>' + song["submitter"] + '</span></p>'
+                  + '<span class="song_url" style="display:none;">' + song["url"] + '</span>'
+                  + '<span class="song_id" style="display:none;">' + song["unique_id"] + '</span>'
+                  + '</div>'
+                  + '<div class="editSong">'
+                  + ( index == 0 ? '<a class="playing_icon"><img src="../images/icons/playing_red.png"/></a>' : '<a class="swap_icon handle" style="display:none;"><img src="../images/icons/vertical_drag_red.png"/></a>' )
+                  + '</div>'
+                  + '</li>'
+                );
+              } else {
+                $("#queue_list").append(
+                  '<li class="comp' + ( index == 0 ? ' unsortable">' : '">' )
+                  //+ '<div class="square" style="background:' + sColor + ';">'
+                  + ( index == 0 ? '' : '<span class="trash_container"><a class="delete_icon" href=\'javascript:deleteSong(' + index + ',"' + song["url"] + '");\'><img src="../images/icons/trash_red.png"/></a></span>' )
+                  + '<aside>'
+                  + '<a class="squareButton" href="javascript:void(null)">'
+                  + ( song["image_url"] ? '<img src="'+song["image_url"]+'" style="width:70px; height=70px;"/></a>' : '<div class="square"><img></div></a>' )
+                  + '</aside>'
+                  + '<div>'
+                  + '<h3>' + song["track"] + '</h3>'
+                  + '<h4>' + song["artist"] 
+                  + '</h4>'
+                  + '<p>' + song["album"] + '</p>'
+                  + '<p class="suggested_by">Added by <span>' + song["submitter"] + '</span></p>'
+                  + '<span class="song_url" style="display:none;">' + song["url"] + '</span>'
+                  + '<span class="song_id" style="display:none;">' + song["unique_id"] + '</span>'
+                  + '</div>'
+                  + '<div class="editSong">'
+                  + ( index == 0 ? '<a class="playing_icon"><img src="../images/icons/playing_red.png"/></a>' : '<a class="swap_icon handle"><img src="../images/icons/vertical_drag_red.png"/></a>' )
+                  + '</div>'
+                  + '</li>'
+                );
+              }
             });
             // $.UIDeletable({
             //   list: '#queue_list', 
@@ -409,7 +437,6 @@
                 reorderSong(song_id, new_pos);
               }
             });
-            if (callback) callback();
             $(".sortable").disableSelection();
           } else {
             $("#queue_list").append('<li class="comp">Error in displaying queue: ' +data["message"]+'</li>');
@@ -431,7 +458,7 @@
             });
         },
         select: function(event, ui) {
-          showNotification();
+          showNotification("You successfully added a song!");
           submitSong(cur_roomID, ui.item.data);
         },
         messages: {
