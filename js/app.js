@@ -278,7 +278,7 @@
         e.preventDefault();
       });
 
-      setTimeout(refresh_rooms, NUM_SECONDS_UNTIL_ROOM_REFRESH * 1000);
+      setInterval(refresh_rooms, NUM_SECONDS_UNTIL_ROOM_REFRESH * 1000);
 
     }
 
