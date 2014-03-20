@@ -1,21 +1,31 @@
 /* -------------------- *
  * Rules for home.html *
  * -------------------- */
-.button.action {
-  min-width: 200px;
-  max-width: 300px;
-  margin: 20px auto;
-  display: block; }
+#room_section a.button {
+  background-color: #d64031;
+  margin-top: 14px;
+  min-width: 60px;
+  border-radius: 4px; }
+
+#username_update_button {
+  color: white;
+  border: none;
+  background-color: #d64031;
+  border-radius: 4px; }
 
 #username_display {
   font-weight: bold; }
 
+.created_by {
+  color: #d64031; }
+
+#username_input {
+  outline: none;
+  border: 1px inset;
+  border-radius: 2px; }
+
 #username_update_div {
   display: none; }
-
-.align-right {
-  display: inline;
-  float: left; }
 
 li {
   overflow: auto; }
@@ -23,9 +33,86 @@ li {
 a {
   text-decoration: none; }
 
+.icon {
+  border-radius: 50%; }
+
+.icon.music {
+  margin-left: 0px;
+  background-color: #d64031;
+  background-image: url("../images/app-icons/music.png"); }
+
 /* -------------------- *
  * Rules for queue.html *
  * -------------------- */
+#queue_list li aside {
+  margin-right: 10px; }
+
+#queue_list h3 {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  -o-text-overflow: ellipsis; }
+#queue_list h4 {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  -o-text-overflow: ellipsis; }
+#queue_list p {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  -o-text-overflow: ellipsis; }
+
+#queue_list.shrunken h3 {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  -o-text-overflow: ellipsis;
+  margin-right: 30px; }
+#queue_list.shrunken h4 {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  -o-text-overflow: ellipsis;
+  margin-right: 30px; }
+#queue_list.shrunken p {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  -o-text-overflow: ellipsis;
+  margin-right: 30px; }
+
+.suggested_by span {
+  color: #d64031; }
+
+.delete_icon {
+  margin-top: 24px;
+  float: left;
+  display: none; }
+
+.delete_icon img {
+  width: 30px; }
+
+.trash_container a {
+  margin-left: 0;
+  padding-right: 2px; }
+
+.swap_icon {
+  margin-top: 6px;
+  float: right;
+  display: none; }
+
+.swap_icon img {
+  width: 30px; }
+
+.playing_icon {
+  margin-top: 20px;
+  margin-right: 0px;
+  float: right; }
+
+.playing_icon img {
+  width: 30px; }
+
 #main h2 {
   text-align: center; }
 
@@ -43,6 +130,8 @@ a {
 .squareButton {
   margin-left: 5px;
   margin-right: 5px; }
+  .squareButton img {
+    margin-top: 4px; }
 
 a.squareButton {
   padding: 0; }
@@ -72,17 +161,12 @@ a.squareButton {
   margin-top: -110px;
   z-index: 0; }
 
-.fitParent {
-  display: block;
-  width: 100%;
-  height: 100%; }
-
 #spotify_song_search {
   text-align: center;
   font-size: 10pt;
   margin-top: 13px;
   margin-left: 13px;
-  width: 90%;
+  width: 80%;
   padding: 5px;
   padding-left: 24px;
   outline: none;

@@ -14,5 +14,7 @@ handlers:
   static_dir: js
 - url: /stylesheets
   static_dir: stylesheets
+- url: /images
+  static_dir: images
 - url: /.*
   script: handler.application

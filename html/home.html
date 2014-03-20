@@ -23,27 +23,28 @@
 
     <nav>
       <h1>PICK PLAY</h1>
-      <!-- <a class='button' id='editButton'>Settings</a> -->
     </nav>
-    <article id="main">
-      <section>
+    <article id="main" class="current">
+      <section id="room_section">
         <p style="text-align: center;">
-            <span id="username_tag">Your username is </span><span id="username_display"></span>
+            <span id="username_tag">Hi! Your username is </span><span id="username_display"></span>
             <a href="javascript:showUsernameUpdateDiv();" id="open_user_popup">
               <label>(edit)</label>
             </a>
         </p>
         <div style="text-align: center;" id="username_update_div">
             <form id="username_update_form">
-              New Username: <input type="text" id="username_input">
-              <input type="submit" value="Update">
+              New Username: <input type="text" id="username_input" maxlength="20">
+              <input id="username_update_button" type="submit" value="Update">
             </form>
         </div>
         <h2>Your Rooms</h2>
         <ul class='list' id="my_rooms">
+          <li>You have not joined any rooms!</li>
         </ul>
         <h2>Nearby Rooms</h2>
         <ul class='list' id="nearby_rooms">
+          <li>Loading nearby rooms... Please wait...</li>
         </ul>
       </section>
     </article>

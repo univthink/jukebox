@@ -2,10 +2,11 @@
     var cur_user = null;
     var cur_userID = null;
     var cur_roomID = null;
-    var sortable = false;
     var coordinates = null;
+    var editMode = false;
+    var joined_rooms = Object.create(null);
     var colors = ['red', 'blue', 'green', 'pink'];
-    var username_arr = ['Banana', 'Apple', 'Peach', 'Mango', 'Cherry', 'Grape', 'Pear', 'Plum'];
+    var username_arr = ['Banana', 'Apple', 'Peach', 'Mango', 'Cherry', 'Grape', 'Pear', 'Plum', 'Pineapple', 'Lychee', 'Kiwi'];
     var NUM_DAYS_TO_KEEP_COOKIES = 1;
     var GEOLOCATION_TIMEOUT = 30; // in seconds
     var OLDEST_CACHED_GEOLOCATION_TO_ACCEPT = 60; // in seconds
@@ -68,7 +69,7 @@
         data: {room_id: roomID, user_id: userID, password: password},
         success: function(data) {
           if (data["status"] == "OK") {
-            alert("Joined successfully!");
+            //alert("Joined successfully!");
             if (callbackOnSuccess) callbackOnSuccess();
           } else {
             if (callbackOnFailure) callbackOnFailure();
@@ -99,8 +100,7 @@
     // Function called when the join room button is pressed next a room on the room list (no password)
     function joinRoom(roomID) {
       ajaxJoin(roomID, cur_userID, null, function() {
-        getAndDisplayMyRooms();
-        getAndDisplayNearbyRooms();
+        getAndDisplayMyRooms(getAndDisplayNearbyRooms);
       });
     }
 
@@ -113,38 +113,43 @@
       }
       ajaxJoin(roomID, cur_userID, password,
         function() {
-          getAndDisplayMyRooms();
-          getAndDisplayNearbyRooms();
+          getAndDisplayMyRooms(getAndDisplayNearbyRooms);
         },
         function() {
-          alert(data["message"]);
-          if (data["message"].indexOf("password") != -1) {
-            console.log("Provided password was incorrect.");
-            removeCookie(roomID);
-          }
+          alert("Provided password was incorrect.");
+          removeCookie(roomID);
+          // alert(data["message"]);
+          // if (data["message"].indexOf("password") != -1) {
+          //   console.log("Provided password was incorrect.");
+          //   removeCookie(roomID);
+          // }
         }
       );
     }
 
-    function getAndDisplayMyRooms() {
+    function getAndDisplayMyRooms(callback) {
      $.ajax({
         type: "POST",
         url: "/search_room",
-        data: {user_id: cur_userID},
+        data: {member_id: cur_userID},
         success: function(data) {
           $("#my_rooms").empty();
           if (data["status"] == "OK") {
             $.each(data["data"], function(index, itemData) {
-                $("#nearby_rooms").append(
-                    "<li>"
-                  + "Room Name: " + itemData["name"] + "<br>"
-                  + "Creator: " + itemData["creator_name"] + "<br>"
-                  + '<a href="queue.html?id=' + itemData["id"] + '" class="button action align-right" id="view_queue_button">View Queue</a>'
+                joined_rooms[itemData["id"]] = true;
+                //console.log(itemData["name"]);
+                $("#my_rooms").append(
+                    '<li class="comp">'
+                  + '<aside><span class="icon music"></span></aside>'
+                  + "<div><h3>" + itemData["name"] + "</h3>"
+                  + '<h4>Created by <span class="created_by">' + itemData["creator_name"] + "</span></h3></div>"
+                  + '<a href="queue.html?id=' + itemData["id"] + '" class="button align-flush" id="view_queue_button">View</a>'
                   + "</li>"
                 );
             });
-          }
-          else {
+            if ($.isEmptyObject(joined_rooms)) $("#my_rooms").html("<li>You have not joined any rooms!</li>");
+            if (callback) callback();
+          } else {
             console.log(data["message"]);
           }
         }
@@ -160,20 +165,38 @@
           $("#nearby_rooms").empty();
           if (data["status"] == "OK") {
             $.each(data["data"], function(index, itemData) {
+              if (!Object.prototype.hasOwnProperty.call(joined_rooms, itemData["id"])) {
                 $("#nearby_rooms").append(
-                    "<li>"
-                  + "Room Name: " + itemData["name"] + "<br>"
-                  + "Creator: " + itemData["creator_name"] + "<br>"
+                    '<li class="comp">'
+                  + '<aside><span class="icon music"></span></aside>'                  
+                  + "<div><h3>" + itemData["name"] + "</h3>"
+                  + '<h4>Created by <span class="created_by">' + itemData["creator_name"] + "</span></h3></div>"
                   + ( itemData["password"] ? '<a href="javascript:joinRoom_p(' + itemData["id"] + ');" ' : '<a href="javascript:joinRoom(' + itemData["id"] + ');" ' )
-                  + 'class="button action align-right" id="join_room_button">Join Room</a>'
-                  + '<a href="queue.html?id=' + itemData["id"] + '" class="button action align-right" id="view_queue_button">View Queue</a>'
+                  + 'class="button align-flush" id="join_room_button">Join</a>'
                   + "</li>"
                 );
+              }
             });
+            if ($("#nearby_rooms").is(':empty')) {
+              if ($.isEmptyObject(joined_rooms)) $("#nearby_rooms").html("<li>There are no nearby rooms.</li>");
+              else $("#nearby_rooms").html("<li>You are a member of all the nearby rooms.</li>");
+            } 
           }
           else {
             console.log(data["message"]);
           }
+        }
+      });
+    }
+
+    function changeUsername() {
+      $.ajax({
+        type: "POST",
+        url: "/change_username",
+        data: {user_id: cur_userID, name: cur_user},
+        success: function(data) {
+          if (data["status"] == "OK") { console.log("Username successfully changed."); }
+          else console.log(data["message"]);
         }
       });
     }
@@ -213,9 +236,6 @@
 
     function homeReady() {
 
-      $.UISlideout();
-      $.UISlideout.populate([{main:'Home'},{header:'Actions'},{join_room:'Join Room'}]);
-
       // Display user information
       cur_user = getCookie("username");
       if (!cur_user) {
@@ -227,7 +247,7 @@
         });
       } else {
         cur_userID = getCookie("user_id");
-        $("#username_tag").html("Welcome back ");
+        $("#username_tag").html("Welcome ");
         $("#username_display").html(cur_user);
         $('input[name="username_join"]').val(cur_user);
         getAndDisplayMyRooms();
@@ -236,24 +256,29 @@
       console.log('User: ' + cur_user);
       console.log('User ID: ' + cur_userID);
 
-      // $("#username_update_form").submit(function(e) {
-      //   var newUsername = $("#username_input").val()
-      //   $("#username_display").html(newUsername);
-      //   $('input[name="username_join"]').val(newUsername);
-      //   cur_user = newUsername;
-      //   cur_userID = 0;
-      //   $("#username_input").val('');
-      //   $("#username_update_div").css("display", "none");
-      //   registerUser(newUsername, function() {
-      //     getMyRooms();
-      //     getNearbyRooms();
-      //   });
-      //   e.preventDefault();
-      // });
+      $("#username_update_form").submit(function(e) {
+        var newUsername = $("#username_input").val()
+        $("#username_display").html(newUsername);
+        cur_user = newUsername;
+        $("#username_input").val('');
+        $("#username_update_div").css("display", "none");
+        changeUsername();
+        setCookie("username", cur_user);
+        e.preventDefault();
+      });
 
     }
 
 // Queue.html functions
+
+    function toggleSortDelete() {
+      editMode = !editMode;
+      $(".delete_icon").toggle();
+      $(".swap_icon").toggle();
+      $("#queue_list").toggleClass("shrunken");
+      if (editMode) $("#editButton").html("Done");
+      else $("#editButton").html("Edit");
+    }    
 
     function submitSong(roomID, autocompleteData) {
       var password = getCookie(roomID);
@@ -263,9 +288,48 @@
         url: "/submit_song",
         data: {room_id: roomID, user_id: cur_userID, password: password, url: autocompleteData.url, track: autocompleteData.name, artist: autocompleteData.artist, album: autocompleteData.album},
         success: function(data) {
-          if (data["status"]=="OK") alert("Song added successfully!");
-          displayQueue(roomID, password);
+          if (data["status"]=="OK") {
+            displayQueue(roomID, password);
+          }
           $("#spotify_song_search").val('');
+        }
+      });
+    }
+
+    function reorderSong(song_id, new_pos) {
+      var password = getCookie(cur_roomID);
+      if (!password) password = "";
+      $.ajax({
+        type: "POST",
+        url: "/reorder_song",
+        data: {room_id: cur_roomID, user_id: cur_userID, password: password, song_id: song_id, new_pos: new_pos},
+        success: function(data) {
+          if (data["status"]=="OK") {
+            console.log("Song successfully reordered.");
+            displayQueue(cur_roomID, password);
+          } else {
+            console.log("Houston, we have a problem.");
+            console.log(data["message"]);
+          }
+        }
+      });
+    }
+
+    function deleteSong(index, song_url) {
+      var password = getCookie(cur_roomID);
+      if (!password) password = "";
+      $.ajax({
+        type: "POST",
+        url: "/delete_song",
+        data: {room_id: cur_roomID, user_id: cur_userID, password: password, song_url: song_url, position: index},
+        success: function(data) {
+          if (data["status"]=="OK") {
+            console.log("Song successfully deleted.");
+            displayQueue(cur_roomID, password);
+          } else {
+            console.log("Houston, we have a problem.");
+            console.log(data["message"]);
+          }
         }
       });
     }
@@ -278,37 +342,58 @@
         data: {room_id: roomID, password: password},
         success: function(data) {
           if (data["status"] == "OK") {
+            $("#room_name").html(data["room_name"]);
+            if (data["all_admin"]) $("#editButton").show();
+            console.log(data);
             $("#queue_list").empty();
             $.each(data["data"], function(index, song) {
               var sColor = colors[Math.floor((Math.random()*colors.length))];
               $("#queue_list").append(
-                '<li class="comp">'
-                + '<aside>'
+                '<li class="comp' + ( index == 0 ? ' unsortable">' : '">' )
                 //+ '<div class="square" style="background:' + sColor + ';">'
+                + ( index == 0 ? '' : '<span class="trash_container"><a class="delete_icon" href=\'javascript:deleteSong(' + index + ',"' + song["url"] + '");\'><img src="../images/icons/trash_red.png"/></a></span>' )
+                + '<aside>'
                 + '<a class="squareButton" href="javascript:void(null)">'
-                + ( song["image_url"] ? '<img src="'+song["image_url"]+'" style="width:60px; height=60px;"/></a>' : '<div class="square"><img></div></a>' )
+                + ( song["image_url"] ? '<img src="'+song["image_url"]+'" style="width:70px; height=70px;"/></a>' : '<div class="square"><img></div></a>' )
                 + '</aside>'
                 + '<div>'
                 + '<h3>' + song["track"] + '</h3>'
-                + '<h4>' + song["artist"] + '</h4>'
+                + '<h4>' + song["artist"] 
+                + '</h4>'
                 + '<p>' + song["album"] + '</p>'
-                + '<span style="display:none;">' + song["url"] + '</span>'
+                + '<p class="suggested_by">Added by <span>' + song["submitter"] + '</span></p>'
+                + '<span class="song_url" style="display:none;">' + song["url"] + '</span>'
+                + '<span class="song_id" style="display:none;">' + song["unique_id"] + '</span>'
+                + '</div>'
+                + '<div class="editSong">'
+                + ( index == 0 ? '<a class="playing_icon"><img src="../images/icons/playing_red.png"/></a>' : '<a class="swap_icon handle"><img src="../images/icons/vertical_drag_red.png"/></a>' )
                 + '</div>'
                 + '</li>'
               );
             });
-            $.UIDeletable({
-              list: '#queue_list', 
-              callback: function(item) {
-                var url = $(item).siblings('div').find('span').text(); //url is not unique (think: duplicates)
-                alert("You deleted " + url);
-              }
-            });
-            $(".squareButton").click(function(event) {
+            // $.UIDeletable({
+            //   list: '#queue_list', 
+            //   callback: function(item) {
+            //     var url = $(item).siblings('div').find('span').text(); //url is not unique (think: duplicates)
+            //     alert("You deleted " + url);
+            //   }
+            // });
+            $(".squareButton").click(function(event) { // easter egg woo :)
               console.log(event);
               curCB = event.target;
               $("#colorPopover").show();
             });
+            $(".sortable").sortable({
+              handle: ".handle",
+              items: "li:not(.unsortable)",
+              update: function(e, ui) {
+                var new_pos = ui.item.index();
+                var song_id = ui.item.find('span.song_id').text();
+                var song_url = ui.item.find('span.song_url').text()
+                reorderSong(song_id, new_pos);
+              }
+            });
+            $(".sortable").disableSelection();
           } else {
             $("#queue_list").append('<li class="comp">Error in displaying queue: ' +data["message"]+'</li>');
           }
@@ -320,7 +405,7 @@
       $("#spotify_song_search").autocomplete({
         source: function(request, response) {
             $.get("http://ws.spotify.com/search/1/track.json", {
-              //currently selected in input
+              // currently selected in input
                 q: request.term
             }, function(data) {
                 response($.map(data.tracks, function(item) {
@@ -340,15 +425,6 @@
             results: function() {}
         }
       });
-    }
-
-    function toggleSortDelete() {
-      sortable = !sortable;
-      if (sortable) {
-        $('.sortable').sortable('enable');
-      } else {
-        $('.sortable').sortable('disable');
-      }
     }
 
     function populateColorPicker() {
@@ -388,6 +464,15 @@
 
     function queueReady() {
 
+      populateColorPicker();
+      $(".miniSquareButton").click(function(event) {
+        var color = $(event.target).css("background-color");
+        $(curCB).css("background-color", color);
+        $(curCB).css("border", "3px solid");
+        $(curCB).css("border-color", color);
+        $("#colorPopover").hide();
+      });
+
       cur_roomID = getParam("id");
       if (!cur_roomID) {
         $("#queue_list").append('<li class="comp">No room ID provided.</li>');
@@ -401,24 +486,11 @@
           ifPasswordPromptAndDisplay();
         });
       } else {
-        cur_userID = getCookie("user_id");
+        cur_userID = getCookie("user_id" );
         ifPasswordPromptAndDisplay();
       }
       console.log('User: ' + cur_user);
       console.log('User ID: ' + cur_userID);
-
-      $('.sortable').sortable();
-      $('.sortable').sortable('disable');
-
-      populateColorPicker();
-
-      $(".miniSquareButton").click(function(event) {
-        var color = $(event.target).css("background-color");
-        $(curCB).css("background-color", color);
-        $(curCB).css("border", "3px solid");
-        $(curCB).css("border-color", color);
-        $("#colorPopover").hide();
-      });
 
     }
 

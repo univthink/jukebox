@@ -419,13 +419,13 @@ nav > h1 + a.button {
   top: 3px;
 }
 nav > a.button + h1 {
-  left: 120px;
-  right: 120px;
+  left: 0; /* edit, originally 120 */
+  right: 0; /* edit, originally 120 */
 }
 @media only screen and (max-device-width: 320px) and (orientation: portrait) {
   nav > a.button + h1 {
-    left: 115px;
-    right: 115px;
+    left: 0; /* edit, originally 115 */
+    right: 0; /* edit, originally 115 */
   }
 }
 @media only screen and (max-device-width: 320px) and (orientation: landscape) {
