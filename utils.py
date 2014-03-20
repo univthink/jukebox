@@ -4,6 +4,12 @@ import json, math, models, hashlib
 DEFAULT_ROOMLIST_NAME = "default_roomlist"
 DEFAULT_USERLIST_NAME = "default_userlist"
 
+@ndb.transactional
+def transactional_put(*args):
+	for obj in args:
+		if isinstance(obj, ndb.Model):
+			obj.put()
+
 def roomlist_key(roomlist_name=DEFAULT_ROOMLIST_NAME):
 	return ndb.Key('RoomList',roomlist_name)
 
