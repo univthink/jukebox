@@ -1,20 +1,35 @@
 import webapp2, models, forms, json, endpoints, utils, urllib2
 from google.appengine.ext import ndb
 
+#Called when a song is deleted in fairness mode.
+#It will shift the user's songs up to replace
+#the delted song.
+#position: position where the song was deleted
+#submitter: the id of the person whose song was deleted
 def fairness_adjustment(room,position,submitter):
 	x = position
 	while x < len(room.queue):
 		queue_id = room.queue[x]
 		queue_song = models.Song.get_by_id(int(queue_id),parent=room.key)
 		queue_submitter = queue_song.submitter.integer_id()
-		if queue_submitter == submitter:
+		if queue_submitter == submitter:#found a song to be moved up
 			if position == x:
 				break
+			#move song up
 			room.queue.remove(queue_id)
 			room.queue.insert(position,queue_id)
+			#set position to where the song was moved from
+			#this way, the algorithm can keep running and will
+			#continue moving songs up to fill the gaps.
 			position = x + 1
 		x = x + 1
 
+#Parameters
+#room_id: room of the song to be deleted
+#user_id: user_id of deleter(must be admin)
+#password: password for validation purposes
+#url: spotify url that matches the song you want to delete
+#position: queue position of the song being deleted
 class DeleteSong(webapp2.RequestHandler):
 
 	def post(self):
@@ -39,42 +54,25 @@ class DeleteSong(webapp2.RequestHandler):
 				self.response.write(json.dumps({"status": "NOT OK", "message": "You must be an admin to delete songs."}))
 				return
 
-		web_app = self.request.get('web_app','false') != 'false'
-
 		if not room_exists:
-			if web_app:
-				self.response.write("The referenced room was not found.")
-			else:
-				self.response.write(json.dumps({"status": "NOT OK", "message": "The requested room was not found."}))
+			self.response.write(json.dumps({"status": "NOT OK", "message": "The requested room was not found."}))
 		else:
 			allowed = utils.checkPassword(self.request.get('password', ''), room.password)
 			if not allowed:
-				if web_app:
-					self.response.write("The correct password was not provided.")
-				else:
-					self.response.write(json.dumps({"status": "NOT OK", "message": "The correct password was not provided."}))
+				self.response.write(json.dumps({"status": "NOT OK", "message": "The correct password was not provided."}))
 			else:
 				if room.mode != 0 and room.mode != 1:
-					if web_app:
-						self.response.write("You cannot delte songs in this mode.")
-					else: 
-						self.response.write(json.dumps({"status": "NOT OK", "message": "You cannot delet songs in this mode."}))
+					self.response.write(json.dumps({"status": "NOT OK", "message": "You cannot delet songs in this mode."}))
 				else:
 					if self.request.get('url') == None:
-						if web_app:
-							self.response.write("No url specified.")
-						else:
-							self.response.write(json.dumps({"status": "NOT OK", "message": "No url specified."}))
+						self.response.write(json.dumps({"status": "NOT OK", "message": "No url specified."}))
 					else:
 						song = models.Song.query(ancestor=room.key)
 						song = song.filter(models.Song.url == self.request.get('url'))
 						songs = song.fetch()
 
 						if not songs:
-							if web_app:
-								self.response.write("Song not found in room.")
-							else:
-								self.response.write(json.dumps({"status": "NOT OK", "message": "Song not found in room."}))
+							self.response.write(json.dumps({"status": "NOT OK", "message": "Song not found in room."}))
 						else:
 							if self.request.get('position'):
 								removedSong = False
@@ -93,19 +91,15 @@ class DeleteSong(webapp2.RequestHandler):
 
 											song.key.delete()
 											room.put()
-											if web_app:
-												self.response.write("You successfully deleted the song.")
-											else:
-												self.response.write(json.dumps({"status":"OK"}))
+											
+											self.response.write(json.dumps({"status":"OK"}))
+
 											removedSong = True
 											break
 								except:
 									removedSong = False
 								if not removedSong:
-									if web_app:
-										self.response.write("Song not found at that position in room.")
-									else:
-										self.response.write(json.dumps({"status": "NOT OK", "message": "Song not found at that position in room."}))
+									self.response.write(json.dumps({"status": "NOT OK", "message": "Song not found at that position in room."}))
 							else:
 								submitter = songs[0].submitter.integer_id()
 								position = room.queue.index(songs[0].key.integer_id())
@@ -117,10 +111,4 @@ class DeleteSong(webapp2.RequestHandler):
 									fairness_adjustment(room,position,submitter)
 
 								room.put()
-								if web_app:
-									self.response.write("You successfully deleted the song.")
-								else:
-									self.response.write(json.dumps({"status":"OK"}))
-
-		if web_app:
-			self.response.write(forms.RETURN_TO_MAIN)
+								self.response.write(json.dumps({"status":"OK"}))

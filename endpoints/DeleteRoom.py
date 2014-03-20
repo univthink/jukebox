@@ -1,6 +1,10 @@
 import webapp2, models, forms, json, endpoints, utils, urllib2
 from google.appengine.ext import ndb
 
+#Paremeters
+#room_id: room_id to be deleted
+#password: password for validation purposes
+#user_id: user id of person deleting (must be room creator)
 class DeleteRoom(webapp2.RequestHandler):
 
 	def post(self):
@@ -20,27 +24,16 @@ class DeleteRoom(webapp2.RequestHandler):
 			except:
 				room_exists = False
 
-		web_app = self.request.get('web_app','false') != 'false'
-
 		if not room_exists:
-			if web_app:
-				self.response.write("The referenced room was not found.")
-			else:
-				self.response.write(json.dumps({"status": "NOT OK", "message": "The requested room was not found."}))
+			self.response.write(json.dumps({"status": "NOT OK", "message": "The requested room was not found."}))
 		else:
 			allowed = utils.checkPassword(self.request.get('password', ''), room.password)
 			if not allowed:
-				if web_app:
-					self.response.write("The correct password was not provided.")
-				else:
-					self.response.write(json.dumps({"status": "NOT OK", "message": "The correct password was not provided."}))
+				self.response.write(json.dumps({"status": "NOT OK", "message": "The correct password was not provided."}))
 			else:
-				ndb.delete_multi(ndb.Query(ancestor = room.key).iter(keys_only = True))
-
-				if web_app:
-					self.response.write("You successfully deleted the song.")
+				if not room.creator == long(self.request.get('user_id')):
+					self.response.write(json.dumps({"status": "NOT OK", "message": "Only the creator of a room can delete it."}))
 				else:
-					self.response.write(json.dumps({"status":"OK"}))
+					ndb.delete_multi(ndb.Query(ancestor = room.key).iter(keys_only = True))
 
-		if web_app:
-			self.response.write(forms.RETURN_TO_MAIN)
+					self.response.write(json.dumps({"status":"OK"}))
