@@ -89,7 +89,7 @@ class SubmitSong(webapp2.RequestHandler):
 							imageStuff = None
 
 						if len(self.request.get('track')) > 100 or len(self.request.get('artist')) > 100 or len(self.request.get('album')) > 100:
-							self.response.write(json.dumps({"status":"NOT OK","message":"Track name, artist, or album cannot be more than 100 characters."})
+							self.response.write(json.dumps({"status":"NOT OK","message":"Track name, artist, or album cannot be more than 100 characters."}))
 							return
 
 						# self.response.write(imageStuff)
