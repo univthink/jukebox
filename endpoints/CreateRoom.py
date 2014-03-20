@@ -1,5 +1,15 @@
 import webapp2, models, forms, json, endpoints, utils, urllib2, hashlib
 from google.appengine.ext import ndb
+from google.appengine.ext import deferred
+
+def load_image_stuff(song_key,url):
+	try:
+		song = song_key.get()
+		song.image_url = json.loads(urllib2.urlopen("https://embed.spotify.com/oembed/?url="+url).read())["thumbnail_url"]
+		song.put()
+	except:
+		pass
+
 
 class CreateRoom(webapp2.RequestHandler):
 
@@ -70,26 +80,24 @@ class CreateRoom(webapp2.RequestHandler):
 				try:
 					for song in json.loads(self.request.get('initial_playlist')):
 
-						try:
-							imageStuff = json.loads(urllib2.urlopen("https://embed.spotify.com/oembed/?url="+song['url']).read())
-						except:
-							continue
-							imageStuff = None
-
 						if len(song['track']) > 100 or len(song['artist']) > 100 or len(song['album']) > 100:
 							continue
 
-						song = models.Song(parent=room_key,
+						song_model = models.Song(parent=room_key,
 										   url=song['url'],
 										   track=song['track'],
 										   artist=song['artist'],
 										   album=song['album'],
 										   history = False,
-										   image_url=imageStuff["thumbnail_url"] if imageStuff else None,
+										   image_url=None,
 										   status=0,
 										   submitter=guest.key)
 
-						song_key = song.put()
+						song_key = song_model.put()
+						try:
+							deferred.defer(load_image_stuff,song_key,song['url'])
+						except:
+							continue
 
 						#TODO: Order differently based on mode
 						room.queue.append(song_key.integer_id())
