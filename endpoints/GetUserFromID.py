@@ -21,18 +21,7 @@ class GetUserFromID(webapp2.RequestHandler):
 			except:
 				user_exists = False
 
-		web_app = self.request.get('web_app','false') != 'false'
-
 		if not user_exists:
-			if web_app:
-				self.response.write("The referenced user was not found.")
-			else:
-				self.response.write(json.dumps({"status": "NOT OK", "message": "The requested user was not found."}))
+			self.response.write(json.dumps({"status": "NOT OK", "message": "The requested user was not found."}))
 		else:
-			if web_app:
-				self.response.write(utils.JSONEncoder().encode(user))
-			else:
-				self.response.write(utils.JSONEncoder().encode({"status":"OK", "data": user}))
-
-		if web_app:
-			self.response.write(forms.RETURN_TO_MAIN)
+			self.response.write(utils.JSONEncoder().encode({"status":"OK", "data": user}))

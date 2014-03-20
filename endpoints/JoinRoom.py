@@ -19,27 +19,16 @@ class JoinRoom(webapp2.RequestHandler):
 			except:
 				room_exists = False
 
-		web_app = self.request.get('web_app','false') != 'false'
-
 		if not room_exists:
-			if web_app:
-				self.response.write("The requested room was not found.")
-			else:
-				self.response.write(json.dumps({"status": "NOT OK", "message": "The requested room was not found."}))
+			self.response.write(json.dumps({"status": "NOT OK", "message": "The requested room was not found."}))
 		else:
 			allowed = utils.checkPassword(self.request.get('password', ''), room.password)
 			if not allowed:
-				if web_app:
-					self.response.write("You did not enter the proper password for room: " + room.name)
-				else:
-					self.response.write(json.dumps({"status": "NOT OK", "message": "You did not enter the proper password for room: " + room.name}))
+				self.response.write(json.dumps({"status": "NOT OK", "message": "You did not enter the proper password for room: " + room.name}))
 			else:
 				user_id = self.request.get('user_id')
 				if user_id == '':
-					if web_app:
-						self.response.write("No user_id was provided.")
-					else:
-						self.response.write(json.dumps({"status": "NOT OK", "message": "No user_id was provided."}))
+					self.response.write(json.dumps({"status": "NOT OK", "message": "No user_id was provided."}))
 				else:
 					userlist_name = utils.DEFAULT_USERLIST_NAME
 	
@@ -55,12 +44,4 @@ class JoinRoom(webapp2.RequestHandler):
 						else:
 							guest = models.Guest(parent=room.key,user_id=int(user_id),admin=True)
 						guest_key = guest.put()
-						#TODO: Consdier adding detail to "Guest"
-
-						if web_app:
-							self.response.write("\"" + room.name + "\" was successfully joined!")
-						else:
-							self.response.write(json.dumps({"status":"OK"}))
-
-		if web_app:
-			self.response.write(forms.RETURN_TO_MAIN)
+						self.response.write(json.dumps({"status":"OK"}))

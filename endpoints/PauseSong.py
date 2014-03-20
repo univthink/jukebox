@@ -20,52 +20,25 @@ class PauseSong(webapp2.RequestHandler):
 			except: # fixed a syntax error you had here
 				room_exists = False
 
-		web_app = self.request.get('web_app','false') != 'false'
-
 		if not room_exists:
-			if web_app:
-				self.response.write("The referenced room was not found.")
-			else:
-				self.response.write(json.dumps({"status": "NOT OK", "message": "The requested room was not found."}))
+			self.response.write(json.dumps({"status": "NOT OK", "message": "The requested room was not found."}))
 		else:
 			allowed = utils.checkPassword(self.request.get('password', ''), room.password)
 			if not allowed:
-				if web_app:
-					self.response.write("The correct password was not provided.")
-				else:
-					self.response.write(json.dumps({"status": "NOT OK", "message": "The correct password was not provided."}))
+				self.response.write(json.dumps({"status": "NOT OK", "message": "The correct password was not provided."}))
 			else:
 				if self.request.get('action') == 'pause':
 					try:
 						room.playing = False
 						room.put()
-
-						if web_app:
-							self.response.write("You successfully paused the song.")
-						else:
-							self.response.write(json.dumps({"status":"OK"}))
+						self.response.write(json.dumps({"status":"OK"}))
 					except:
-
-						if web_app:
-							self.response.write("Errors pausing the song.")
-						else:
-							self.response.write(json.dumps({"status":"NOT OK", "message": "Errors pausing the song."}))
+						self.response.write(json.dumps({"status":"NOT OK", "message": "Errors pausing the song."}))
 
 				else: 
 					try:
 						room.playing = True
 						room.put()
-
-						if web_app:
-							self.response.write("You successfully unpaused the song.")
-						else:
-							self.response.write(json.dumps({"status":"OK"}))
+						self.response.write(json.dumps({"status":"OK"}))
 					except:
-
-						if web_app:
-							self.response.write("Errors unpausing the song.")
-						else:
-							self.response.write(json.dumps({"status":"NOT OK", "message": "Errors unpausing the song."}))
-
-		if web_app:
-			self.response.write(forms.RETURN_TO_MAIN)
+						self.response.write(json.dumps({"status":"NOT OK", "message": "Errors unpausing the song."}))

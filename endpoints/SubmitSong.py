@@ -46,20 +46,12 @@ class SubmitSong(webapp2.RequestHandler):
 			except:
 				room_exists = False
 
-		web_app = self.request.get('web_app','false') != 'false'
-
 		if not room_exists:
-			if web_app:
-				self.response.write("The referenced room was not found.")
-			else:
-				self.response.write(json.dumps({"status": "NOT OK", "message": "The requested room was not found."}))
+			self.response.write(json.dumps({"status": "NOT OK", "message": "The requested room was not found."}))
 		else:
 			allowed = utils.checkPassword(self.request.get('password', ''), room.password)
 			if not allowed:
-				if web_app:
-					self.response.write("The correct password was not provided.")
-				else:
-					self.response.write(json.dumps({"status": "NOT OK", "message": "The correct password was not provided."}))
+				self.response.write(json.dumps({"status": "NOT OK", "message": "The correct password was not provided."}))
 			else:
 				user_id = self.request.get('user_id')
 				userlist_name = utils.DEFAULT_USERLIST_NAME
@@ -68,22 +60,17 @@ class SubmitSong(webapp2.RequestHandler):
 				except:
 					user = None
 				if user == None:
-					if web_app:
-						self.response.write("The given user_id is not a valid user.")
-					else:
-						self.response.write(json.dumps({"status": "NOT OK", "message": "The given user_id is not a valid user."}))
+					self.response.write(json.dumps({"status": "NOT OK", "message": "The given user_id is not a valid user."}))
 				else:
 					guest_query = models.Guest.query(models.Guest.user_id == int(user_id),ancestor=room.key)
 					guest = guest_query.fetch()
 					if len(guest) == 0:
-						if web_app:
-							self.response.write("You need to join this room before you can submit a song.")
-						else:
-							self.response.write(json.dumps({"status": "NOT OK", "message": "You need to join this room before you can submit a song."}))
+						self.response.write(json.dumps({"status": "NOT OK", "message": "You need to join this room before you can submit a song."}))
 					else:
+						#Use Spotify Metadata API to get album art image urls.
 						try:
 							imageStuff = json.loads(urllib2.urlopen("https://embed.spotify.com/oembed/?url="+self.request.get('url')).read())
-						except: # originally a else, getting a syntax error
+						except: 
 							self.response.write(json.dumps({"status":"NOT OK","message":"The requested spotify url could not be accessed"}))
 							return
 							imageStuff = None
@@ -92,8 +79,6 @@ class SubmitSong(webapp2.RequestHandler):
 							self.response.write(json.dumps({"status":"NOT OK","message":"Track name, artist, or album cannot be more than 100 characters."}))
 							return
 
-						# self.response.write(imageStuff)
-						# TODO: Add values necessary for other modes
 						song = models.Song(parent=room.key,
 										   url=self.request.get('url'),
 										   track=self.request.get('track'),
@@ -106,8 +91,6 @@ class SubmitSong(webapp2.RequestHandler):
 
 						song_key = song.put()
 
-						#TODO: Order differently based on mode
-						#TODO: Delete/Reorder for Fairness?
 						if room.mode == 1:
 							insert_pos = self.fairness_insert(room,guest[0])
 							room.queue.insert(insert_pos,song_key.integer_id())
@@ -115,11 +98,4 @@ class SubmitSong(webapp2.RequestHandler):
 							room.queue.append(song_key.integer_id())
 
 						room.put()
-
-						if web_app:
-							self.response.write("You successfully submitted \"" + self.request.get('track_name') + "\" to the room \"" + room.name + "\".")
-						else:
-							self.response.write(json.dumps({"status":"OK"}))
-
-		if web_app:
-			self.response.write(forms.RETURN_TO_MAIN)
+						self.response.write(json.dumps({"status":"OK"}))
