@@ -18,7 +18,7 @@ class SearchRoom(webapp2.RequestHandler):
 					guest_query = models.Guest.query(models.Guest.user_id == member_id, ancestor=test_room.key)
 					guest = guest_query.fetch()
 					if len(guest) != 0:
-						room.append(test_room)
+						rooms.append(test_room)
 
 				self.response.write(utils.JSONEncoder().encode({"status":"OK", "data": rooms}))
 				return
