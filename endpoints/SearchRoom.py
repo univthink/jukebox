@@ -5,6 +5,8 @@ from google.appengine.ext import ndb
 class SearchRoom(webapp2.RequestHandler):
 
 	def post(self):
+		self.response.headers['Content-Type'] = 'application/json'
+
 		if self.request.get('member_id'):
 			try:
 				roomlist_name = self.request.get('roomlist_name', utils.DEFAULT_ROOMLIST_NAME)
@@ -25,7 +27,6 @@ class SearchRoom(webapp2.RequestHandler):
 			except:
 				pass
 
-		self.response.headers['Content-Type'] = 'application/json'
 		roomlist_name = self.request.get('roomlist_name', utils.DEFAULT_ROOMLIST_NAME)
 		room_id = self.request.get('room_id')
 		room = models.Room.query(ancestor=utils.roomlist_key(roomlist_name))
