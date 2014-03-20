@@ -36,7 +36,7 @@ class ArchiveSong(webapp2.RequestHandler):
 			self.response.write(json.dumps({"status": "NOT OK", "message": "The correct password was not provided."}))
 			return
 
-		if not room.creator == self.request.get('user_id'):
+		if not room.creator == long(self.request.get('user_id')):
 			self.response.write(json.dumps({"status": "NOT OK", "message": "Only the creator of a room can archive a song."}))
 			return
 
