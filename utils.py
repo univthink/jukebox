@@ -47,6 +47,8 @@ class JSONEncoder(json.JSONEncoder):
         		user = models.User.get_by_id(int(obj['creator']),parent=userlist_key(DEFAULT_USERLIST_NAME))
         		del obj['creator']
         		del obj['queue']
+        		del obj['history']
+        		del obj['password']
         		obj['creator_name'] = user.username
         		#obj['password'] =  bool(obj['password'])
         	return obj
