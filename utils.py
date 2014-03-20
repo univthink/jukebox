@@ -10,9 +10,13 @@ def roomlist_key(roomlist_name=DEFAULT_ROOMLIST_NAME):
 def userlist_key(userlist_name=DEFAULT_USERLIST_NAME):
 	return ndb.Key('UserList',userlist_name)
 
+def get_user_by_id(user_id,userlist_name=DEFAULT_USERLIST_NAME):
+	return models.User.get_by_id(int(user_id),parent=userlist_key(userlist_name))
+
 def is_admin(room,user_id):
 	userlist_name = DEFAULT_USERLIST_NAME
 	user = models.User.get_by_id(int(user_id),parent=userlist_key(userlist_name))
+
 	
 	if user == None:
 		return False
