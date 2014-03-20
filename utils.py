@@ -10,8 +10,14 @@ def roomlist_key(roomlist_name=DEFAULT_ROOMLIST_NAME):
 def userlist_key(userlist_name=DEFAULT_USERLIST_NAME):
 	return ndb.Key('UserList',userlist_name)
 
-def get_user_by_id(user_id,userlist_name=DEFAULT_USERLIST_NAME):
-	return models.User.get_by_id(int(user_id),parent=userlist_key(userlist_name))
+def get_user_by_guest_id(room,guest_id,userlist_name=DEFAULT_USERLIST_NAME):
+	guest = models.Guest.get_by_id(int(guest_id),parent=room.key)
+	if guest == None:
+		return None
+	else:
+		user_id = guest.user_id
+		user = models.User.get_by_id(int(user_id),parent=userlist_key(userlist_name))
+		return user
 
 def is_admin(room,user_id):
 	userlist_name = DEFAULT_USERLIST_NAME
@@ -40,6 +46,7 @@ class JSONEncoder(json.JSONEncoder):
         	if isinstance(o, models.Room):
         		user = models.User.get_by_id(int(obj['creator']),parent=userlist_key(DEFAULT_USERLIST_NAME))
         		del obj['creator']
+        		del obj['queue']
         		obj['creator_name'] = user.username
         		#obj['password'] =  bool(obj['password'])
         	return obj
