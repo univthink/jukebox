@@ -125,3 +125,11 @@ SEARCH_ROOM_FORM = """\
 	<input type="submit" value="Search Room!">
 	</form>
 """
+
+CHANGE_USERNAME_FORM = """\
+	<form action="change_username" method="post">
+	User ID: <input type="text" name="user_id"><br>
+	Name: <input type="text" name="name"><br>
+	<input type="submit" value="Change Username!">
+	</form>
+"""

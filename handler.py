@@ -73,6 +73,9 @@ class Main(webapp2.RequestHandler):
 		self.response.write("<br><br>Search Room!<br>")
 		self.response.write(forms.SEARCH_ROOM_FORM)
 
+		self.response.write("<br><br>Change Username!<br>")
+		self.response.write(forms.CHANGE_USERNAME_FORM)
+
 
 application = webapp2.WSGIApplication([
 	('/', Main),
@@ -92,5 +95,6 @@ application = webapp2.WSGIApplication([
 	('/update_room', UpdateRoom.UpdateRoom),
 	('/pause_song', PauseSong.PauseSong),
 	('/check_play_status', CheckPlayStatus.CheckPlayStatus),
-	('/set_admin',SetAdmin.SetAdmin)
+	('/set_admin',SetAdmin.SetAdmin),
+	('/change_username',ChangeUsername.ChangeUsername)
 ], debug=True)
