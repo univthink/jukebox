@@ -19,6 +19,9 @@ def get_user_by_guest_id(room,guest_id,userlist_name=DEFAULT_USERLIST_NAME):
 		user = models.User.get_by_id(int(user_id),parent=userlist_key(userlist_name))
 		return user
 
+def get_user_by_id(user_id,userlist_name=DEFAULT_USERLIST_NAME):
+	return models.User.get_by_id(int(user_id),parent=userlist_key(userlist_name))
+
 def is_admin(room,user_id):
 	userlist_name = DEFAULT_USERLIST_NAME
 	user = models.User.get_by_id(int(user_id),parent=userlist_key(userlist_name))
