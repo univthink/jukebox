@@ -10,6 +10,9 @@
     var NUM_DAYS_TO_KEEP_COOKIES = 1;
     var GEOLOCATION_TIMEOUT = 30; // in seconds
     var OLDEST_CACHED_GEOLOCATION_TO_ACCEPT = 60; // in seconds
+    var NUM_SECONDS_UNTIL_QUEUE_REFRESH = 5;
+    var NUM_SECONDS_UNTIL_ROOM_REFRESH = 20;
+
 
 // Shared functions
 
@@ -35,6 +38,10 @@
         }
       }
      return null;
+    }
+
+    function auto_refresh() {
+      window.location.reload();
     }
 
     function assignUsername(callback) {
@@ -234,6 +241,10 @@
         });
     }
 
+    function refresh_rooms() {
+
+    }
+
     function homeReady() {
 
       // Display user information
@@ -266,6 +277,8 @@
         setCookie("username", cur_user);
         e.preventDefault();
       });
+
+      setTimeout(refresh_rooms, NUM_SECONDS_UNTIL_ROOM_REFRESH * 1000);
 
     }
 
@@ -344,7 +357,7 @@
           if (data["status"] == "OK") {
             $("#room_name").html(data["room_name"]);
             if (data["all_admin"]) $("#editButton").show();
-            console.log(data);
+            //console.log(data);
             $("#queue_list").empty();
             $.each(data["data"], function(index, song) {
               var sColor = colors[Math.floor((Math.random()*colors.length))];
@@ -462,8 +475,14 @@
       );
     }
 
-    function queueReady() {
+    function refresh_queue() {
+      var password = getCookie(cur_roomID);
+      if (!password) password = "";
+      displayQueue(cur_roomID, password);
+      console.log("Refreshing queue...");
+    }
 
+    function queueReady() {
       populateColorPicker();
       $(".miniSquareButton").click(function(event) {
         var color = $(event.target).css("background-color");
@@ -492,5 +511,6 @@
       console.log('User: ' + cur_user);
       console.log('User ID: ' + cur_userID);
 
+      setInterval(refresh_queue, NUM_SECONDS_UNTIL_QUEUE_REFRESH * 1000);
     }
 
