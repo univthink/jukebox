@@ -1,4 +1,5 @@
 // Global vars
+
     var cur_user = null;
     var cur_userID = null;
     var cur_roomID = null;
@@ -11,7 +12,7 @@
     var GEOLOCATION_TIMEOUT = 30; // in seconds
     var OLDEST_CACHED_GEOLOCATION_TO_ACCEPT = 60; // in seconds
     var NUM_SECONDS_UNTIL_QUEUE_REFRESH = 5;
-    var NUM_SECONDS_UNTIL_ROOM_REFRESH = 20;
+    var NUM_SECONDS_UNTIL_ROOM_REFRESH = 15;
 
 
 // Shared functions
@@ -323,9 +324,8 @@
         success: function(data) {
           if (data["status"]=="OK") {
             console.log("Song successfully reordered.");
-            displayQueue(cur_roomID, password);
+            displayQueue(cur_roomID, password, toggleSortDelete);
           } else {
-            console.log("Houston, we have a problem.");
             console.log(data["message"]);
           }
         }
@@ -338,20 +338,19 @@
       $.ajax({
         type: "POST",
         url: "/delete_song",
-        data: {room_id: cur_roomID, user_id: cur_userID, password: password, song_url: song_url, position: index},
+        data: {room_id: cur_roomID, user_id: cur_userID, password: password, url: song_url, position: index},
         success: function(data) {
           if (data["status"]=="OK") {
             console.log("Song successfully deleted.");
             displayQueue(cur_roomID, password);
           } else {
-            console.log("Houston, we have a problem.");
             console.log(data["message"]);
           }
         }
       });
     }
 
-    function displayQueue(roomID, password) {
+    function displayQueue(roomID, password, callback) {
       if (!password) password = "";
       $.ajax({
         type: "GET",
@@ -410,6 +409,7 @@
                 reorderSong(song_id, new_pos);
               }
             });
+            if (callback) callback();
             $(".sortable").disableSelection();
           } else {
             $("#queue_list").append('<li class="comp">Error in displaying queue: ' +data["message"]+'</li>');
