@@ -7,7 +7,7 @@ class JoinRoom(webapp2.RequestHandler):
 	def post(self):
 		room_exists = True
 		self.response.headers['Content-Type'] = 'application/json'
-		roomlist_name = self.request.get('roomlist_name', utils.DEFAULT_ROOMLIST_NAME)
+		roomlist_name = utils.DEFAULT_ROOMLIST_NAME
 		room_id = self.request.get('room_id')
 		if not room_id:
 			room_exists = False
@@ -41,7 +41,8 @@ class JoinRoom(webapp2.RequestHandler):
 					else:
 						self.response.write(json.dumps({"status": "NOT OK", "message": "No user_id was provided."}))
 				else:
-					userlist_name = self.request.get('userlist_name', utils.DEFAULT_USERLIST_NAME)
+					userlist_name = utils.DEFAULT_USERLIST_NAME
+	
 					try:
 						user = models.User.get_by_id(int(user_id),parent=utils.userlist_key(userlist_name))
 					except:

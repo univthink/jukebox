@@ -7,7 +7,7 @@ class DeleteUser(webapp2.RequestHandler):
 		self.response.headers['Content-Type'] = 'application/json'
 		user_exists = True
 
-		userlist_name = self.request.get('userlist_name',utils.DEFAULT_USERLIST_NAME)
+		userlist_name = utils.DEFAULT_USERLIST_NAME
 		user_id = self.request.get('user_id')
 
 		if not user_id:

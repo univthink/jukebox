@@ -5,7 +5,7 @@ class CreateRoom(webapp2.RequestHandler):
 
 	def post(self):
 		self.response.headers['Content-Type'] = 'application/json'
-		roomlist_name = self.request.get('roomlist_name', utils.DEFAULT_ROOMLIST_NAME)
+		roomlist_name = utils.DEFAULT_ROOMLIST_NAME
 		
 		has_coordinates = True
 		if self.request.get("coordinates") != '':
@@ -16,8 +16,15 @@ class CreateRoom(webapp2.RequestHandler):
 		else:
 			has_coordinates = False
 
+		if len(self.request.get("room_name",'')) == 0:
+			self.response.write(json.dumps({"status": "NOT OK", "message": "You must enter a room name."}))
+			return
 
-		userlist_name = self.request.get('userlist_name', utils.DEFAULT_USERLIST_NAME)
+		if len(self.request.get("room_name",'')) > 20:
+			self.response.write(json.dumps({"status": "NOT OK", "message": "The room name cannot be more than 20 characters."}))
+			return
+
+		userlist_name = utils.DEFAULT_USERLIST_NAME
 		try:
 			user = models.User.get_by_id(int(self.request.get('creator')),parent=utils.userlist_key(userlist_name))
 		except:
@@ -60,29 +67,36 @@ class CreateRoom(webapp2.RequestHandler):
 			guest.put()
 
 			if self.request.get('initial_playlist'):
-				for song in json.loads(self.request.get('initial_playlist')):
+				try:
+					for song in json.loads(self.request.get('initial_playlist')):
 
-					try:
-						imageStuff = json.loads(urllib2.urlopen("https://embed.spotify.com/oembed/?url="+song['url']).read())
-					except:
-						imageStuff = None
+						try:
+							imageStuff = json.loads(urllib2.urlopen("https://embed.spotify.com/oembed/?url="+song['url']).read())
+						except:
+							continue
+							imageStuff = None
 
-					song = models.Song(parent=room_key,
-									   url=song['url'],
-									   track=song['track'],
-									   artist=song['artist'],
-									   album=song['album'],
-									   history = False,
-									   image_url=imageStuff["thumbnail_url"] if imageStuff else None,
-									   status=0,
-									   submitter=guest.key)
+						if len(song['track']) > 100 or len(song['artist']) > 100 or len(song['album']) > 100:
+							continue
 
-					song_key = song.put()
+						song = models.Song(parent=room_key,
+										   url=song['url'],
+										   track=song['track'],
+										   artist=song['artist'],
+										   album=song['album'],
+										   history = False,
+										   image_url=imageStuff["thumbnail_url"] if imageStuff else None,
+										   status=0,
+										   submitter=guest.key)
 
-					#TODO: Order differently based on mode
-					room.queue.append(song_key.integer_id())
+						song_key = song.put()
 
-				room_key = room.put()
+						#TODO: Order differently based on mode
+						room.queue.append(song_key.integer_id())
+
+					room_key = room.put()
+				except:
+					pass
 
 			toReturn = {"status": "OK", "data":room_key.integer_id()}
 			self.response.write(json.dumps(toReturn))

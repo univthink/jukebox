@@ -7,7 +7,7 @@ class CheckPlayStatus(webapp2.RequestHandler):
 		self.response.headers['Content-Type'] = 'application/json'
 		room_exists = True
 
-		roomlist_name = self.request.get('roomlist_name',utils.DEFAULT_ROOMLIST_NAME)
+		roomlist_name = utils.DEFAULT_ROOMLIST_NAME
 		room_id = self.request.get('room_id')
 
 		if not room_id:

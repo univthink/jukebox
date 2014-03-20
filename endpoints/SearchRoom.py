@@ -27,7 +27,7 @@ class SearchRoom(webapp2.RequestHandler):
 			except:
 				pass
 
-		roomlist_name = self.request.get('roomlist_name', utils.DEFAULT_ROOMLIST_NAME)
+		roomlist_name = utils.DEFAULT_ROOMLIST_NAME
 		room_id = self.request.get('room_id')
 		room = models.Room.query(ancestor=utils.roomlist_key(roomlist_name))
 		if self.request.get('name'):
@@ -42,8 +42,8 @@ class SearchRoom(webapp2.RequestHandler):
 		lonMin = 0
 		lonMax =0
 		if self.request.get('coordinates'):
-			[lat, lon] = self.request.get('coordinates').split(',')
 			try:
+				[lat, lon] = self.request.get('coordinates').split(',')
 				[latMin, latMax, lonMin, lonMax] = utils.boundingBox(float(lat), float(lon), float(self.request.get('distance', '1000')))
 				room = room.filter(models.Room.lat >= latMin, models.Room.lat <= latMax)
 				filterLon = True

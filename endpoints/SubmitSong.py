@@ -33,7 +33,7 @@ class SubmitSong(webapp2.RequestHandler):
 		room_exists = True
 		self.response.headers['Content-Type'] = 'application/json'
 
-		roomlist_name = self.request.get('roomlist_name',utils.DEFAULT_ROOMLIST_NAME)
+		roomlist_name = utils.DEFAULT_ROOMLIST_NAME
 		room_id = self.request.get('room_id')
 
 		if not room_id:
@@ -62,7 +62,7 @@ class SubmitSong(webapp2.RequestHandler):
 					self.response.write(json.dumps({"status": "NOT OK", "message": "The correct password was not provided."}))
 			else:
 				user_id = self.request.get('user_id')
-				userlist_name = self.request.get('userlist_name',utils.DEFAULT_USERLIST_NAME)
+				userlist_name = utils.DEFAULT_USERLIST_NAME
 				try:
 					user = models.User.get_by_id(int(user_id),parent=utils.userlist_key(userlist_name))
 				except:
@@ -84,7 +84,13 @@ class SubmitSong(webapp2.RequestHandler):
 						try:
 							imageStuff = json.loads(urllib2.urlopen("https://embed.spotify.com/oembed/?url="+self.request.get('url')).read())
 						except: # originally a else, getting a syntax error
+							self.response.write(json.dumps({"status":"NOT OK","message":"The requested spotify url could not be accessed"}))
+							return
 							imageStuff = None
+
+						if len(self.request.get('track')) > 100 or len(self.request.get('artist')) > 100 or len(self.request.get('album')) > 100:
+							self.response.write(json.dumps({"status":"NOT OK","message":"Track name, artist, or album cannot be more than 100 characters."})
+							return
 
 						# self.response.write(imageStuff)
 						# TODO: Add values necessary for other modes
