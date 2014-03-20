@@ -65,4 +65,4 @@ class GetSongQueue(webapp2.RequestHandler):
 					except:
 						pass
 
-				self.response.write(utils.JSONEncoder().encode({"status": "OK","data": songs}))
+				self.response.write(utils.JSONEncoder().encode({"status": "OK","data": songs,"room_name":room.name}))
