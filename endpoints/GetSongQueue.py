@@ -50,10 +50,9 @@ class GetSongQueue(webapp2.RequestHandler):
 					try:
 						song = models.Song.get_by_id(int(song_id),parent=room.key)
 						song_dict = song.to_dict()
-						user = utils.get_user_by_id(song_dict['submitter'])
-						if user:
-							song_dict['submitter'] = user.username
-						else:
+						try:
+							song_dict['submitter'] = utils.get_user_by_id(song_dict['submitter']).username
+						except:
 							del song_dict['submitter']
 						song_dict['timeSubmitted'] = str(song_dict['timeSubmitted'])
 						song_dict['unique_id'] = int(song_id)
