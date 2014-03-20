@@ -14,11 +14,25 @@ $light_blue: rgb(239,239,244);
   border-radius: 4px;
 }
 
+input[type='submit'] {
+   -webkit-appearance: none;
+   -moz-appearance: none;
+   appearance: none;  
+}
+
+input {
+   -webkit-appearance: none;
+   -moz-appearance: none;
+   appearance: none;  
+}
+
 #username_update_button {
   color: white;
   border: none;
   background-color: $app_red;
   border-radius: 4px;
+  padding-top: 3px;
+  padding-bottom: 3px;
 }
 
 #username_display {
@@ -217,7 +231,7 @@ a.squareButton {
 }
 
 .ui-autocomplete-input:focus {
-  box-shadow: 0 0 0 2px rgb(154,192,235);
+  box-shadow: 0 0 0 2px $app_red;
 }
 
 .ui-menu {

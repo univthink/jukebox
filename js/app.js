@@ -12,7 +12,7 @@
     var GEOLOCATION_TIMEOUT = 30; // in seconds
     var OLDEST_CACHED_GEOLOCATION_TO_ACCEPT = 60; // in seconds
     var NUM_SECONDS_UNTIL_QUEUE_REFRESH = 5;
-    var NUM_SECONDS_UNTIL_ROOM_REFRESH = 15;
+    var NUM_SECONDS_UNTIL_ROOM_REFRESH = 10;
 
 
 // Shared functions
@@ -39,6 +39,10 @@
         }
       }
      return null;
+    }
+
+    function isAlphanumeric(val) {
+      return (! val.match(/^[a-zA-Z]+$/))
     }
 
     function showNotification(msg) {
@@ -275,12 +279,14 @@
 
       $("#username_update_form").submit(function(e) {
         var newUsername = $("#username_input").val()
-        $("#username_display").html(newUsername);
-        cur_user = newUsername;
-        $("#username_input").val('');
-        $("#username_update_div").css("display", "none");
-        changeUsername();
-        setCookie("username", cur_user);
+        if (newUsername != "" && !isAlphanumeric(newUsername)) {
+          $("#username_display").html(newUsername);
+          cur_user = newUsername;
+          $("#username_input").val('');
+          $("#username_update_div").css("display", "none");
+          changeUsername();
+          setCookie("username", cur_user);
+        }
         e.preventDefault();
       });
 
