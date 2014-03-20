@@ -51,9 +51,8 @@ class JSONEncoder(json.JSONEncoder):
         		del obj['creator']
         		del obj['queue']
         		del obj['history']
-        		del obj['password']
         		obj['creator_name'] = user.username
-        		#obj['password'] =  bool(obj['password'])
+        		obj['password'] =  bool(obj['password'])
         	return obj
         elif isinstance(o, (ndb.GeoPt)):
             return str(o)  # Or whatever other date format you're OK with...
