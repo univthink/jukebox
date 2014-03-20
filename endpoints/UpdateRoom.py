@@ -20,20 +20,12 @@ class UpdateRoom(webapp2.RequestHandler):
 			except:
 				room_exists = False
 
-		web_app = self.request.get('web_app','false') != 'false'
-
 		if not room_exists:
-			if web_app:
-				self.response.write("The referenced room was not found.")
-			else:
-				self.response.write(json.dumps({"status": "NOT OK", "message": "The requested room was not found."}))
+			self.response.write(json.dumps({"status": "NOT OK", "message": "The requested room was not found."}))
 		else:
 			allowed = utils.checkPassword(self.request.get('password', ''), room.password)
 			if not allowed:
-				if web_app:
-					self.response.write("The correct password was not provided.")
-				else:
-					self.response.write(json.dumps({"status": "NOT OK", "message": "The correct password was not provided."}))
+				self.response.write(json.dumps({"status": "NOT OK", "message": "The correct password was not provided."}))
 			else:
 				if self.request.get("coordinates") != '':
 					try:
@@ -41,22 +33,8 @@ class UpdateRoom(webapp2.RequestHandler):
 						room.lat = float(lat)
 						room.lon = float(lon)
 						room.put()
-						if web_app:
-							self.response.write("You successfully updated the room.")
-						else:
-							self.response.write(json.dumps({"status":"OK"}))
+						self.response.write(json.dumps({"status":"OK"}))
 					except:
-						if web_app:
-							self.response.write("Misformatted coordinates specified.")
-						else:
-							self.response.write(json.dumps({"status": "NOT OK", "message": "Misformatted coordinates specified."}))
+						self.response.write(json.dumps({"status": "NOT OK", "message": "Misformatted coordinates specified."}))
 				else:
-					if web_app:
-						self.response.write("No coordinates specified.")
-					else:
-						self.response.write(json.dumps({"status": "NOT OK", "message": "No coordinates specified."}))
-
-			
-
-		if web_app:
-			self.response.write(forms.RETURN_TO_MAIN)
+					self.response.write(json.dumps({"status": "NOT OK", "message": "No coordinates specified."}))

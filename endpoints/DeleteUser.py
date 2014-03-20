@@ -20,21 +20,10 @@ class DeleteUser(webapp2.RequestHandler):
 			except:
 				user_exists = False
 
-		web_app = self.request.get('web_app','false') != 'false'
-
 		if not user_exists:
-			if web_app:
-				self.response.write("The requested user was not found.")
-			else:
-				self.response.write(json.dumps({"status": "NOT OK", "message": "The requested user was not found."}))
+			self.response.write(json.dumps({"status": "NOT OK", "message": "The requested user was not found."}))
 		else:
 
 			user.key.delete()
 			#TODO: Delete associated guests.
-			if web_app:
-				self.response.write("You successfully deleted the song.")
-			else:
-				self.response.write(json.dumps({"status":"OK"}))
-
-		if web_app:
-			self.response.write(forms.RETURN_TO_MAIN)
+			self.response.write(json.dumps({"status":"OK"}))
