@@ -2,6 +2,9 @@ import webapp2, models, forms, json, endpoints, utils, urllib2, hashlib
 from google.appengine.ext import ndb
 from google.appengine.ext import deferred
 
+#Function that loads image_url for a song specified
+#by song key from the url specified by url.
+#Used to do deferred loading of album art images.
 def load_image_stuff(song_key,url):
 	try:
 		song = song_key.get()
@@ -10,7 +13,16 @@ def load_image_stuff(song_key,url):
 	except:
 		pass
 
-
+#Parameters
+#coordinates: string coordinates of room location
+#room_name
+#creator: user_id of creator
+#mode: 0 for first-come-first-server, 1 for fairness
+#all_admin: 0 false, 1 true
+#password
+#initial playlist: JSON blob with songs to add initially
+ 
+#Creates room according to the parameters passed to it
 class CreateRoom(webapp2.RequestHandler):
 
 	def post(self):
@@ -40,8 +52,7 @@ class CreateRoom(webapp2.RequestHandler):
 		except:
 			user = None
 		if user == None:
-			toReturn = {"status": "NOT OK", "message": "Invalid user_id."}
-			self.response.write(json.dumps(toReturn))
+			self.response.write(json.dumps({"status": "NOT OK", "message": "Invalid user_id."}))
 		else:
 
 			try:
@@ -106,5 +117,4 @@ class CreateRoom(webapp2.RequestHandler):
 				except:
 					pass
 
-			toReturn = {"status": "OK", "data":room_key.integer_id()}
-			self.response.write(json.dumps(toReturn))
+			self.response.write(json.dumps({"status": "OK", "data":room_key.integer_id()}))

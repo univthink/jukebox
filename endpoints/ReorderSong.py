@@ -25,27 +25,15 @@ class ReorderSong(webapp2.RequestHandler):
 				self.response.write(json.dumps({"status": "NOT OK", "message": "You must be an admin to reorder songs."}))
 				return
 
-		web_app = self.request.get('web_app','false') != 'false'
-
 		if not room_exists:
-			if web_app:
-				self.response.write("The referenced room was not found.")
-			else:
-				self.response.write(json.dumps({"status": "NOT OK", "message": "The requested room was not found."}))
+			self.response.write(json.dumps({"status": "NOT OK", "message": "The requested room was not found."}))
 		else:
-			#TODO: Mode?
 			if room.mode != 0:
-				if web_app:
-					self.response.write("You can only reorder songs in First Come First Serve mode.")
-				else: 
-					self.response.write(json.dumps({"status": "NOT OK", "message": "You can only reorder songs in First Come First Serve mode."}))
+				self.response.write(json.dumps({"status": "NOT OK", "message": "You can only reorder songs in First Come First Serve mode."}))
 			else:
 				allowed = utils.checkPassword(self.request.get('password', ''), room.password)
 				if not allowed:
-					if web_app:
-						self.response.write("The correct password was not provided.")
-					else:
-						self.response.write(json.dumps({"status": "NOT OK", "message": "The correct password was not provided."}))
+					self.response.write(json.dumps({"status": "NOT OK", "message": "The correct password was not provided."}))
 				else:
 					#TODO: Error checking
 					song_exists = True
@@ -54,10 +42,7 @@ class ReorderSong(webapp2.RequestHandler):
 					except:
 						song_exists = False
 					if not song_exists or room.queue.count(song_id) == 0:
-						if web_app:
-							self.response.write("The requested song is not in the Room's queue.")
-						else:
-							self.response.write(json.dumps({"status": "NOT OK", "message": "The requested song is not in the Room's queue."}))
+						self.response.write(json.dumps({"status": "NOT OK", "message": "The requested song is not in the Room's queue."}))
 					else:
 						try:
 							new_pos = int(self.request.get('new_pos'))
@@ -66,11 +51,4 @@ class ReorderSong(webapp2.RequestHandler):
 						room.queue.remove(song_id)
 						room.queue.insert(new_pos,song_id)
 						room.put()
-
-						if web_app:
-							self.response.write("You successfully moved song \"" + str(song_id) + "\" to position " + str(new_pos))
-						else:
-							self.response.write(json.dumps({"status":"OK"}))
-
-		if web_app:
-			self.response.write(forms.RETURN_TO_MAIN)
+						self.response.write(json.dumps({"status":"OK"}))

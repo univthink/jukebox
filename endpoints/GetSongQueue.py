@@ -17,22 +17,13 @@ class GetSongQueue(webapp2.RequestHandler):
 		except:
 			room_exists = False
 
-		web_app = self.request.get('web_app','false') != 'false'
-
 		if not room_exists:
-			if web_app:
-				self.response.write("The referenced room was not found.")
-			else:
-				self.response.write(json.dumps({"status": "NOT OK", "message": "The referenced room was not found."}))
+			self.response.write(json.dumps({"status": "NOT OK", "message": "The referenced room was not found."}))
 		else:
 			allowed = utils.checkPassword(self.request.get('password', ''), room.password)
 			if not allowed:
-				if web_app:
-					self.response.write("The correct password was not provided.")
-				else:
-					self.response.write(json.dumps({"status": "NOT OK", "message": "The correct password was not provided."}))
+				self.response.write(json.dumps({"status": "NOT OK", "message": "The correct password was not provided."}))
 			else:
-				#TODO: Error checking
 				try:
 					num_songs = int(self.request.get('num_songs',"1000"))
 				except:
@@ -41,6 +32,7 @@ class GetSongQueue(webapp2.RequestHandler):
 				song_pos = 0;
 				song_list = room.queue
 
+				# Returns appropriate type of queue.
 				if self.request.get('type') == 'history':
 					song_list = room.history
 				elif self.request.get('type') == 'both':
@@ -48,6 +40,7 @@ class GetSongQueue(webapp2.RequestHandler):
 
 				for song_id in song_list:
 					try:
+						# Sets up song dictionaries for pretty printing.
 						song = models.Song.get_by_id(int(song_id),parent=room.key)
 						song_dict = song.to_dict()
 						try:

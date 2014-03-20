@@ -1,6 +1,10 @@
 import webapp2, models, forms, json, endpoints, utils, urllib2
 from google.appengine.ext import ndb
 
+#Parameters
+#room_id: the room for which play status is being checked
+#password: password for validation purposes
+#Return - Json blob with play status
 class CheckPlayStatus(webapp2.RequestHandler):
 
 	def post(self):
@@ -19,36 +23,18 @@ class CheckPlayStatus(webapp2.RequestHandler):
 					room_exists = False
 			except:
 				room_exists = False
-			
-
-		web_app = self.request.get('web_app','false') != 'false'
 
 		if not room_exists:
-			if web_app:
-				self.response.write("The referenced room was not found.")
-			else:
-				self.response.write(json.dumps({"status": "NOT OK", "message": "The requested room was not found."}))
+			self.response.write(json.dumps({"status": "NOT OK", "message": "The requested room was not found."}))
 		else:
 
 			allowed = utils.checkPassword(self.request.get('password', ''), room.password)
 			if not allowed:
-				if web_app:
-					self.response.write("The correct password was not provided.")
-				else:
-					self.response.write(json.dumps({"status": "NOT OK", "message": "The correct password was not provided."}))
+				self.response.write(json.dumps({"status": "NOT OK", "message": "The correct password was not provided."}))
 			else: 
 				try:
 					playing = room.playing
 				except:
 					playing = True
 
-				if web_app:
-					if playing:
-						self.response.write("The song is playing.")
-					else:
-						self.response.write("The song is paused.")
-				else:
-					self.response.write(json.dumps({"status":"OK", "data": json.dumps(playing)}))	
-
-		if web_app:
-			self.response.write(forms.RETURN_TO_MAIN)
+				self.response.write(json.dumps({"status":"OK", "data": json.dumps(playing)}))
