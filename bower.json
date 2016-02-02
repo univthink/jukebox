@@ -1,0 +1,20 @@
+{
+  "name": "Jukebox",
+  "description": "The greatest collaborative playlist app ever",
+  "main": "index.html",
+  "moduleType": [],
+  "authors": [
+    "Justin Salloum"
+  ],
+  "license": "MIT",
+  "homepage": "",
+  "private": true,
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests",
+    "lib/"
+  ]
+}
