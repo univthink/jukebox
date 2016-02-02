@@ -2,7 +2,9 @@
   'use strict';
 
   angular
-    .module('app', [
-      'ngRoute'
+    .module('jukebox', [
+      'jukebox.footer',
+      'jukebox.header',
+      'jukebox.queue'
     ]);
 })();
