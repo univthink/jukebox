@@ -2,7 +2,7 @@
   'use strict';
 
   angular
-    .module('jukebox.jb-footer')
+    .module('jukebox.jb-footer', [])
     .directive('jbFooter', jbFooter);
 
   function jbFooter() {

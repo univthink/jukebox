@@ -2,7 +2,7 @@
   'use strict';
 
   angular
-    .module('jukebox.jb-header', [
+    .module('jukebox.spotify-search', [
 
     ]);
 })();
