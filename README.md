@@ -1,1 +1,9 @@
-# This is my README
+#jukebox-web
+
+```
+npm install
+```
+```
+npm start
+```
+
