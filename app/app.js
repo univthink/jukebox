@@ -2,10 +2,7 @@
   'use strict';
 
   angular
-
-  .module('app', [])
-
-  .controller('AppController', ['$scope', function(scope) {
-
-  }]);
+    .module('app', [
+      'ngRoute'
+    ]);
 })();
