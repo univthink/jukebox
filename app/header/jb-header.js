@@ -2,7 +2,7 @@
   'use strict';
 
   angular
-    .module('jukebox.footer', [
+    .module('jukebox.jb-header', [
 
     ]);
 })();
