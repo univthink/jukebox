@@ -26,17 +26,33 @@
   });
 
   app.controller('SongInfoController', function($scope, $routeParams) {
-    //$ means dependency injection
+    //$ means a dependency injection
     $scope.coolNumber = 9000;
     $scope.songId = $routeParams.songId;
   });
 
-  app.controller('SongsController', function($scope) {
+  app.controller('SongsController', function($scope, $http) {
     $scope.songs = [
       { "name":"The Yellow Submarine", "artist":"The Beatles", "price":1.29 },
       { "name":"Hello", "artist":"Adele", "price":.99 },
       { "name":"Stairway to Heaven", "artist":"Led Zeppelin", "price":.59 }
     ]
+    $scope.myData = {};
+    $scope.myData.sendQuery = function() {
+      var responsePromise = $http.get("https://api.spotify.com/v1/search", {
+        "params" : {
+          "q" : $scope.searchText,
+          "type" : "track"
+        }
+      });
+      responsePromise.success(function(data, status, headers, config) {
+        $scope.myData.results = data.tracks.items;
+      });
+      responsePromise.error(function(data, status, headers, config) {
+        console.log("AJAX failed!");
+      });
+    }
+
   });
 
 })();

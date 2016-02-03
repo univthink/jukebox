@@ -2,10 +2,20 @@
   <div>
     <p>This is inside the songs.html "view"</p>
     <p>Search:</p>
-    <input type="text" ng-model="searchText" />
-    <br/>
+    <input type="text" ng-model="searchText" ng-model-options="{ debounce: 500 }" ng-change="myData.sendQuery()" />
     {{ searchText }}
+    <br>
+    <br>
+    Search results:
+    <div ng-repeat="result in myData.results">
+      <img style="float: left;" height="50" width="50" src="{{ result.album.images[0].url }}" />
+      <p style="float: left;">{{ result.name }}</p>
+      <br style="clear: both;">
+    </div>
   </div>
+
+  <br>
+  <br>
 
   <div ng-repeat="song in songs | filter:searchText">
     <a href="">{{ song.name }} <em>by</em> {{ song.artist }} <em>for</em> {{ song.price | currency }}</a>
