@@ -1,0 +1,13 @@
+<div ng-controller="SongsController">
+  <div>
+    <p>This is inside the songs.html "view"</p>
+    <p>Search:</p>
+    <input type="text" ng-model="searchText" />
+    <br/>
+    {{ searchText }}
+  </div>
+
+  <div ng-repeat="song in songs | filter:searchText">
+    <a href="">{{ song.name }} <em>by</em> {{ song.artist }} <em>for</em> {{ song.price | currency }}</a>
+  </div>
+</div>

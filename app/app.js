@@ -10,19 +10,25 @@
       'ngRoute'
     ]);
 
+  // routeProvider marries a view with a controller!
   app.config(function($routeProvider) {
     $routeProvider.when('/', {
       controller: 'SongsController',
-      templateUrl: 'app/views/songs.html'
+      templateUrl: 'views/songs.html'
     })
-    .when('/search', {
-      controller: 'UnknownController',
-      templateUrl: 'app/views/unknown.html'
+    .when('/song/:songId?', {
+      controller: 'SongInfoController',
+      templateUrl: 'views/song-info.html'
+    })
+    .otherwise({
+      redirectTo: '/'
     });
   });
 
-  app.controller('UnknownController', function($scope) {
-
+  app.controller('SongInfoController', function($scope, $routeParams) {
+    //$ means dependency injection
+    $scope.coolNumber = 9000;
+    $scope.songId = $routeParams.songId;
   });
 
   app.controller('SongsController', function($scope) {
