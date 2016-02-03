@@ -3,8 +3,8 @@
 
   angular
     .module('jukebox', [
-      'jukebox.jb-footer',
-      'jukebox.jb-header',
+      'jukebox.jbFooter',
+      'jukebox.jbHeader',
       'jukebox.queue'
     ]);
 })();

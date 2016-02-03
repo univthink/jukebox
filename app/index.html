@@ -11,6 +11,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <link rel="stylesheet" href="bower_components/html5-boilerplate/dist/css/normalize.css">
   <link rel="stylesheet" href="bower_components/html5-boilerplate/dist/css/main.css">
+  <link rel="stylesheet" href="bower_components/normalize-css/normalize.css">
   <link rel="stylesheet" href="app.css">
   <script src="bower_components/html5-boilerplate/dist/js/vendor/modernizr-2.8.3.min.js"></script>
   <script src="bower_components/angular/angular.js"></script>
@@ -19,14 +20,16 @@
 </head>
 <body>
 
-  <footer></footer>
+  <jb-header></jb-header>
+  <queue></queue>
+  <jb-footer></jb-footer>
+
+  <script src="footer/jbFooter.js"></script>
+  <script src="header/jbHeader.js"></script>
+  <script src="queue/queue.js"></script>
   <!-- In production use:
   <script src="//ajax.googleapis.com/ajax/libs/angularjs/x.x.x/angular.min.js"></script>
   -->
-
-  <script src="footer/jb-footer.js"></script>
-  <script src="header/jb-header.js"></script>
-  <script src="queue/queue.js"></script>
 
 
   <!-- 
