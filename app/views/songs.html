@@ -6,18 +6,31 @@
     {{ searchText }}
     <br>
     <br>
-    Search results:
-    <div ng-repeat="result in myData.results">
-      <img style="float: left;" height="50" width="50" src="{{ result.album.images[0].url }}" />
-      <p style="float: left;">{{ result.name }}</p>
-      <br style="clear: both;">
+    <div style="float: left; width: 50%;">
+      Spotify search results:
+      <div ng-repeat="result in myData.spotify.results">
+        <img style="float: left;" height="50" width="50" src="{{ result.album.images[0].url }}" />
+        <p style="float: left;">{{ result.name }}</p>
+        <br style="clear: both;">
+      </div>
+    </div>
+    <div style="float: right; width: 50%;">
+      Soundcloud search results:
+      <div ng-repeat="result in myData.soundcloud.results">
+        <a href="{{ result.permalink_url }}">
+          <img style="float: left;" height="50" width="50" src="{{ result.artwork_url }}" />
+          <span style="float: left;">{{ result.title }}</span>
+          <br>
+          <span style="">{{ result.user.username }}</span>
+          <br style="clear: both;">
+          <br>
+        </a>
+      </div>
     </div>
   </div>
 
-  <br>
-  <br>
-
-  <div ng-repeat="song in songs | filter:searchText">
+<!--   <div ng-repeat="song in songs | filter:searchText">
     <a href="">{{ song.name }} <em>by</em> {{ song.artist }} <em>for</em> {{ song.price | currency }}</a>
-  </div>
+  </div> -->
+
 </div>
