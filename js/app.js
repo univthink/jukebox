@@ -311,7 +311,15 @@
       $.ajax({
         type: "POST",
         url: "/submit_song",
-        data: {room_id: roomID, user_id: cur_userID, password: password, url: autocompleteData.url, track: autocompleteData.name, artist: autocompleteData.artist, album: autocompleteData.album, album_art_url: autocompleteData.},
+        data: {
+          room_id: roomID,
+          user_id: cur_userID,
+          password: password,
+          url: autocompleteData.url,
+          track: autocompleteData.name,
+          artist: autocompleteData.artist,
+          album: autocompleteData.album
+        },
         success: function(data) {
           console.log('successfully added a song!');
           console.log(data);
