@@ -476,7 +476,6 @@
                       url: item.href,
                       name: item.name
                     };
-                    console.log(ui_data);
                     return {
                       label: item.artists[0].name + " - " + item.name,
                       data: ui_data
