@@ -460,7 +460,7 @@
                 "type" : "track"
             }, function(data) {
                 console.log(data);
-                response($.map(data.tracks, function(item) {
+                response($.map(data.tracks.items, function(item) {
                     return {label: item.artists[0].name + " - " + item.name, data: {artist: item.artists[0].name, album: item.album.name, url: item.href, name: item.name}};
                 }));
             });

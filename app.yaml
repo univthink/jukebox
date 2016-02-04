@@ -1,5 +1,5 @@
 application: musicviz194
-version: 1
+version: beta-2
 runtime: python27
 api_version: 1
 threadsafe: true
@@ -21,3 +21,12 @@ handlers:
 
 builtins:
 - deferred: on
+
+skip_files:
+- ^(.*/)?#.*#$
+- ^(.*/)?.*~$
+- ^(.*/)?.*\.py[co]$
+- ^(.*/)?.*/RCS/.*$
+- ^(.*/)?\..*$
+- ^app$
+- ^node_modules$
