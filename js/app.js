@@ -322,16 +322,10 @@
           album_art_url: autocompleteData.album_art_url
         },
         success: function(data) {
-          console.log('successfully added a song!');
-          console.log(data);
           if (data["status"]=="OK") {
             displayQueue(roomID, password);
           }
           $("#spotify_song_search").val('');
-        },
-        failure: function(data) {
-          console.log('fail');
-          console.log(data);
         }
       });
     }
