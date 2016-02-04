@@ -34,8 +34,8 @@
       var vars = query.split("&");
       for (var i = 0; i < vars.length; i++) {
         var pair = vars[i].split("=");
-        if (pair[0] == variable) { 
-          return pair[1]; 
+        if (pair[0] == variable) {
+          return pair[1];
         }
       }
      return null;
@@ -91,10 +91,10 @@
             if (callbackOnFailure) callbackOnFailure();
           }
         }
-      }); 
+      });
     }
 
-// Home.html functions 
+// Home.html functions
 
     function showUsernameUpdateDiv() {
       $("#username_update_div").css("display", "block");
@@ -184,7 +184,7 @@
               if (!Object.prototype.hasOwnProperty.call(joined_rooms, itemData["id"])) {
                 $("#nearby_rooms").append(
                     '<li class="comp">'
-                  + '<aside><span class="icon music"></span></aside>'                  
+                  + '<aside><span class="icon music"></span></aside>'
                   + "<div><h3>" + itemData["name"] + "</h3>"
                   + '<h4>Created by <span class="created_by">' + itemData["creator_name"] + "</span></h3></div>"
                   + ( itemData["password"] ? '<a href="javascript:joinRoom_p(' + itemData["id"] + ');" ' : '<a href="javascript:joinRoom(' + itemData["id"] + ');" ' )
@@ -196,7 +196,7 @@
             if ($("#nearby_rooms").is(':empty')) {
               if ($.isEmptyObject(joined_rooms)) $("#nearby_rooms").html("<li>There are no nearby rooms.</li>");
               else $("#nearby_rooms").html("<li>You are a member of all the nearby rooms.</li>");
-            } 
+            }
           }
           else {
             console.log(data["message"]);
@@ -235,7 +235,7 @@
           { maximumAge: OLDEST_CACHED_GEOLOCATION_TO_ACCEPT * 1000 } // I'm not sure if this is helpful
         );
       } else {
-        if (callbackOnFailure) callbackOnFailure(); // browser/device does not support geolocation 
+        if (callbackOnFailure) callbackOnFailure(); // browser/device does not support geolocation
       }
     }
 
@@ -303,7 +303,7 @@
       $("#queue_list").toggleClass("shrunken");
       if (editMode) $("#editButton").html("Done");
       else $("#editButton").html("Edit");
-    }    
+    }
 
     function submitSong(roomID, autocompleteData) {
       var password = getCookie(roomID);
@@ -384,7 +384,7 @@
                   + '</aside>'
                   + '<div>'
                   + '<h3>' + song["track"] + '</h3>'
-                  + '<h4>' + song["artist"] 
+                  + '<h4>' + song["artist"]
                   + '</h4>'
                   + '<p>' + song["album"] + '</p>'
                   + '<p class="suggested_by">Added by <span>' + song["submitter"] + '</span></p>'
@@ -407,7 +407,7 @@
                   + '</aside>'
                   + '<div>'
                   + '<h3>' + song["track"] + '</h3>'
-                  + '<h4>' + song["artist"] 
+                  + '<h4>' + song["artist"]
                   + '</h4>'
                   + '<p>' + song["album"] + '</p>'
                   + '<p class="suggested_by">Added by <span>' + song["submitter"] + '</span></p>'
@@ -422,7 +422,7 @@
               }
             });
             // $.UIDeletable({
-            //   list: '#queue_list', 
+            //   list: '#queue_list',
             //   callback: function(item) {
             //     var url = $(item).siblings('div').find('span').text(); //url is not unique (think: duplicates)
             //     alert("You deleted " + url);
@@ -454,10 +454,12 @@
     function prepareSongSearch() {
       $("#spotify_song_search").autocomplete({
         source: function(request, response) {
-            $.get("http://ws.spotify.com/search/1/track.json", {
+            $.get("https://api.spotify.com/v1/search", {
               // currently selected in input
-                q: request.term
+                "q": request.term,
+                "type" : "track"
             }, function(data) {
+                console.log(data);
                 response($.map(data.tracks, function(item) {
                     return {label: item.artists[0].name + " - " + item.name, data: {artist: item.artists[0].name, album: item.album.name, url: item.href, name: item.name}};
                 }));
@@ -484,7 +486,7 @@
 
     function ifPasswordPromptAndDisplay() {
       var password = getCookie(cur_roomID);
-      ajaxJoin(cur_roomID, cur_userID, password, 
+      ajaxJoin(cur_roomID, cur_userID, password,
         function() {
           displayQueue(cur_roomID, password);
           prepareSongSearch();
@@ -492,7 +494,7 @@
         function() {
           var password = prompt("Please enter the room password:");
           setCookie(cur_roomID, password);
-          ajaxJoin(cur_roomID, cur_userID, password, 
+          ajaxJoin(cur_roomID, cur_userID, password,
             function() {
               $("#queue_list").empty();
               $("#spotify_song_search").removeAttr("disabled");
