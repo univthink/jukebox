@@ -311,7 +311,7 @@
       $.ajax({
         type: "POST",
         url: "/submit_song",
-        data: {room_id: roomID, user_id: cur_userID, password: password, url: autocompleteData.url, track: autocompleteData.name, artist: autocompleteData.artist, album: autocompleteData.album},
+        data: {room_id: roomID, user_id: cur_userID, password: password, url: autocompleteData.url, track: autocompleteData.name, artist: autocompleteData.artist, album: autocompleteData.album, album_art_url: autocompleteData.},
         success: function(data) {
           console.log('successfully added a song!');
           console.log(data);
@@ -466,7 +466,18 @@
                 "type" : "track"
             }, function(data) {
                 response($.map(data.tracks.items, function(item) {
-                    return {label: item.artists[0].name + " - " + item.name, data: {artist: item.artists[0].name, album: item.album.name, url: item.href, name: item.name}};
+                    var ui_data = {
+                      artist: item.artists[0].name,
+                      album: item.album.name,
+                      album_art_url: item.album.images[0].url,
+                      url: item.href,
+                      name: item.name
+                    };
+                    console.log(ui_data);
+                    return {
+                      label: item.artists[0].name + " - " + item.name,
+                      data: ui_data
+                    };
                 }));
             });
         },
