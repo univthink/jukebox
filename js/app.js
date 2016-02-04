@@ -461,6 +461,7 @@
             }, function(data) {
                 console.log(data);
                 response($.map(data.tracks.items, function(item) {
+                    console.log(item);
                     return {label: item.artists[0].name + " - " + item.name, data: {artist: item.artists[0].name, album: item.album.name, url: item.href, name: item.name}};
                 }));
             });
