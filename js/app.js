@@ -313,10 +313,16 @@
         url: "/submit_song",
         data: {room_id: roomID, user_id: cur_userID, password: password, url: autocompleteData.url, track: autocompleteData.name, artist: autocompleteData.artist, album: autocompleteData.album},
         success: function(data) {
+          console.log('successfully added a song!');
+          console.log(data);
           if (data["status"]=="OK") {
             displayQueue(roomID, password);
           }
           $("#spotify_song_search").val('');
+        },
+        failure: function(data) {
+          console.log('fail');
+          console.log(data);
         }
       });
     }
@@ -459,9 +465,7 @@
                 "q": request.term,
                 "type" : "track"
             }, function(data) {
-                console.log(data);
                 response($.map(data.tracks.items, function(item) {
-                    console.log(item);
                     return {label: item.artists[0].name + " - " + item.name, data: {artist: item.artists[0].name, album: item.album.name, url: item.href, name: item.name}};
                 }));
             });
