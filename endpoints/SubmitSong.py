@@ -69,11 +69,14 @@ class SubmitSong(webapp2.RequestHandler):
 					else:
 						#Use Spotify Metadata API to get album art image urls.
 						try:
-							imageStuff = json.loads(urllib2.urlopen("https://embed.spotify.com/oembed/?url="+self.request.get('url')).read())
-						except: 
-							self.response.write(json.dumps({"status":"NOT OK","message":"The requested spotify url could not be accessed"}))
+							#imageStuff = json.loads(urllib2.urlopen("https://embed.spotify.com/oembed/?url="+self.request.get('url')).read())
+							albumArtUrl = self.request.get('album_art_url');
+						except:
+							#self.response.write(json.dumps({"status":"NOT OK","message":"The requested spotify url could not be accessed"}))
+							self.response.write(json.dumps({"status":"NOT OK","message":"Album art url not provided"}))
 							return
-							imageStuff = None
+							#imageStuff = None
+							albumArtUrl = None
 
 						if len(self.request.get('track')) > 100 or len(self.request.get('artist')) > 100 or len(self.request.get('album')) > 100:
 							self.response.write(json.dumps({"status":"NOT OK","message":"Track name, artist, or album cannot be more than 100 characters."}))
@@ -85,7 +88,8 @@ class SubmitSong(webapp2.RequestHandler):
 										   artist=self.request.get('artist'),
 										   album=self.request.get('album'),
 										   history=False,
-										   image_url=imageStuff["thumbnail_url"] if imageStuff else None,
+										   #image_url=imageStuff["thumbnail_url"] if imageStuff else None,
+										   image_url=albumArtUrl if albumArtUrl else None,
 										   status=0,
 										   submitter=guest[0].key)
 

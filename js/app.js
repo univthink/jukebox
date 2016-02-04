@@ -318,7 +318,8 @@
           url: autocompleteData.url,
           track: autocompleteData.name,
           artist: autocompleteData.artist,
-          album: autocompleteData.album
+          album: autocompleteData.album,
+          album_art_url: autocompleteData.album_art_url
         },
         success: function(data) {
           console.log('successfully added a song!');
