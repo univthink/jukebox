@@ -1,13 +1,21 @@
 {
-  "globalstrict": true,
+  "browser": true,
+  "bitwise": true,
+  "camelcase": true,
+  "curly": true,
+  "eqeqeq": true,
+  "immed": true,
+  "indent": 2,
+  "newcap": true,
+  "noarg": true,
+  "quotmark": "single",
+  "regexp": true,
+  "undef": true,
+  "unused": true,
+  "strict": true,
+  "trailing": true,
+  "smarttabs": true,
   "globals": {
-    "angular": false,
-    "describe": false,
-    "it": false,
-    "expect": false,
-    "beforeEach": false,
-    "afterEach": false,
-    "module": false,
-    "inject": false
+    "angular": false
   }
 }
