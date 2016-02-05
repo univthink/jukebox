@@ -21,3 +21,12 @@ handlers:
 
 builtins:
 - deferred: on
+
+skip_files:
+- ^(.*/)?#.*#$
+- ^(.*/)?.*~$
+- ^(.*/)?.*\.py[co]$
+- ^(.*/)?.*/RCS/.*$
+- ^(.*/)?\..*$
+- ^app$
+- ^node_modules$
