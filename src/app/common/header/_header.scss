@@ -1,0 +1,25 @@
+.header {
+  padding-top: 10px;
+  text-align: center;
+  height: 50px;
+  background: white;
+  color: $dark-gray-1;
+
+  .header-label {
+    text-align: center;
+    &.song {
+      font-size: 20px;
+    }
+    &.artist {
+      color: $light-gray-1;
+      font-size: 12px;
+    }
+  }
+  .plus-icon {
+    font-size: 30px;
+    position: relative;
+    text-align: right;
+    right: 8px;;
+    bottom: 48px;
+  }
+}
