@@ -1,0 +1,11 @@
+body {
+  font: $font;
+  color: $text-color;
+  background: $background;
+}
+
+input,
+textarea,
+button {
+  font: inherit;
+}

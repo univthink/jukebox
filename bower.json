@@ -1,28 +1,30 @@
 {
-  "name": "Jukebox",
-  "description": "The greatest collaborative playlist app ever",
-  "main": "index.html",
-  "moduleType": [],
+  "name": "jukebox",
+  "main": [
+    "/dist/jukebox.min.js",
+    "/dist/jukebox.min.css"
+  ],
+  "version": "0.1.0",
+  "description": "TODO",
   "authors": [
     "Justin Salloum",
     "Kyle Dumovic"
   ],
-  "license": "MIT",
-  "homepage": "",
-  "private": true,
   "ignore": [
     "**/.*",
+    "package.json",
+    "klei.json",
+    "gulpfile.js",
     "node_modules",
     "bower_components",
-    "test",
-    "tests",
-    "lib/"
+    "src"
   ],
   "dependencies": {
-    "angular": "~1.4.0",
-    "angular-route": "~1.4.0",
-    "angular-loader": "~1.4.0",
-    "angular-mocks": "~1.4.0",
-    "html5-boilerplate": "~5.2.0"
+    "angular": "~1.2.14",
+    "angular-route": "~1.2.14",
+    "normalize-css": "^3.0.3"
+  },
+  "devDependencies": {
+    "angular-mocks": "~1.2.14"
   }
 }
