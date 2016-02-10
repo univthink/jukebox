@@ -70,10 +70,10 @@ class SubmitSong(webapp2.RequestHandler):
 						#Use Spotify Metadata API to get album art image urls.
 						try:
 							#imageStuff = json.loads(urllib2.urlopen("https://embed.spotify.com/oembed/?url="+self.request.get('url')).read())
-							albumArtUrl = self.request.get('album_art_url');
+							albumArtUrl = self.request.get('album_art_url')
 						except:
 							#self.response.write(json.dumps({"status":"NOT OK","message":"The requested spotify url could not be accessed"}))
-							self.response.write(json.dumps({"status":"NOT OK","message":"Album art url not provided"}))
+							self.response.write(json.dumps({"status":"NOT OK","message":"album_art_url not provided"}))
 							return
 							#imageStuff = None
 							albumArtUrl = None
