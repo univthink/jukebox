@@ -2,7 +2,9 @@
   'use strict';
 
   angular
-    .module('jukebox', ['ngRoute'])
+    .module('jukebox', [
+      'ngRoute'
+    ])
     .config(routeProvider);
 
   function routeProvider($routeProvider) {
