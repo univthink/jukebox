@@ -5,37 +5,41 @@ api_version: 1
 threadsafe: true
 
 handlers:
-- url: /dist
-  static_dir: dist
-- url: /src
-  static_files: .*
-  upload: .*
+- url: /src/app/(.*)
+  static_dir: src/app
+- url: /css
+  static_dir: .tmp/css
+- url: /angular
+  static_dir: bower_components/angular
+- url: /angular-route
+  static_dir: bower_components/angular-route
+- url: /angular-mocks
+  static_dir: bower_components/angular-mocks
+- url: /normalize-css
+  static_dir: bower_components/normalize-css
+- url: /common
+  static_dir: src/app/common
+- url: /queue
+  static_dir: src/app/queue
+- url: /todo
+  static_dir: src/app/todo # remove this later
+- url: /app.js
+  static_files: src/app/app.js
+  upload: src/files/app.js
+- url: /jukebox-templates.js
+  static_files: .tmp/jukebox-templates.js
+  upload: .tmp/jukebox-templates.js
 - url: /app
-  static_files: dist/index.html
-  upload: dist/index.html
+  static_files: src/app/index.html
+  upload: src/app/index.html
 - url: /.*
   script: handler.application
-
-# handlers:
-# - url: /html
-#   static_dir: html
-#   mime_type: text/html
-# - url: /chui
-#   static_dir: chui
-# - url: /js
-#   static_dir: js
-# - url: /stylesheets
-#   static_dir: stylesheets
-# - url: /images
-#   static_dir: images
-# - url: /.*
-#   script: handler.application
 
 builtins:
 - deferred: on
 
 skip_files:
-- ^(.*/)?#.*#$
+#- ^(.*/)?#.*#$
 - ^(.*/)?.*~$
 - ^(.*/)?.*\.py[co]$
 - ^(.*/)?.*/RCS/.*$

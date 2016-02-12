@@ -1,22 +1,6 @@
-import webapp2, models, forms, json, utils, os
+import webapp2, models, forms, json, utils
 from endpoints import *
 from google.appengine.ext import ndb
-
-# import jinja2,
-# jinja_env = jinja2.Environment(loader=jinja2.FileSystemLoader(os.path.dirname(__file__)))
-
-# class IndexPage(webapp2.RequestHandler):
-#   def get(self):
-#     temp_val = {}
-#     template = jinja_env.get_template('dist/index.html')
-#     self.response.out.write(template.render(temp_val))
-
-from google.appengine.ext.webapp import template
-class MainPage(webapp2.RequestHandler):
-	def get(self):
-		path = os.path.join(os.path.dirname(__file__), 'dist', 'index.html')
-		self.response.write(template.render(path,{}))
-
 
 class APIDebugger(webapp2.RequestHandler):
 	def get(self):
@@ -93,7 +77,6 @@ class APIDebugger(webapp2.RequestHandler):
 
 
 application = webapp2.WSGIApplication([
-	# ('/app', MainPage),
 	('/api', APIDebugger),
 	('/api/create_room', CreateRoom.CreateRoom),
 	('/api/register_user', RegisterUser.RegisterUser),
