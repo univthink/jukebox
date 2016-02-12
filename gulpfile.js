@@ -11,6 +11,7 @@ var gulp = require('gulp'),
     lazypipe = require('lazypipe'),
     stylish = require('jshint-stylish'),
     bower = require('./bower'),
+    gae = require('gulp-gae'),
     svgstore = require('gulp-svgstore'),
     svgmin = require('gulp-svgmin'),
     isWatching = false;
@@ -161,14 +162,38 @@ gulp.task('dist', ['vendors', 'assets', 'styles-dist', 'scripts-dist'], function
  */
 gulp.task('statics', g.serve({
   port: 3000,
-  root: ['./.tmp', './.tmp/src/app', './src/app', './bower_components']
+  root: ['./.tmp', './.tmp/src/app', './src/app', './bower_components'] // not great practice
 }));
+
+/**
+ * Google App Engine server
+ */
+gulp.task('gae-serve', function () {
+  gulp.src('app.yaml')
+    .pipe(gae('dev_appserver.py', [], {
+      port: 8080,
+      host: '0.0.0.0',
+      admin_port: 8000,
+      admin_host: '0.0.0.0'
+    }));
+});
+
+/**
+ * Google App Engine deploy
+ */
+gulp.task('gae-deploy', function() {
+  gulp.src('app.yaml')
+    .pipe(gae('appcfg.py', ['update'], {
+      version: 'dev',
+      oauth2: undefined // for value-less parameters
+    }));
+});
 
 /**
  * Watch
  */
 gulp.task('serve', ['watch']);
-gulp.task('watch', ['statics', 'default'], function () {
+gulp.task('watch', ['gae-serve', 'default'], function () {
   isWatching = true;
   // Initiate livereload server:
   g.livereload.listen();

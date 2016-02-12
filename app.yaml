@@ -38,7 +38,7 @@ handlers:
 builtins:
 - deferred: on
 
-skip_files:
+skip_files: # TODO: flesh this out
 #- ^(.*/)?#.*#$
 - ^(.*/)?.*~$
 - ^(.*/)?.*\.py[co]$
