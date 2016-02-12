@@ -9,13 +9,9 @@
 
   function routeProvider($routeProvider) {
     $routeProvider
-      .when('/', {
-        controller: 'SongsController',
-        templateUrl: 'songs/songs.html'
-      })
-      .when('/song/:songId?', {
-        controller: 'SongInfoController',
-        templateUrl: 'songs/song-info.html'
+      .when('/:roomId?', {
+        controller: 'QueueController',
+        templateUrl: 'queue/queue.html'
       })
       .otherwise({
         redirectTo: '/'

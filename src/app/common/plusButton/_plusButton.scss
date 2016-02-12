@@ -1,4 +1,5 @@
-$plus-color: $background;
+$plus-button-color: white;
+$plus-color: black;
 
 .plus-button {
   position: absolute;
@@ -6,8 +7,7 @@ $plus-color: $background;
   right: 0;
   width: 60px;
   height: 60px;
-  background-color: #FFF;
-  color: $plus-color;
+  background-color: $plus-button-color;
   border-top-left-radius: 100%;
 
   .plus-icon {
@@ -17,7 +17,7 @@ $plus-color: $background;
     svg {
       width: 20px;
       height: 20px;
-      fill: black;
+      fill: $plus-color;
     }
   }
 }

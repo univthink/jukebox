@@ -1,7 +1,8 @@
 <div class="container">
   <div header></div>
   <div> <!-- why don't you need this anymore? <div ng-controller="SongsController"> -->
-    <p>This is inside the songs.html "view"</p>
+    <p>You are in room ID: {{ roomId }}</p>
+    <p>STATUS: {{ status }}</p>
     <p>Search:</p>
     <input type="text" ng-model="searchText" ng-model-options="{ debounce: 500 }" ng-change="myData.sendQuery()" />
     {{ searchText }}
