@@ -46,7 +46,16 @@
             // if (!params.hasOwnProperty('password') {
             //     params.password = '';
             // }
-            return $http.post(urlBase + '/join_room', params);
+            console.log(params);
+            // return $http.post(urlBase + '/join_room', params);
+            return $http({
+                url: urlBase + '/join_room',
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded'
+                },
+                data: params
+            });
         };
 
         /* Get a song queue

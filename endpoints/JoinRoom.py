@@ -1,6 +1,7 @@
 import webapp2, models, forms, json, endpoints, utils
 from google.appengine.ext import ndb
 
+import logging
 
 class JoinRoom(webapp2.RequestHandler):
 
@@ -9,8 +10,14 @@ class JoinRoom(webapp2.RequestHandler):
 		self.response.headers['Content-Type'] = 'application/json'
 		roomlist_name = utils.DEFAULT_ROOMLIST_NAME
 		room_id = self.request.get('room_id')
+		logging.info('\n')
+		logging.info(self.request)
+		logging.info('\n')
+		logging.info('room: ' + self.request.get('room_id'))
+		logging.info('user: ' + self.request.get('user_id'))
 		if not room_id:
-			room_exists = False
+			self.response.write(json.dumps({"status": "NOT OK", "message": "No room_id provided."}))
+			return
 		else:
 			try:
 				room = models.Room.get_by_id(int(room_id), parent=utils.roomlist_key(roomlist_name))
@@ -31,7 +38,7 @@ class JoinRoom(webapp2.RequestHandler):
 					self.response.write(json.dumps({"status": "NOT OK", "message": "No user_id was provided."}))
 				else:
 					userlist_name = utils.DEFAULT_USERLIST_NAME
-	
+
 					try:
 						user = models.User.get_by_id(int(user_id),parent=utils.userlist_key(userlist_name))
 					except:
