@@ -10,11 +10,14 @@ $plus-color: $background;
   color: $plus-color;
   border-top-left-radius: 100%;
 
-  .plus {
-    font-weight: bold;
-    font-size: 42px;
+  .plus-icon {
     position: absolute;
-    right: 4px;
-    bottom: 4px;
+    right: 6px;
+    bottom: 6px;
+    svg {
+      width: 20px;
+      height: 20px;
+      fill: black;
+    }
   }
 }

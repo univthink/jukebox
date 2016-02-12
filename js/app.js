@@ -315,7 +315,7 @@
           room_id: roomID,
           user_id: cur_userID,
           password: password,
-          url: autocompleteData.url,
+          url: autocompleteData.uri,
           track: autocompleteData.name,
           artist: autocompleteData.artist,
           album: autocompleteData.album,
@@ -473,7 +473,7 @@
                       artist: item.artists[0].name,
                       album: item.album.name,
                       album_art_url: item.album.images[0].url,
-                      url: item.href,
+                      uri: item.uri,
                       name: item.name
                     };
                     return {

@@ -9,3 +9,8 @@ textarea,
 button {
   font: inherit;
 }
+
+svg g,
+svg path {
+    fill: inherit; /* this allows CSS to override an element's fill when a fill has already been baked in to the svg file */
+}
