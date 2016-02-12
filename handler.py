@@ -2,8 +2,16 @@ import webapp2, models, forms, json, utils
 from endpoints import *
 from google.appengine.ext import ndb
 
-class Main(webapp2.RequestHandler):
+# import os
+# from google.appengine.ext.webapp import template
 
+# class Main(webapp2.RequestHandler):
+# 	def get(self):
+# 		path = os.path.join(os.path.dirname(__file__), 'dist', 'index.html')
+# 		self.response.write(template.render(path,{}))
+
+
+class APIDebugger(webapp2.RequestHandler):
 	def get(self):
 		self.response.write('Welcome to Music Vis!')
 		self.response.write(forms.CREATE_ROOM_FORM)
@@ -78,7 +86,7 @@ class Main(webapp2.RequestHandler):
 
 
 application = webapp2.WSGIApplication([
-	('/', Main),
+	('/', APIDebugger),
 	('/create_room', CreateRoom.CreateRoom),
 	('/register_user', RegisterUser.RegisterUser),
 	('/join_room', JoinRoom.JoinRoom),

@@ -6,7 +6,7 @@
         .module('jukebox')
         .factory('backendAPI', ['$http', function($http) {
 
-        var urlBase = ''; // in the future, make this /api/
+        var urlBase = '/api';
         var backendAPI = {};
 
         /* Register a user

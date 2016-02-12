@@ -5,19 +5,25 @@ api_version: 1
 threadsafe: true
 
 handlers:
-- url: /html
-  static_dir: html
-  mime_type: text/html
-- url: /chui
-  static_dir: chui
-- url: /js
-  static_dir: js
-- url: /stylesheets
-  static_dir: stylesheets
-- url: /images
-  static_dir: images
-- url: /.*
+- url: /app/.*
+  static_dir: dist
+- url: /api/.*
   script: handler.application
+
+# handlers:
+# - url: /html
+#   static_dir: html
+#   mime_type: text/html
+# - url: /chui
+#   static_dir: chui
+# - url: /js
+#   static_dir: js
+# - url: /stylesheets
+#   static_dir: stylesheets
+# - url: /images
+#   static_dir: images
+# - url: /.*
+#   script: handler.application
 
 builtins:
 - deferred: on
