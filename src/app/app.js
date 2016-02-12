@@ -5,6 +5,9 @@
     .module('jukebox', [
       'ngRoute'
     ])
+    // .config(function($locationProvider) {
+    //   $locationProvider.html5Mode(true);
+    // })
     .config(routeProvider);
 
   function routeProvider($routeProvider) {

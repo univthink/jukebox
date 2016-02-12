@@ -16,8 +16,12 @@
           user_id: '007', // TODO: Update this
           //password: '', TODO: Update this
         }).success(function(data) {
-          console.log("Join room was a success!");
-          console.log(data);
+          if (data.status == "NOT OK") {
+            $scope.status = data.message;
+          } else {
+            console.log("Join room was a success!");
+            console.log(data);
+          }
         }).error(function(error) {
           $scope.status = error.message;
         });

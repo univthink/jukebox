@@ -4,7 +4,7 @@ from google.appengine.ext import ndb
 
 class APIDebugger(webapp2.RequestHandler):
 	def get(self):
-		self.response.write('Welcome to Music Vis!')
+		self.response.write('Welcome to the Jukebox API Debugger!')
 		self.response.write(forms.CREATE_ROOM_FORM)
 
 		self.response.write('<b>Current Rooms:<br></b>')
@@ -41,6 +41,7 @@ class APIDebugger(webapp2.RequestHandler):
 		self.response.write('<br><br><b>Submit a Song!<br></b>')
 		self.response.write(forms.SUBMIT_SONG_FORM)
 
+		self.response.write('<br><br><b>Create a user!</b><br>')
 		self.response.write(forms.CREATE_USER_FORM)
 
 		self.response.write('<b>Current Users:<br></b>')
@@ -54,25 +55,25 @@ class APIDebugger(webapp2.RequestHandler):
 			self.response.write("<br>")
 
 		# self.response.write("<br><br>" + JOIN_FORM)
-		self.response.write("<br><br>Get Song Queue!<br>")
+		self.response.write("<br><br><b>Get Song Queue!</b><br>")
 		self.response.write(forms.GET_SONG_QUEUE_FORM)
 
-		self.response.write("<br><br>Reorder Song!<br>")
+		self.response.write("<br><br><b>Reorder Song!</b><br>")
 		self.response.write(forms.REORDER_SONG_FORM)
 
-		self.response.write("<br><br>Archive Song!<br>")
+		self.response.write("<br><br><b>Archive Song!</b><br>")
 		self.response.write(forms.ARCHIVE_SONG_FORM)
 
-		self.response.write("<br><br>Set Admin!<br>")
+		self.response.write("<br><br><b>Set Admin!</b><br>")
 		self.response.write(forms.SET_ADMIN_FORM)
 
-		self.response.write("<br><br>Delete Song!<br>")
+		self.response.write("<br><br><b>Delete Song!</b><br>")
 		self.response.write(forms.DELETE_SONG_FORM)
 
-		self.response.write("<br><br>Search Room!<br>")
+		self.response.write("<br><br><b>Search Room!</b><br>")
 		self.response.write(forms.SEARCH_ROOM_FORM)
 
-		self.response.write("<br><br>Change Username!<br>")
+		self.response.write("<br><br><b>Change Username!</b><br>")
 		self.response.write(forms.CHANGE_USERNAME_FORM)
 
 

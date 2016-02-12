@@ -2,7 +2,7 @@
   <div header></div>
   <div> <!-- why don't you need this anymore? <div ng-controller="SongsController"> -->
     <p>You are in room ID: {{ roomId }}</p>
-    <p>STATUS: {{ status }}</p>
+    <p style="font-weight: bold; color: red;">STATUS: {{ status }}</p>
     <p>Search:</p>
     <input type="text" ng-model="searchText" ng-model-options="{ debounce: 500 }" ng-change="myData.sendQuery()" />
     {{ searchText }}

@@ -196,7 +196,7 @@ gulp.task('serve', ['watch']);
 gulp.task('watch', ['gae-serve', 'default'], function () {
   isWatching = true;
   // Initiate livereload server:
-  g.livereload.listen();
+  g.livereload.listen(); // make sure to install the LiveReload plugin for Chrome
   gulp.watch('./src/app/**/*.js', ['jshint']).on('change', function (evt) {
     if (evt.type !== 'changed') {
       gulp.start('index');

@@ -1,6 +1,6 @@
 CREATE_ROOM_FORM = """\
-	<br><br>Create a room!<br>
-	<form action="create_room" method="post">
+	<br><br><b>Create a room!</b><br>
+	<form action="api/create_room" method="post">
 	Creator: <input type="text" name="creator"><br>
 	Room Name: <input type="text" name="room_name"><br>
 	Mode: <input type="text" name="mode"><br>
@@ -12,7 +12,7 @@ CREATE_ROOM_FORM = """\
 """
 
 SUBMIT_SONG_FORM = """\
-	<form action="submit_song" method="post">
+	<form action="api/submit_song" method="post">
 	Room ID: <input type="text" name="room_id"><br>
 	User ID: <input type="text" name="user_id"><br>
 	Spotify URL: <input type="text" name="url"><br>
@@ -25,7 +25,7 @@ SUBMIT_SONG_FORM = """\
 """
 
 JOIN_ROOM_FORM = """\
-	<form action="join_room" method="post">
+	<form action="api/join_room" method="post">
 	Id: <input type="text" name="room_id"><br>
 	User_ID: <input type="text" name="user_id"><br>
 	Password: <input type="text" name="password"><br>
@@ -35,22 +35,21 @@ JOIN_ROOM_FORM = """\
 """
 
 CREATE_GUEST_FORM = """\
-	<form action="create_guest" method="post">
+	<form action="api/create_guest" method="post">
 	Id: <input type="text" name="id"><br>
 	<input type="submit" value="Create Guest">
 	</form>
 """
 
 CREATE_USER_FORM = """\
-	<br><br>Create a user!<br>
-	<form action="register_user" method="post">
+	<form action="api/register_user" method="post">
 	Username: <input type="text" name="username"><br>
 	<input type="submit" value="Create User">
 	</form>
 """
 
 CREATE_SONG_FORM = """\
-	<form action="create_guest" method="post">
+	<form action="api/create_guest" method="post">
 	Spotify URL: <input type="text" name="spotify_url"><br>
 	Track Name: <input type="text" name="track"><br>
 	Artist Name: <input type="text" name="artist"><br>
@@ -64,13 +63,13 @@ CREATE_SONG_FORM = """\
 """
 
 RETURN_TO_MAIN = """\
-	<form action="/" method="get">
+	<form action="api/" method="get">
 	<input type="submit" value="Return to home">
 	</form>
 """
 
 GET_SONG_QUEUE_FORM = """\
-	<form action="get_song_queue" method="get">
+	<form action="api/get_song_queue" method="get">
 	Room ID: <input type="text" name="room_id"><br>
 	Num Songs: <input type="text" name="num_songs"><br>
 	Type: <input type="text" name="type"><br>
@@ -79,7 +78,7 @@ GET_SONG_QUEUE_FORM = """\
 """
 
 REORDER_SONG_FORM = """\
-	<form action="reorder_song" method="post">
+	<form action="api/reorder_song" method="post">
 	Room ID: <input type="text" name="room_id"><br>
 	Song ID: <input type="text" name="song_id"><br>
 	New Pos: <input type="text" name="new_pos"><br>
@@ -90,7 +89,7 @@ REORDER_SONG_FORM = """\
 """
 
 ARCHIVE_SONG_FORM = """\
-	<form action="archive_song" method="post">
+	<form action="api/archive_song" method="post">
 	Room ID: <input type="text" name="room_id"><br>
 	Song ID: <input type="text" name="song_id"><br>
 	<input type="hidden" name="web_app" value="true">
@@ -99,7 +98,7 @@ ARCHIVE_SONG_FORM = """\
 """
 
 SET_ADMIN_FORM  = """\
-	<form action="set_admin" method="post">
+	<form action="api/set_admin" method="post">
 	Room ID: <input type="text" name="room_id"><br>
 	Value: <input type="text" name="value"><br>
 	User ID: <input type="text" name="user_id"><br>
@@ -109,7 +108,7 @@ SET_ADMIN_FORM  = """\
 """
 
 DELETE_SONG_FORM = """\
-	<form action="delete_song" method="post">
+	<form action="api/delete_song" method="post">
 	Room ID: <input type="text" name="room_id"><br>
 	URL: <input type="text" name="url"><br>
 	Position: <input type="text" name="position"><br>
@@ -120,14 +119,14 @@ DELETE_SONG_FORM = """\
 """
 
 SEARCH_ROOM_FORM = """\
-	<form action="search_room" method="post">
+	<form action="api/search_room" method="post">
 	Member ID: <input type="text" name="member_id"><br>
 	<input type="submit" value="Search Room!">
 	</form>
 """
 
 CHANGE_USERNAME_FORM = """\
-	<form action="change_username" method="post">
+	<form action="api/change_username" method="post">
 	User ID: <input type="text" name="user_id"><br>
 	Name: <input type="text" name="name"><br>
 	<input type="submit" value="Change Username!">
