@@ -11,6 +11,8 @@ var gulp = require('gulp'),
     lazypipe = require('lazypipe'),
     stylish = require('jshint-stylish'),
     bower = require('./bower'),
+    svgstore = require('gulp-svgstore'),
+    svgmin = require('gulp-svgmin'),
     isWatching = false;
 
 var htmlminOpts = {
@@ -64,6 +66,17 @@ gulp.task('csslint', ['styles'], function () {
 });
 
 /**
+ * Minify and store svgs
+ */
+gulp.task('svgstore', function() {
+  return gulp
+    .src(['./src/app/assets/*.svg'])
+    .pipe(svgmin())
+    .pipe(svgstore({ inlineSvg: true })) // output <svg> element without <?xml ?> and DOCTYPE
+    .pipe(gulp.dest('src/app/assets/'));
+});
+
+/**
  * Scripts
  */
 gulp.task('scripts-dist', ['templates-dist'], function () {
@@ -109,6 +122,13 @@ function index () {
   return gulp.src('./src/app/index.html')
     .pipe(g.inject(gulp.src(bowerFiles(), opt), {ignorePath: 'bower_components', starttag: '<!-- inject:vendor:{{ext}} -->'}))
     .pipe(g.inject(es.merge(appFiles(), cssFiles(opt)), {ignorePath: ['.tmp', 'src/app']}))
+    .pipe(g.inject(gulp.src(['./src/app/assets/assets.svg']), {
+      starttag: '<!-- inject:svg -->',
+      transform: function (filePath, file) {
+        // return file contents as string
+        return file.contents.toString('utf8');
+      }
+    }))
     .pipe(gulp.dest('./src/app/'))
     .pipe(g.embedlr())
     .pipe(gulp.dest('./.tmp/'))
@@ -160,6 +180,14 @@ gulp.task('watch', ['statics', 'default'], function () {
   gulp.watch('./src/app/index.html', ['index']);
   gulp.watch(['./src/app/**/*.html', '!./src/app/index.html'], ['templates']);
   gulp.watch(['./src/app/**/*.scss'], ['csslint']).on('change', function (evt) {
+    if (evt.type !== 'changed') {
+      gulp.start('index');
+    } else {
+      g.livereload.changed(evt);
+    }
+  });
+  gulp.watch(['./src/app/assets/*.svg'], ['svgstore']).on('change', function (evt) {
+    console.log('bah');
     if (evt.type !== 'changed') {
       gulp.start('index');
     } else {
