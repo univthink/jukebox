@@ -5,9 +5,15 @@ api_version: 1
 threadsafe: true
 
 handlers:
-- url: /app/.*
+- url: /dist
   static_dir: dist
-- url: /api/.*
+- url: /src
+  static_files: .*
+  upload: .*
+- url: /app
+  static_files: dist/index.html
+  upload: dist/index.html
+- url: /.*
   script: handler.application
 
 # handlers:

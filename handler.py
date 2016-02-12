@@ -1,14 +1,21 @@
-import webapp2, models, forms, json, utils
+import webapp2, models, forms, json, utils, os
 from endpoints import *
 from google.appengine.ext import ndb
 
-# import os
-# from google.appengine.ext.webapp import template
+# import jinja2,
+# jinja_env = jinja2.Environment(loader=jinja2.FileSystemLoader(os.path.dirname(__file__)))
 
-# class Main(webapp2.RequestHandler):
-# 	def get(self):
-# 		path = os.path.join(os.path.dirname(__file__), 'dist', 'index.html')
-# 		self.response.write(template.render(path,{}))
+# class IndexPage(webapp2.RequestHandler):
+#   def get(self):
+#     temp_val = {}
+#     template = jinja_env.get_template('dist/index.html')
+#     self.response.out.write(template.render(temp_val))
+
+from google.appengine.ext.webapp import template
+class MainPage(webapp2.RequestHandler):
+	def get(self):
+		path = os.path.join(os.path.dirname(__file__), 'dist', 'index.html')
+		self.response.write(template.render(path,{}))
 
 
 class APIDebugger(webapp2.RequestHandler):
@@ -86,23 +93,24 @@ class APIDebugger(webapp2.RequestHandler):
 
 
 application = webapp2.WSGIApplication([
-	('/', APIDebugger),
-	('/create_room', CreateRoom.CreateRoom),
-	('/register_user', RegisterUser.RegisterUser),
-	('/join_room', JoinRoom.JoinRoom),
-	('/submit_song',SubmitSong.SubmitSong),
-	('/search_room',SearchRoom.SearchRoom),
-	('/get_song_queue',GetSongQueue.GetSongQueue),
-	('/reorder_song',ReorderSong.ReorderSong),
-	('/delete_song', DeleteSong.DeleteSong),
-	('/get_room_from_id', GetRoomFromID.GetRoomFromID),
-	('/get_user_from_id', GetUserFromID.GetUserFromID),
-	('/archive_song',ArchiveSong.ArchiveSong),
-	('/delete_room', DeleteRoom.DeleteRoom),
-	('/delete_user', DeleteUser.DeleteUser),
-	('/update_room', UpdateRoom.UpdateRoom),
-	('/pause_song', PauseSong.PauseSong),
-	('/check_play_status', CheckPlayStatus.CheckPlayStatus),
-	('/set_admin',SetAdmin.SetAdmin),
-	('/change_username',ChangeUsername.ChangeUsername)
+	# ('/app', MainPage),
+	('/api', APIDebugger),
+	('/api/create_room', CreateRoom.CreateRoom),
+	('/api/register_user', RegisterUser.RegisterUser),
+	('/api/join_room', JoinRoom.JoinRoom),
+	('/api/submit_song',SubmitSong.SubmitSong),
+	('/api/search_room',SearchRoom.SearchRoom),
+	('/api/get_song_queue',GetSongQueue.GetSongQueue),
+	('/api/reorder_song',ReorderSong.ReorderSong),
+	('/api/delete_song', DeleteSong.DeleteSong),
+	('/api/get_room_from_id', GetRoomFromID.GetRoomFromID),
+	('/api/get_user_from_id', GetUserFromID.GetUserFromID),
+	('/api/archive_song',ArchiveSong.ArchiveSong),
+	('/api/delete_room', DeleteRoom.DeleteRoom),
+	('/api/delete_user', DeleteUser.DeleteUser),
+	('/api/update_room', UpdateRoom.UpdateRoom),
+	('/api/pause_song', PauseSong.PauseSong),
+	('/api/check_play_status', CheckPlayStatus.CheckPlayStatus),
+	('/api/set_admin',SetAdmin.SetAdmin),
+	('/api/change_username',ChangeUsername.ChangeUsername)
 ], debug=True)
