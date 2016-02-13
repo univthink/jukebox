@@ -8,13 +8,20 @@
 
 .modal-body {
   position: absolute;
-  background: $background;
+  background-color: $background;
   bottom: -100%;
   width: 100%;
   height: 100%;
-  border-radius: 6px 6px 0 0;
   -webkit-transition: bottom 0.3s ease-out;
   -moz-transition: bottom 0.3s ease-out;
   -o-transition: bottom 0.3s ease-out;
   transition: bottom 0.3s ease-out;
+
+  .close {
+    background-color: $background;
+    border: none;
+    &:focus {
+      outline: 0;
+    }
+  }
 }

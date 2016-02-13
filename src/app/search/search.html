@@ -1,11 +1,13 @@
 <div class="modal fade" id="slide-bottom-popup" data-keyboard="false" data-backdrop="false">
   <div class="modal-body" ng-controller="SearchController">
-    <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
-    <p>Search:</p>
-    <input type="text" ng-model="searchText" ng-model-options="{ debounce: 500 }" ng-change="myData.sendQuery()" />
-    {{ searchText }}
-    <br>
-    <br>
+    <div class="search-header-item">
+      <input type="text" ng-model="searchText" ng-model-options="{ debounce: 500 }" ng-change="myData.sendQuery()" />
+    </div>
+    <div class="search-header-item">
+      <button type="button" class="close" data-dismiss="modal">
+        <span>Cancel</span>
+      </button>
+    </div>
     <div style="float: left; width: 50%;">
       Spotify search results:
       <div ng-repeat="result in myData.spotify.results">

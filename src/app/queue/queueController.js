@@ -9,11 +9,14 @@
       $scope.status = '';
       $scope.roomId = $routeParams.roomId;
 
+      var test_uid = '5629499534213120';
+      // var test_password = 'pickplay';
+
       // Example usage of backendAPI factory
       function joinRoom() {
         backendAPI.joinRoom({
           room_id: $scope.roomId,
-          user_id: '5838406743490560', // TODO: Update this
+          user_id: test_uid //'5838406743490560', // TODO: Update this
           //password: '', TODO: Update this
         }).success(function(data) {
           console.log(data);
