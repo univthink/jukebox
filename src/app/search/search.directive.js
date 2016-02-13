@@ -4,16 +4,19 @@
 
   angular
     .module('jukebox')
-    .directive('footer', footer);
+    .directive('search', search);
 
-  function footer() {
+  function search() {
     return {
       restrict: 'A',
       replace: true,
       scope: {
 
       },
-      templateUrl: 'common/footer/footer.html'
+      templateUrl: 'search/search.html',
+      controller: ['$scope', function($scope) {
+
+      }]
     };
   }
 

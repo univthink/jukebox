@@ -21,3 +21,7 @@ $plus-color: black;
     }
   }
 }
+
+.plus-button:focus {
+  outline: 0;
+}

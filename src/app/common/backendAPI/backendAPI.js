@@ -13,7 +13,7 @@
         // http://victorblog.com/2012/12/20/make-angularjs-http-service-behave-like-jquery-ajax/
 
         // Use x-www-form-urlencoded Content-Type
-        $http.defaults.headers.post['Content-Type'] = 'application/x-www-form-urlencoded;charset=utf-8'
+        $http.defaults.headers.post['Content-Type'] = 'application/x-www-form-urlencoded;charset=utf-8';
 
         /**
         * The workhorse; converts an object to x-www-form-urlencoded serialization.
@@ -44,8 +44,9 @@
                   query += param(innerObj) + '&';
                 }
               }
-              else if(value !== undefined && value !== null)
+              else if(value !== undefined && value !== null) {
                 query += encodeURIComponent(name) + '=' + encodeURIComponent(value) + '&';
+              }
             }
 
             return query.length ? query.substr(0, query.length - 1) : query;

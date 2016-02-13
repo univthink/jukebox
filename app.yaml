@@ -19,12 +19,20 @@ handlers:
   static_dir: bower_components/angular-route
 - url: /angular-mocks
   static_dir: bower_components/angular-mocks
+- url: /bootstrap
+  static_dir: bower_components/bootstrap
+- url: /jquery
+  static_dir: bower_components/jquery
+- url: /jquery-ui
+  static_dir: bower_components/jquery-ui
 - url: /normalize-css
   static_dir: bower_components/normalize-css
 - url: /common
   static_dir: src/app/common
 - url: /queue
   static_dir: src/app/queue
+- url: /search
+  static_dir: src/app/search
 - url: /todo
   static_dir: src/app/todo # remove this later
 - url: /app.js

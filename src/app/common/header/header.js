@@ -13,10 +13,7 @@
       scope: {
 
       },
-      templateUrl: 'common/header/header.html',
-      controller: ['$scope', function($scope) {
-
-      }]
+      templateUrl: 'common/header/header.html'
     };
   }
 
