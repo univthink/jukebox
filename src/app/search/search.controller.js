@@ -23,6 +23,7 @@
         $scope.myData.spotify.results = data.tracks.items;
       });
       spotifyResponsePromise.error(function() {
+        $scope.myData.spotify = {};
         console.log('AJAX failed!');
       });
 
@@ -38,6 +39,7 @@
         $scope.myData.soundcloud.results = data;
       });
       soundcloudResponsePromise.error(function() {
+        $scope.myData.soundcloud = {};
         console.log('AJAX failed!');
       });
     };

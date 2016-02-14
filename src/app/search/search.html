@@ -1,31 +1,34 @@
 <div class="modal fade" id="slide-bottom-popup" data-keyboard="false" data-backdrop="false">
   <div class="modal-body" ng-controller="SearchController">
-    <div class="search-header-item">
-      <input type="text" ng-model="searchText" ng-model-options="{ debounce: 500 }" ng-change="myData.sendQuery()" />
-    </div>
-    <div class="search-header-item">
-      <button type="button" class="close" data-dismiss="modal">
-        <span>Cancel</span>
-      </button>
-    </div>
-    <div style="float: left; width: 50%;">
-      Spotify search results:
-      <div ng-repeat="result in myData.spotify.results">
-        <img style="float: left;" height="50" width="50" src="{{ result.album.images[0].url }}" />
-        <p style="float: left;">{{ result.name }}</p>
-        <br style="clear: both;">
+    <div class="search-wrapper">
+      <div class="search-header-items">
+        <div class="search-header-item close">
+          <button type="button" data-dismiss="modal">
+            <span>Cancel</span>
+          </button>
+        </div>
+        <div class="search-header-item search">
+          <input type="search" ng-model="searchText" ng-model-options="{ debounce: 500 }" ng-change="myData.sendQuery()" />
+        </div>
       </div>
-    </div>
-    <div style="float: right; width: 50%;">
-      Soundcloud search results:
-      <div ng-repeat="result in myData.soundcloud.results">
-        <a href="{{ result.permalink_url }}">
-          <img style="float: left;" height="50" width="50" src="{{ result.artwork_url }}" />
-          <span style="float: left;">{{ result.title }}</span>
-          <br>
-          <span style="">{{ result.user.username }}</span>
-          <br style="clear: both;">
-          <br>
+      <div class="song-search-results">
+        <div ng-if="myData.spotify.results.length > 0"><span>Spotify Results</span></div>
+        <div ng-repeat="result in myData.spotify.results" class="song-search-result">
+          <img src="{{ result.album.images[0].url }}" class="song-image">
+          <div class="song-info">
+            <p>{{ result.name }} </p>
+            <p>{{ result.artists[0].name }}</p>
+          </div>
+        </div>
+      </div>
+      <div class="song-search-results">
+        <div ng-if="myData.soundcloud.results.length > 0"><span>Soundcloud Results</span></div>
+        <a ng-repeat="result in myData.soundcloud.results" class="song-search-result" href="{{ result.permalink_url }}">
+          <img src="{{ result.artwork_url }}" class="song-image">
+          <div class="song-info">
+            <p>{{ result.title }}</p>
+            <p>{{ result.user.username }}</p>
+          </div>
         </a>
       </div>
     </div>
