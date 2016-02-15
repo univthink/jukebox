@@ -9,15 +9,35 @@ $plus-color: black;
   height: 60px;
   background-color: $plus-button-color;
   border-top-left-radius: 100%;
+  border: none;
+  transition: .4s transform;
 
   .plus-icon {
     position: absolute;
     right: 6px;
     bottom: 6px;
+    transition: .4s transform;
     svg {
       width: 20px;
       height: 20px;
       fill: $plus-color;
+    }
+  }
+}
+
+.plus-button:hover {
+  pointer: cursor;
+  transform: scale(1.5,1.5);
+  .plus-icon {
+    transform: translate(-8px, -8px);
+  }
+}
+
+.plus-button:active {
+  background-color: $plus-color;
+  .plus-icon {
+    svg {
+      fill: $plus-button-color;
     }
   }
 }
