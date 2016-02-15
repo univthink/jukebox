@@ -9,7 +9,7 @@
   function searchController($scope, $routeParams, $http) {
     $scope.myData = {};
     $scope.myData.spotify = {};
-    $scope.myData.soundcloud = {};
+    // $scope.myData.soundcloud = {};
 
     $scope.myData.sendQuery = function() {
       //spotify API
@@ -27,21 +27,21 @@
         console.log('AJAX failed!');
       });
 
-      //soundcloud API
-      var clientId = '09ae0464d724195b755f6205f2753390';
-      var soundcloudResponsePromise = $http.get('http://api.soundcloud.com/tracks/', {
-        'params' : {
-          'q' : $scope.searchText,
-          'client_id' : clientId
-        }
-      });
-      soundcloudResponsePromise.success(function(data) {
-        $scope.myData.soundcloud.results = data;
-      });
-      soundcloudResponsePromise.error(function() {
-        $scope.myData.soundcloud = {};
-        console.log('AJAX failed!');
-      });
+      // // soundcloud API
+      // var clientId = '09ae0464d724195b755f6205f2753390';
+      // var soundcloudResponsePromise = $http.get('http://api.soundcloud.com/tracks/', {
+      //   'params' : {
+      //     'q' : $scope.searchText,
+      //     'client_id' : clientId
+      //   }
+      // });
+      // soundcloudResponsePromise.success(function(data) {
+      //   $scope.myData.soundcloud.results = data;
+      // });
+      // soundcloudResponsePromise.error(function() {
+      //   $scope.myData.soundcloud = {};
+      //   console.log('AJAX failed!');
+      // });
     };
   }
 
