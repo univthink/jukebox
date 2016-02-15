@@ -6,7 +6,7 @@
     .module('jukebox')
     .controller('SearchController', searchController);
 
-  function searchController($scope, $routeParams, $http) {
+  function searchController($scope, $routeParams, $http, backendAPI, sharedRoomData) {
     $scope.myData = {};
     $scope.myData.spotify = {};
     // $scope.myData.soundcloud = {};
@@ -21,6 +21,7 @@
       });
       spotifyResponsePromise.success(function(data) {
         $scope.myData.spotify.results = data.tracks.items;
+        console.log($scope.myData.spotify.results);
       });
       spotifyResponsePromise.error(function() {
         $scope.myData.spotify = {};
@@ -43,6 +44,33 @@
       //   console.log('AJAX failed!');
       // });
     };
+
+    $scope.addSong = function(url, name, artist, album, album_art_url) {
+
+        backendAPI.addSong({
+          room_id: sharedRoomData.roomId,
+          user_id: sharedRoomData.userId,
+          password: sharedRoomData.password,
+          url: url,
+          track: name,
+          artist: artist,
+          album: album,
+          album_art_url: album_art_url
+        }).success(function(data) {
+          console.log(data);
+          if (data.status === 'NOT OK') {
+            console.log('NOT OK', data);
+          } else {
+            console.log('OK', data);
+
+            $('#slide-bottom-popup').modal('hide'); // TODO: Don't do this
+
+          }
+        }).error(function(error) {
+          console.log('FAIL', data.message);
+        });
+
+    }
   }
 
 })();

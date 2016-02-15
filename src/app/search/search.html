@@ -13,11 +13,13 @@
       </div>
       <div class="song-search-results">
         <div ng-if="myData.spotify.results.length > 0"><span>Spotify Results</span></div>
-        <div ng-repeat="result in myData.spotify.results" class="song-search-result">
-          <img src="{{ result.album.images[0].url }}" class="song-image">
-          <div class="song-info">
-            <p>{{ result.name }} </p>
-            <p>{{ result.artists[0].name }}</p>
+        <div ng-repeat="result in myData.spotify.results">
+          <div ng-click="addSong(result.uri, result.name, result.artists[0].name, result.album.name, result.album.images[0].url)" class="song-search-result">
+            <img src="{{ result.album.images[0].url }}" class="song-image">
+            <div class="song-info">
+              <p>{{ result.name }} </p>
+              <p>{{ result.artists[0].name }}</p>
+            </div>
           </div>
         </div>
       </div>

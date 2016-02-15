@@ -88,4 +88,9 @@
   .song-search-result:last-child {
     margin-bottom: 0;
   }
+
+  .song-search-result:hover {
+    cursor: pointer;
+    background-color: grey;
+  }
 }

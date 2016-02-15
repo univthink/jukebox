@@ -4,20 +4,23 @@
 
   angular
     .module('jukebox')
-    .controller('QueueController', function($scope, $routeParams, $http, backendAPI) { // TODO: Remove $http when song search is moved to a separate factory
+    .controller('QueueController', function($scope, $routeParams, backendAPI, sharedRoomData) {
 
       $scope.status = '';
-      $scope.roomId = $routeParams.roomId;
 
-      var test_uid = '5629499534213120';
-      // var test_password = 'pickplay';
+      sharedRoomData.roomId = $routeParams.roomId;
+      $scope.roomId = sharedRoomData.roomId;
+
+      sharedRoomData.password = ''; // TODO: update when we ask user
+      sharedRoomData.userId = '5629499534213120';
+      sharedRoomData.userName = 'kyle';
 
       // Example usage of backendAPI factory
       function joinRoom() {
         backendAPI.joinRoom({
-          room_id: $scope.roomId,
-          user_id: test_uid //'5838406743490560', // TODO: Update this
-          //password: '', TODO: Update this
+          room_id: sharedRoomData.roomId,
+          user_id: sharedRoomData.userId,
+          password: sharedRoomData.password,
         }).success(function(data) {
           console.log(data);
           if (data.status === 'NOT OK') {
