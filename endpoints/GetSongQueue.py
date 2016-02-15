@@ -1,14 +1,21 @@
 import webapp2, models, forms, json, endpoints, utils
 from google.appengine.ext import ndb
 
+import logging
+
 class GetSongQueue(webapp2.RequestHandler):
 
 	def get(self):
+
+		logging.info(self.request);
+
 		self.response.headers['Content-Type'] = 'application/json'
 		room_exists = True
 
 		roomlist_name = utils.DEFAULT_ROOMLIST_NAME
 		room_id = self.request.get('room_id')
+
+
 
 		try:
 			room = models.Room.get_by_id(int(room_id),parent=utils.roomlist_key(roomlist_name))

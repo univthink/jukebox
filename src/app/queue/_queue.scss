@@ -1,3 +1,26 @@
 .container {
   width: 100%;
 }
+
+.song-queue {
+  display: flex;
+  align-items: center;
+  margin: 6px 0;
+
+  .song-image {
+    flex: 0 0 50px;
+    height: 50px;
+    width: 50px;
+  }
+
+  .song-info {
+    flex: 1;
+    margin-left: 2px;
+
+    p {
+      margin: 0;
+      padding: 4px;
+      font-size: 14px;
+    }
+  }
+}

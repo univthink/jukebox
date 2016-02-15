@@ -9,6 +9,16 @@
     <a href="">{{ song.name }} <em>by</em> {{ song.artist }} <em>for</em> {{ song.price | currency }}</a>
   </div>
   -->
+  <div ng-if="queueData.length > 0"><span>Your Song Queue</span></div>
+  <div ng-repeat="song in queueData">
+    <div class="song-queue">
+      <img src="{{ song.image_url }}" class="song-image">
+      <div class="song-info">
+        <p>{{ song.track }} </p>
+        <p>{{ song.artist }}</p>
+      </div>
+    </div>
+  </div>
 <!--   <div footer></div> -->
   <div plus-button></div>
 </div>

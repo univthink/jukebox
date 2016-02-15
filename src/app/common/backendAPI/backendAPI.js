@@ -14,6 +14,7 @@
 
         // Use x-www-form-urlencoded Content-Type
         $http.defaults.headers.post['Content-Type'] = 'application/x-www-form-urlencoded;charset=utf-8';
+        // $http.defaults.headers.get = { 'Content-Type' : 'application/x-www-form-urlencoded;charset=utf-8' };
 
         /**
         * The workhorse; converts an object to x-www-form-urlencoded serialization.
@@ -53,61 +54,66 @@
         };
 
         // Override $http service's default transformRequest
+        // Transforms the response body data
         $http.defaults.transformRequest = [function(data) {
             return angular.isObject(data) && String(data) !== '[object File]' ? param(data) : data;
         }];
 
         /* Register a user
          *
-         * params = {
+         * data = {
          *   username: String,      (required)
          * }
          *
          */
-        backendAPI.registerUser = function(params) {
-            return $http.post(urlBase + '/register_user', params);
+        backendAPI.registerUser = function(data) {
+            return $http.post(urlBase + '/register_user', data);
         };
 
         /* Change username
          *
-         * params = {
+         * data = {
          *   user_id: String,       (required)
          *   name: String,          (required) // new user name
          * }
          *
          */
-        backendAPI.changeUsername = function(params) {
-            return $http.post(urlBase + '/change_username', params);
+        backendAPI.changeUsername = function(data) {
+            return $http.post(urlBase + '/change_username', data);
         };
 
         /* Join a room
          *
-         * params = {
+         * data = {
          *   room_id: String,       (required)
          *   user_id: String,       (required)
          *   password: String,      (optional)
          * }
          *
          */
-        backendAPI.joinRoom = function(params) {
-            return $http.post(urlBase + '/join_room', params);
+        backendAPI.joinRoom = function(data) {
+            return $http.post(urlBase + '/join_room', data);
         };
 
         /* Get a song queue
          *
-         * params = {
+         * data = {
          *   room_id: String,       (required)
          *   password: String,      (optional)
          * }
          *
          */
-        backendAPI.getSongQueue = function(params) {
-            return $http.get(urlBase + '/get_song_queue', params);
+        backendAPI.getSongQueue = function(data) {
+            return $http({
+                method: 'GET',
+                url: urlBase + '/get_song_queue',
+                params: data, // params =/= data
+            });
         };
 
         /* Add a song to the queue
          *
-         * params = {
+         * data = {
          *   room_id: String,       (required)
          *   user_id: String,       (required)
          *   password: String,      (optional)
@@ -119,13 +125,13 @@
          * }
          *
          */
-        backendAPI.addSong = function(params) {
-            return $http.post(urlBase + '/submit_song', params);
+        backendAPI.addSong = function(data) {
+            return $http.post(urlBase + '/submit_song', data);
         };
 
         /* Reorder a song in the queue
          *
-         * params = {
+         * data = {
          *   room_id: String,       (required)
          *   user_id: String,       (required)
          *   password: String,      (optional)
@@ -134,13 +140,13 @@
          * }
          *
          */
-        backendAPI.reorderSong = function(params) {
-            return $http.post(urlBase + '/reorder_song', params);
+        backendAPI.reorderSong = function(data) {
+            return $http.post(urlBase + '/reorder_song', data);
         };
 
         /* Delete a song from the queue
          *
-         * params = {
+         * data = {
          *   room_id: String,       (required)
          *   user_id: String,       (required)
          *   password: String,      (optional)
@@ -149,8 +155,8 @@
          * }
          *
          */
-        backendAPI.deleteSong = function(params) {
-            return $http.post(urlBase + '/delete_song', params);
+        backendAPI.deleteSong = function(data) {
+            return $http.post(urlBase + '/delete_song', data);
         };
 
         return backendAPI;

@@ -7,6 +7,7 @@
     .controller('QueueController', function($scope, $routeParams, backendAPI, sharedRoomData) {
 
       $scope.status = '';
+      $scope.queueData = {};
 
       sharedRoomData.roomId = $routeParams.roomId;
       $scope.roomId = sharedRoomData.roomId;
@@ -34,7 +35,28 @@
         });
       }
 
-      joinRoom();
+      // joinRoom();
+
+      function getSongQueue() {
+        console.log(sharedRoomData.roomId);
+        backendAPI.getSongQueue({
+          room_id: '5066549580791808',
+          password: sharedRoomData.password,
+        }).success(function(data) {
+          if (data.status === 'OK') {
+            sharedRoomData.roomName = data.room_name;
+            $scope.queueData = data.data;
+            console.log(data.data);
+          } else {
+            console.log('Error', data);
+          }
+        }).error(function(error) {
+          console.log(error);
+        });
+      }
+
+      getSongQueue();
+
   });
 
 })();
