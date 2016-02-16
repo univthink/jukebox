@@ -1,7 +1,7 @@
 <div class="container">
   <div header></div>
   <div>
-    <p>You are in room ID: {{ roomId }}</p>
+    <p>You are in room ID: {{ room.roomId }}</p>
     <p style="font-weight: bold; color: red;">STATUS: {{ status }}</p>
   </div>
   <!--
@@ -10,13 +10,16 @@
   </div>
   -->
   <div ng-if="queueData.length > 0"><span>Your Song Queue</span></div>
-    <div data-as-sortable="dragControlListeners" data-ng-model="queueData">
-      <div ng-repeat="song in queueData">
-      <div class="song-queue-item" data-uuid="{{ song.unique_id }}" data-as-sortable-item>
-        <img src="{{ song.image_url }}" class="song-image" data-as-sortable-item-handle>
-        <div class="song-info">
-          <p>{{ song.track }}</p>
-          <p>{{ song.artist }}</p>
+    <div data-as-sortable="dragControlListeners" data-ng-model="room.queue">
+      <div ng-repeat="song in room.queue">
+        <div class="song-queue-item" data-uuid="{{ song.unique_id }}" data-as-sortable-item ng-swipe-left="showDeleteButton = true" ng-swipe-right="showDeleteButton = false">
+          <img src="{{ song.image_url }}" class="song-image" data-as-sortable-item-handle>
+          <div class="song-info">
+            <p>{{ song.track }}</p>
+            <p>{{ song.artist }}</p>
+          </div>
+          <div class="delete-button" ng-show="showDeleteButton" ng-click="deleteSong($event)"></div>
+          <!-- <div data-as-sortable-item-handle></div> -->
         </div>
       </div>
     </div>

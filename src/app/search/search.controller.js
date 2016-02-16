@@ -45,6 +45,23 @@
       // });
     };
 
+    // TODO: this is duplicate code from queueController, it should be made into a service
+    function getSongQueue() {
+      backendAPI.getSongQueue({
+        room_id: sharedRoomData.roomId,
+        password: sharedRoomData.password,
+      }).success(function(data) {
+        if (data.status === 'OK') {
+          sharedRoomData.roomName = data.room_name;
+          sharedRoomData.queue = data.data;
+        } else {
+          console.log('getSongQueue ->', data);
+        }
+      }).error(function(error) {
+        console.log(error);
+      });
+    }
+
     $scope.addSong = function(url, name, artist, album, album_art_url) {
 
         backendAPI.addSong({
@@ -64,6 +81,9 @@
             console.log('OK', data);
 
             $('#slide-bottom-popup').modal('hide'); // TODO: Don't do this
+
+            // refresh song queue, call getSongQueue() from queueController
+            getSongQueue(); // TODO: make this a service
 
           }
         }).error(function(error) {

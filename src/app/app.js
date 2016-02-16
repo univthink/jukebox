@@ -6,6 +6,7 @@
       'ngRoute',
       'ui.bootstrap',
       'as.sortable',
+      'ngTouch',
     ])
     // .config(function($locationProvider) {
     //   $locationProvider.html5Mode(true);

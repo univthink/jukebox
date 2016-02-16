@@ -7,16 +7,15 @@
     .controller('QueueController', function($scope, $routeParams, $uibModal, backendAPI, sharedRoomData) {
 
       $scope.status = '';
-      $scope.queueData = {};
+      $scope.room = sharedRoomData;
 
       sharedRoomData.roomId = $routeParams.roomId;
-      $scope.roomId = sharedRoomData.roomId;
-
       sharedRoomData.password = ''; // TODO: update when we ask user
       sharedRoomData.userId = '5629499534213120';
       sharedRoomData.userName = 'kyle';
 
       // Example usage of backendAPI factory
+      // TODO: All of these should probably be moved to a separate service...
       function joinRoom() {
         backendAPI.joinRoom({
           room_id: sharedRoomData.roomId,
@@ -44,25 +43,16 @@
         }).success(function(data) {
           if (data.status === 'OK') {
             sharedRoomData.roomName = data.room_name;
-            $scope.queueData = data.data;
+            sharedRoomData.queue = data.data;
           } else {
-            console.log(data);
+            console.log('getSongQueue ->', data);
           }
         }).error(function(error) {
-          event.source.itemScope.element[0].dataset.uuid
+          console.log(error);
         });
       }
 
       getSongQueue();
-
-
-         // * data = {
-         // *   room_id: String,       (required)
-         // *   user_id: String,       (required)
-         // *   password: String,      (optional)
-         // *   song_id: String,       (required) // this is the backend uuid (source independent)
-         // *   new_pos: String,       (required) // new position in the queue
-         // * }
 
       function changeSongPosition(songId, newPos) {
         backendAPI.reorderSong({
@@ -72,7 +62,22 @@
           song_id: songId,
           new_pos: newPos,
         }).success(function(data) {
-          console.log(data);
+          console.log('changeSongPosition ->',data);
+          getSongQueue();
+        }).error(function(data) {
+          console.log(error);
+        });
+      }
+
+      function deleteSong(songId) {
+        backendAPI.deleteSong({
+          room_id: sharedRoomData.roomId,
+          user_id: sharedRoomData.userId,
+          password: sharedRoomData.password,
+          song_id: songId,
+        }).success(function(data) {
+          console.log('deleteSong ->', data);
+          getSongQueue();
         }).error(function(data) {
           console.log(error);
         });
@@ -98,6 +103,11 @@
       //   //containment: '#board', //optional param.
       //   allowDuplicates: true, //optional param allows duplicates to be dropped.
       // };
+
+      $scope.deleteSong = function($event) {
+        var songId = $event.target.parentElement.dataset.uuid; // another, slower, way: angular.element($event.target).parent()
+        deleteSong(songId);
+      }
 
   });
 

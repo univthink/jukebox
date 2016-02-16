@@ -110,9 +110,9 @@ SET_ADMIN_FORM  = """\
 DELETE_SONG_FORM = """\
 	<form action="api/delete_song" method="post">
 	Room ID: <input type="text" name="room_id"><br>
-	URL: <input type="text" name="url"><br>
-	Position: <input type="text" name="position"><br>
 	User ID: <input type="text" name="user_id"><br>
+	Song ID: <input type="text" name="song_id"><br>
+	Password: <input type="text" name="password"><br>
 	<input type="hidden" name="web_app" value="true">
 	<input type="submit" value="Delete Song!">
 	</form>
