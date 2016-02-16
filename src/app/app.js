@@ -3,7 +3,8 @@
 
   angular
     .module('jukebox', [
-      'ngRoute'
+      'ngRoute',
+      'ui.bootstrap',
     ])
     // .config(function($locationProvider) {
     //   $locationProvider.html5Mode(true);
