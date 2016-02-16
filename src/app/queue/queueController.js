@@ -4,7 +4,7 @@
 
   angular
     .module('jukebox')
-    .controller('QueueController', function($scope, $routeParams, backendAPI, sharedRoomData) {
+    .controller('QueueController', function($scope, $routeParams, $modal, backendAPI, sharedRoomData) {
 
       $scope.status = '';
       $scope.queueData = {};
