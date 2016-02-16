@@ -17,7 +17,8 @@
       controller: ['$scope', function($scope) {
         $scope.openSearch = function() {
           console.log('Plus button clicked');
-          $('#slide-bottom-popup').modal('show');
+          $('#slide-bottom-popup').modal('show'); // TODO: this is bad, get rid of jquery and replace with angular-ui directives
+          $('#song-search-box').focus();
         };
       }]
     };
