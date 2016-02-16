@@ -1,6 +1,8 @@
 /* jshint node: true */
 'use strict';
 
+// require('es6-promise').polyfill();
+
 var gulp = require('gulp'),
     g = require('gulp-load-plugins')({lazy: false}),
     noop = g.util.noop,
