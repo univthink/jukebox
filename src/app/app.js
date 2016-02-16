@@ -5,6 +5,7 @@
     .module('jukebox', [
       'ngRoute',
       'ui.bootstrap',
+      'as.sortable',
     ])
     // .config(function($locationProvider) {
     //   $locationProvider.html5Mode(true);

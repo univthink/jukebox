@@ -10,12 +10,14 @@
   </div>
   -->
   <div ng-if="queueData.length > 0"><span>Your Song Queue</span></div>
-  <div ng-repeat="song in queueData">
-    <div class="song-queue">
-      <img src="{{ song.image_url }}" class="song-image">
-      <div class="song-info">
-        <p>{{ song.track }} </p>
-        <p>{{ song.artist }}</p>
+    <div data-as-sortable="dragControlListeners" data-ng-model="queueData">
+      <div ng-repeat="song in queueData">
+      <div class="song-queue-item" data-uuid="{{ song.unique_id }}" data-as-sortable-item>
+        <img src="{{ song.image_url }}" class="song-image" data-as-sortable-item-handle>
+        <div class="song-info">
+          <p>{{ song.track }}</p>
+          <p>{{ song.artist }}</p>
+        </div>
       </div>
     </div>
   </div>
