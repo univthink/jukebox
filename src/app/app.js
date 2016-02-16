@@ -2,17 +2,15 @@
   'use strict';
 
   angular
-    .module('jukebox', [
-      'ngRoute',
-      'ui.bootstrap',
-    ])
-    // .config(function($locationProvider) {
-    //   $locationProvider.html5Mode(true);
-    // })
+    .module('jukebox', ['ngRoute', 'ngAnimate', 'ui.bootstrap'])
     .config(routeProvider);
 
   function routeProvider($routeProvider) {
     $routeProvider
+      .when('/search/:roomId', {
+        controller: 'SearchController',
+        templateUrl: 'search/search.html'
+      })
       .when('/:roomId?', {
         controller: 'QueueController',
         templateUrl: 'queue/queue.html'

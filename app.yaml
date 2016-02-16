@@ -15,6 +15,8 @@ handlers:
   static_dir: .tmp/css
 - url: /angular
   static_dir: bower_components/angular
+- url: /angular-animate
+  static_dir: bower_components/angular-animate
 - url: /angular-bootstrap
   static_dir: bower_components/angular-bootstrap
 - url: /angular-route

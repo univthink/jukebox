@@ -1,38 +1,34 @@
-<div class="modal fade" id="slide-bottom-popup" data-keyboard="false" data-backdrop="false">
-  <div class="modal-body" ng-controller="SearchController">
-    <div class="search-wrapper">
-      <div class="search-header-items">
-        <div class="search-header-item close">
-          <button type="button" data-dismiss="modal">
-            <span>Cancel</span>
-          </button>
-        </div>
-        <div class="search-header-item search">
-          <input type="search" ng-model="searchText" ng-model-options="{ debounce: 500 }" ng-change="myData.sendQuery()" />
-        </div>
-      </div>
-      <div class="song-search-results">
-        <div ng-if="myData.spotify.results.length > 0"><span>Spotify Results</span></div>
-        <div ng-repeat="result in myData.spotify.results">
-          <div ng-click="addSong(result.uri, result.name, result.artists[0].name, result.album.name, result.album.images[0].url)" class="song-search-result">
-            <img src="{{ result.album.images[0].url }}" class="song-image">
-            <div class="song-info">
-              <p>{{ result.name }} </p>
-              <p>{{ result.artists[0].name }}</p>
-            </div>
-          </div>
-        </div>
-      </div>
-<!--  <div class="song-search-results">
-        <div ng-if="myData.soundcloud.results.length > 0"><span>Soundcloud Results</span></div>
-        <a ng-repeat="result in myData.soundcloud.results" class="song-search-result" href="{{ result.permalink_url }}">
-          <img src="{{ result.artwork_url }}" class="song-image">
-          <div class="song-info">
-            <p>{{ result.title }}</p>
-            <p>{{ result.user.username }}</p>
-          </div>
-        </a>
-      </div> -->
+<div class="search-wrapper">
+  <div class="search-header-items">
+    <div class="search-header-item close">
+      <a href="#/{{ roomId }}">
+        <span>Cancel</span>
+      </a>
+    </div>
+    <div class="search-header-item search">
+      <input type="search" ng-model="searchText" ng-model-options="{ debounce: 500 }" ng-change="myData.sendQuery()" />
     </div>
   </div>
+  <div class="song-search-results">
+    <div ng-if="myData.spotify.results.length > 0"><span>Spotify Results</span></div>
+    <div ng-repeat="result in myData.spotify.results">
+      <div ng-click="addSong(result.uri, result.name, result.artists[0].name, result.album.name, result.album.images[0].url)" class="song-search-result">
+        <img src="{{ result.album.images[0].url }}" class="song-image">
+        <div class="song-info">
+          <p>{{ result.name }} </p>
+          <p>{{ result.artists[0].name }}</p>
+        </div>
+      </div>
+    </div>
+  </div>
+<!--  <div class="song-search-results">
+    <div ng-if="myData.soundcloud.results.length > 0"><span>Soundcloud Results</span></div>
+    <a ng-repeat="result in myData.soundcloud.results" class="song-search-result" href="{{ result.permalink_url }}">
+      <img src="{{ result.artwork_url }}" class="song-image">
+      <div class="song-info">
+        <p>{{ result.title }}</p>
+        <p>{{ result.user.username }}</p>
+      </div>
+    </a>
+  </div> -->
 </div>

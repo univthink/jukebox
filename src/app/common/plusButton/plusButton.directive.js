@@ -11,14 +11,11 @@
       restrict: 'A',
       replace: true,
       scope: {
-
+        roomId: '='
       },
       templateUrl: 'common/plusButton/plusButton.html',
       controller: ['$scope', function($scope) {
-        $scope.openSearch = function() {
-          console.log('Plus button clicked');
-          $('#slide-bottom-popup').modal('show');
-        };
+        console.log($scope.roomId);
       }]
     };
   }

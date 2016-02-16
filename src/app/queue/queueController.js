@@ -5,7 +5,7 @@
   angular
     .module('jukebox')
     .controller('QueueController',
-      function($scope, $routeParams, $uibModal, backendAPI, sharedRoomData) {
+      function($scope, $routeParams, backendAPI, sharedRoomData) {
 
         $scope.status = '';
         $scope.queueData = {};
@@ -39,7 +39,6 @@
         // joinRoom();
 
         function getSongQueue() {
-          console.log(sharedRoomData.roomId);
           backendAPI.getSongQueue({
             room_id: sharedRoomData.roomId,
             password: sharedRoomData.password,

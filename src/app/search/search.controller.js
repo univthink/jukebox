@@ -7,6 +7,8 @@
     .controller('SearchController', searchController);
 
   function searchController($scope, $routeParams, $http, backendAPI, sharedRoomData) {
+    $scope.roomId = $routeParams.roomId;
+
     $scope.myData = {};
     $scope.myData.spotify = {};
     // $scope.myData.soundcloud = {};
