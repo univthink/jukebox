@@ -41,7 +41,7 @@
         function getSongQueue() {
           console.log(sharedRoomData.roomId);
           backendAPI.getSongQueue({
-            room_id: '5066549580791808',
+            room_id: sharedRoomData.roomId,
             password: sharedRoomData.password,
           }).success(function(data) {
             if (data.status === 'OK') {
