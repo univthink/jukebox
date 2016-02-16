@@ -1,6 +1,7 @@
-.container {
-  width: 100%;
-}
+.queue-page { z-index: -1; }
+
+.queue-page.ng-enter {}
+.queue-page.ng-leave { transition: 0.5s;}
 
 .song-queue-item {
   display: flex;

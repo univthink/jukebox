@@ -7,6 +7,10 @@
     .controller('SearchController', searchController);
 
   function searchController($scope, $routeParams, $http, backendAPI, sharedRoomData) {
+    $scope.pageClass = 'search-page';
+
+    $scope.roomId = $routeParams.roomId;
+
     $scope.myData = {};
     $scope.myData.spotify = {};
     // $scope.myData.soundcloud = {};

@@ -4,10 +4,12 @@
 
   angular
     .module('jukebox')
-    .controller('QueueController', function($scope, $routeParams, $uibModal, backendAPI, sharedRoomData) {
+    .controller('QueueController', function($scope, $routeParams, backendAPI, sharedRoomData) {
+      $scope.pageClass = 'queue-page';
 
       $scope.status = '';
       $scope.room = sharedRoomData;
+      $scope.roomId = $routeParams.roomId;
 
       sharedRoomData.roomId = $routeParams.roomId;
       sharedRoomData.password = ''; // TODO: update when we ask user
