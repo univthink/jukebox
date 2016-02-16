@@ -14,6 +14,7 @@ var gulp = require('gulp'),
     gae = require('gulp-gae'),
     svgstore = require('gulp-svgstore'),
     svgmin = require('gulp-svgmin'),
+    autoprefixer = require('gulp-autoprefixer'),
     isWatching = false;
 
 var htmlminOpts = {
@@ -50,6 +51,10 @@ gulp.task('styles', ['clean-css'], function () {
     '!./src/app/**/_*.scss'
   ])
     .pipe(g.sass())
+    .pipe(autoprefixer({
+      browsers: ['last 2 versions'],
+      cascade: false
+    }))
     .pipe(gulp.dest('./.tmp/css/'))
     .pipe(g.cached('built-css'))
     .pipe(livereload());

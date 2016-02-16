@@ -15,10 +15,14 @@ handlers:
   static_dir: .tmp/css
 - url: /angular
   static_dir: bower_components/angular
+- url: /angular-bootstrap
+  static_dir: bower_components/angular-bootstrap
 - url: /angular-route
   static_dir: bower_components/angular-route
 - url: /angular-mocks
   static_dir: bower_components/angular-mocks
+- url: /angular-ui
+  static_dir: bower_components/angular-ui
 - url: /bootstrap
   static_dir: bower_components/bootstrap
 - url: /jquery
