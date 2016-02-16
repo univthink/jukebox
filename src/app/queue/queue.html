@@ -15,8 +15,9 @@
         <div class="song-queue-item" data-uuid="{{ song.unique_id }}" data-as-sortable-item ng-swipe-left="showDeleteButton = true" ng-swipe-right="showDeleteButton = false">
           <img src="{{ song.image_url }}" class="song-image" data-as-sortable-item-handle>
           <div class="song-info">
-            <p>{{ song.track }}</p>
-            <p>{{ song.artist }}</p>
+            <div class="song-title">{{ song.track }}</div>
+            <div class="song-artist">{{ song.artist }}</div>
+            <div class="song-user">@{{ song.submitter }}</div>
           </div>
           <div class="delete-button" ng-show="showDeleteButton" ng-click="deleteSong($event)"></div>
           <!-- <div data-as-sortable-item-handle></div> -->
