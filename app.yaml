@@ -23,10 +23,12 @@ handlers:
   static_dir: bower_components/angular-route
 - url: /angular-mocks
   static_dir: bower_components/angular-mocks
+- url: /angular-touch
+  static_dir: bower_components/angular-touch
 - url: /angular-ui
   static_dir: bower_components/angular-ui
-- url: /angular-ui/build
-  static_dir: bower_components/angular-ui/build
+- url: /ng-sortable
+  static_dir: bower_components/ng-sortable
 - url: /bootstrap
   static_dir: bower_components/bootstrap
 - url: /jquery

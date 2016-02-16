@@ -9,8 +9,9 @@ class SetAdmin(webapp2.RequestHandler):
 		room_exists = True
 		self.response.headers['Content-Type'] = 'application/json'
 
-		self.response.write({"status": "NOT OK", "message": "Set Admin is not available."})
-		return
+		# Not sure why this was here, but I'm commenting it out as this endpoint seems to work...
+		# self.response.write({"status": "NOT OK", "message": "Set Admin is not available."})
+		# return
 
 		roomlist_name = utils.DEFAULT_ROOMLIST_NAME
 		room_id = self.request.get('room_id')

@@ -28,8 +28,9 @@ def fairness_adjustment(room,position,submitter):
 #room_id: room of the song to be deleted
 #user_id: user_id of deleter(must be admin)
 #password: password for validation purposes
-#url: spotify url that matches the song you want to delete
-#position: queue position of the song being deleted
+#song_id: UUID for the song
+#DEPRECATED: url: spotify uri that matches the song you want to delete
+#DEPRECATED: position: queue position of the song being deleted
 class DeleteSong(webapp2.RequestHandler):
 
 	def post(self):
@@ -42,7 +43,7 @@ class DeleteSong(webapp2.RequestHandler):
 		if not room_id:
 			room_exists = False
 		else:
-			try: 
+			try:
 				room = models.Room.get_by_id(int(room_id),parent=utils.roomlist_key(roomlist_name))
 				if room == None:
 					room_exists = False
@@ -50,7 +51,8 @@ class DeleteSong(webapp2.RequestHandler):
 				room_exists = None
 
 		if room_exists:
-			if not utils.is_admin(room,self.request.get('user_id')):
+			user_id = self.request.get('user_id')
+			if not utils.is_admin(room, user_id):
 				self.response.write(json.dumps({"status": "NOT OK", "message": "You must be an admin to delete songs."}))
 				return
 
@@ -62,56 +64,73 @@ class DeleteSong(webapp2.RequestHandler):
 				self.response.write(json.dumps({"status": "NOT OK", "message": "The correct password was not provided."}))
 			else:
 				if room.mode != 0 and room.mode != 1:
-					self.response.write(json.dumps({"status": "NOT OK", "message": "You cannot delet songs in this mode."}))
+					self.response.write(json.dumps({"status": "NOT OK", "message": "You cannot delete songs in this mode."}))
 				else:
-					if self.request.get('url') == None:
-						self.response.write(json.dumps({"status": "NOT OK", "message": "No url specified."}))
+
+					#TODO: Error checking
+					song_exists = True
+					try:
+						song_id = int(self.request.get('song_id'))
+					except:
+						song_exists = False
+					if not song_exists or room.queue.count(song_id) == 0:
+						self.response.write(json.dumps({"status": "NOT OK", "message": "The requested song is not in the Room's queue."}))
 					else:
-						song = models.Song.query(ancestor=room.key)
-						song = song.filter(models.Song.url == self.request.get('url'))
-						songs = song.fetch()
 
-						if not songs:
-							self.response.write(json.dumps({"status": "NOT OK", "message": "Song not found in room."}))
-						else:
-							if self.request.get('position'):
-								removedSong = False
-								try:
-									position = int(self.request.get('position'))
-									for song in songs:
-										index = room.queue.index(song.key.integer_id())
-										#If a valid position is specified, removes that particular instance of the song.
-										if position == index:
+					# if self.request.get('url') == None:
+					# 	self.response.write(json.dumps({"status": "NOT OK", "message": "No url specified."}))
+					# else:
+					# 	song = models.Song.query(ancestor=room.key)
+					# 	song = song.filter(models.Song.url == self.request.get('url'))
+					# 	songs = song.fetch()
 
-											submitter = song.submitter.integer_id()
+					# 	if not songs:
+					# 		self.response.write(json.dumps({"status": "NOT OK", "message": "Song not found in room."}))
+					# 	else:
 
-											room.queue.remove(song.key.integer_id())
+							# if self.request.get('position'):
+							# 	removedSong = False
+							# 	try:
+							# 		position = int(self.request.get('position'))
+							# 		for song in songs:
+							# 			index = room.queue.index(song.key.integer_id())
+							# 			#If a valid position is specified, removes that particular instance of the song.
+							# 			if position == index:
 
-											#If the room is in fairness mode, adjust accordingly.
-											if room.mode == 1:
-												fairness_adjustment(room,position,submitter)
+							# 				submitter = song.submitter.integer_id()
 
-											song.key.delete()
-											room.put()
-											
-											self.response.write(json.dumps({"status":"OK"}))
+							# 				room.queue.remove(song.key.integer_id())
 
-											removedSong = True
-											break
-								except:
-									removedSong = False
-								if not removedSong:
-									self.response.write(json.dumps({"status": "NOT OK", "message": "Song not found at that position in room."}))
-							else:
+							# 				#If the room is in fairness mode, adjust accordingly.
+							# 				if room.mode == 1:
+							# 					fairness_adjustment(room,position,submitter)
+
+							# 				song.key.delete()
+							# 				room.put()
+
+							# 				self.response.write(json.dumps({"status":"OK"}))
+
+							# 				removedSong = True
+							# 				break
+							# 	except:
+							# 		removedSong = False
+							# 	if not removedSong:
+							# 		self.response.write(json.dumps({"status": "NOT OK", "message": "Song not found at that position in room."}))
+							# else:
+
 								#If a position is not specified, remove the first instance of that song, deleting from both queue and song list.
-								submitter = songs[0].submitter.integer_id()
-								position = room.queue.index(songs[0].key.integer_id())
+								# submitter = songs[0].submitter.integer_id()
+								# position = room.queue.index(songs[0].key.integer_id())
 
-								room.queue.remove(songs[0].key.integer_id())
-								songs[0].key.delete()
+								# room.queue.remove(songs[0].key.integer_id())
+								# songs[0].key.delete()
+
+								room.queue.remove(song_id)
 
 								#If the room is in fairness mode, adjust accordingly.
 								if room.mode == 1:
+									position = room.queue.index(song_id)
+									submitter = int(user_id)
 									fairness_adjustment(room,position,submitter)
 
 								room.put()

@@ -11,6 +11,7 @@
                 roomPassword: '',
                 userId: '',
                 userName: '',
+                queue: {},
             }
             return data;
         });

@@ -4,6 +4,14 @@ body {
   background: $background;
 }
 
+.page {
+    bottom: 0; 
+    position: fixed; 
+    top: 0;  
+    width: 100%;
+    background: $background;
+}
+
 input,
 textarea,
 button {

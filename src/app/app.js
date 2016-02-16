@@ -2,12 +2,12 @@
   'use strict';
 
   angular
-    .module('jukebox', ['ngRoute', 'ngAnimate', 'ui.bootstrap'])
+    .module('jukebox', ['ngRoute', 'ngAnimate', 'ui.bootstrap', 'as.sortable', 'ngTouch'])
     .config(routeProvider);
 
   function routeProvider($routeProvider) {
     $routeProvider
-      .when('/search/:roomId', {
+      .when('/:roomId/s', {
         controller: 'SearchController',
         templateUrl: 'search/search.html'
       })

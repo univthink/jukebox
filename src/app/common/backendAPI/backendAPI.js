@@ -150,8 +150,7 @@
          *   room_id: String,       (required)
          *   user_id: String,       (required)
          *   password: String,      (optional)
-         *   url: String,           (required) // for Spotify, this must be the uri
-         *   position: String,      (required) // the current position in the queue of the song to be deleted
+         *   song_id: String,       (required)
          * }
          *
          */
