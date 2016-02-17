@@ -8,6 +8,7 @@
             var data = {
                 roomId: '',
                 roomName: '',
+                passwordProtected: false,
                 roomPassword: '',
                 userId: '',
                 userName: '',

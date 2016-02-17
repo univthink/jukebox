@@ -4,19 +4,46 @@
 
   angular
     .module('jukebox')
-    .controller('QueueController', function($scope, $routeParams, backendAPI, sharedRoomData) {
+    .controller('QueueController', function($scope, $routeParams, $cookies, backendAPI, sharedRoomData) {
       $scope.pageClass = 'queue-page';
 
-      $scope.status = '';
       $scope.room = sharedRoomData;
-      $scope.roomId = $routeParams.roomId;
-
       sharedRoomData.roomId = $routeParams.roomId;
-      sharedRoomData.password = ''; // TODO: update when we ask user
-      sharedRoomData.userId = '5629499534213120';
-      sharedRoomData.userName = 'kyle';
 
-      // Example usage of backendAPI factory
+      // TODO: move this elsewhere
+      var POTENTIAL_USERNAMES = ['banana', 'apple', 'peach', 'mango', 'cherry', 'grape', 'pear', 'plum', 'pineapple', 'kiwi'];
+
+      sharedRoomData.userId = $cookies.get('jb_user_id'); // TODO: think about moving this to sharedRoomData factory initialization
+      sharedRoomData.userName = $cookies.get('jb_user_name');
+      sharedRoomData.password = $cookies.get(sharedRoomData.roomId) ? $cookies.get(sharedRoomData.roomId) : '';
+
+      if (!sharedRoomData.userId || !sharedRoomData.userName) {
+        sharedRoomData.userName = POTENTIAL_USERNAMES[Math.floor(Math.random()*POTENTIAL_USERNAMES.length)];
+        console.log("Your username will be", sharedRoomData.userName);
+        createUser(sharedRoomData.userName);
+      } else {
+        console.log("You already have a username! It is", sharedRoomData.userName);
+        joinRoom(); // join room if you haven't already
+      }
+
+      function createUser(name) {
+        backendAPI.registerUser({
+          username: name,
+        }).success(function(data) {
+          if (data.status === 'OK') {
+            sharedRoomData.userId = data.data;
+            $cookies.put('jb_user_name', sharedRoomData.userName);
+            $cookies.put('jb_user_id', sharedRoomData.userId);
+            joinRoom();
+            console.log('OK backendAPI.registerUser', data);
+          } else {
+            console.log('NOT OK backendAPI.registerUser', data);
+          }
+        }).error(function(error) {
+          console.log('ERROR backendAPI.registerUser', error);
+        })
+      }
+
       // TODO: All of these should probably be moved to a separate service...
       function joinRoom() {
         backendAPI.joinRoom({
@@ -24,19 +51,22 @@
           user_id: sharedRoomData.userId,
           password: sharedRoomData.password,
         }).success(function(data) {
-          console.log(data);
-          if (data.status === 'NOT OK') {
-            $scope.status = data.message;
+          if (data.status === 'OK') {
+            console.log('OK backendAPI.joinRoom', data);
+            getSongQueue();
           } else {
-            console.log('Join room was a success!');
-            console.log(data);
+            if (data.message == "The correct password was not provided.") { // TODO: reuse this code below?
+              sharedRoomData.passwordProtected = true;
+              sharedRoomData.password = window.prompt("Enter the password:");
+              $cookies.put(sharedRoomData.roomId, sharedRoomData.password);
+              joinRoom();
+            }
+            console.log('NOT OK backendAPI.joinRoom', data);
           }
         }).error(function(error) {
-          $scope.status = error.message;
+          console.log('ERROR backendAPI.joinRoom', error);
         });
       }
-
-      // joinRoom();
 
       function getSongQueue() {
         backendAPI.getSongQueue({
@@ -46,15 +76,20 @@
           if (data.status === 'OK') {
             sharedRoomData.roomName = data.room_name;
             sharedRoomData.queue = data.data;
+            console.log('OK backendAPI.getSongQueue', data);
           } else {
-            console.log('getSongQueue ->', data);
+            if (data.message == "The correct password was not provided.") {
+              sharedRoomData.passwordProtected = true;
+              sharedRoomData.password = window.prompt("Enter the password:");
+              $cookies.put(sharedRoomData.roomId, sharedRoomData.password);
+              getSongQueue();
+            }
+            console.log('NOT OK backendAPI.getSongQueue', data);
           }
         }).error(function(error) {
-          console.log(error);
+          console.log('ERROR backendAPI.getSongQueue', error);
         });
       }
-
-      getSongQueue();
 
       function changeSongPosition(songId, newPos) {
         backendAPI.reorderSong({
@@ -64,10 +99,14 @@
           song_id: songId,
           new_pos: newPos,
         }).success(function(data) {
-          console.log('changeSongPosition ->',data);
-          getSongQueue();
+          if (data.status === 'OK') {
+            console.log('OK backendAPI.reorderSong', data);
+            getSongQueue();
+          } else {
+            console.log('NOT OK backendAPI.reorderSong', data);
+          }
         }).error(function(data) {
-          console.log(error);
+          console.log('ERROR backendAPI.reorderSong', error);
         });
       }
 
@@ -78,10 +117,14 @@
           password: sharedRoomData.password,
           song_id: songId,
         }).success(function(data) {
-          console.log('deleteSong ->', data);
-          getSongQueue();
+          if (data.status === 'OK') {
+            console.log('OK backendAPI.deleteSong', data);
+            getSongQueue();
+          } else {
+            console.log('NOT OK backendAPI.deleteSong', data);
+          }
         }).error(function(data) {
-          console.log(error);
+          console.log('ERROR backendAPI.deleteSong', error);
         });
       }
 

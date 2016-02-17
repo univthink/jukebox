@@ -15,7 +15,7 @@
       },
       templateUrl: 'common/plusButton/plusButton.html',
       controller: ['$scope', function($scope) {
-        console.log($scope.roomId);
+
       }]
     };
   }
