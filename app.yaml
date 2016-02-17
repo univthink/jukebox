@@ -37,6 +37,8 @@ handlers:
   static_dir: bower_components/jquery-ui
 - url: /normalize-css
   static_dir: bower_components/normalize-css
+- url: /font-awesome
+  static_dir: bower_components/font-awesome
 - url: /common
   static_dir: src/app/common
 - url: /queue

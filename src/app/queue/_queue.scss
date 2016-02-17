@@ -29,21 +29,22 @@
     }
   }
 
+  .drag-button,
   .delete-button {
     float: right;
     height: 50px;
-    width: 100px;
+    width: 50px;
     text-align: center;
     vertical-align: middle;
     line-height: 50px;
+
+    &:hover {
+      cursor: pointer;
+    }
+  }
+
+  .delete-button {
     background-color: red;
   }
 
-  .delete-button:before {
-    content: 'DELETE';
-  }
-
-  .delete-button:hover {
-    cursor: pointer;
-  }
 }
