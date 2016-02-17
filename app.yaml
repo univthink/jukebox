@@ -37,9 +37,9 @@ handlers:
   static_files: src/app/index.html
   upload: src/app/index.html
 
-
 builtins:
 - deferred: on
+- remote_api: on
 
 skip_files: # TODO: flesh this out
 #- ^(.*/)?#.*#$
