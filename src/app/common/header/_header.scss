@@ -23,6 +23,37 @@ $record-size: 240px;
   }
 }
 
+.iframe-record-player {
+  padding-top: 20px;
+  height: 288px;
+  position: relative;
+  background-color: #FFF;
+  width: 120%;
+  left: -10%;
+  border-bottom-left-radius: 50%;
+  border-bottom-right-radius: 50%;
+}
+
+.iframe-record {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  .iframe-container {
+    overflow: hidden;
+    height: 200px;
+    width: 200px;
+    border-radius: 100px;
+
+    iframe {
+      opacity: 1;
+      transform: scale(3);
+      margin-top: 140px;
+      margin-left: 140px;
+    }
+  }
+}
+
 .record-player {
   padding-top: 20px;
   height: 288px;
