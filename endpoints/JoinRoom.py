@@ -1,7 +1,6 @@
 import webapp2, models, forms, json, endpoints, utils
 from google.appengine.ext import ndb
 
-
 class JoinRoom(webapp2.RequestHandler):
 
 	def post(self):
@@ -26,7 +25,7 @@ class JoinRoom(webapp2.RequestHandler):
 		else:
 			allowed = utils.checkPassword(self.request.get('password', ''), room.password)
 			if not allowed:
-				self.response.write(json.dumps({"status": "NOT OK", "message": "You did not enter the proper password for room: " + room.name}))
+				self.response.write(json.dumps({"status": "NOT OK", "message": "The correct password was not provided."}))
 			else:
 				user_id = self.request.get('user_id')
 				if user_id == '':
@@ -39,11 +38,16 @@ class JoinRoom(webapp2.RequestHandler):
 					except:
 						user = None
 					if user == None:
-						self.response.write("Invalid user_id.")
+						self.response.write(json.dumps({"status": "NOT OK", "message": "Invalid user_id."}))
 					else:
-						if room.all_admin == 0:
-							guest = models.Guest(parent=room.key,user_id=int(user_id))
-						else:
-							guest = models.Guest(parent=room.key,user_id=int(user_id),admin=True)
-						guest_key = guest.put()
+						guest_query = models.Guest.query(models.Guest.user_id == int(user_id),ancestor=room.key)
+						guests = guest_query.fetch()
+
+						if len(guests) == 0: # the user is not already a member of the room
+							if room.all_admin == 0:
+								guest = models.Guest(parent=room.key,user_id=int(user_id))
+							else:
+								guest = models.Guest(parent=room.key,user_id=int(user_id),admin=True)
+							guest_key = guest.put()
+
 						self.response.write(json.dumps({"status":"OK"}))

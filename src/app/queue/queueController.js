@@ -4,7 +4,7 @@
 
   angular
     .module('jukebox')
-    .controller('QueueController', function($scope, $routeParams, backendAPI, sharedRoomData) {
+    .controller('QueueController', function($scope, $routeParams, $cookies, backendAPI, sharedRoomData) {
       $scope.pageClass = 'queue-page';
 
       $scope.status = '';
@@ -12,9 +12,34 @@
       $scope.roomId = $routeParams.roomId;
 
       sharedRoomData.roomId = $routeParams.roomId;
-      sharedRoomData.password = ''; // TODO: update when we ask user
-      sharedRoomData.userId = '5629499534213120';
-      sharedRoomData.userName = 'kyle';
+
+      // TODO: move this elsewhere
+      var POTENTIAL_USERNAMES = ['banana', 'apple', 'peach', 'mango', 'cherry', 'grape', 'pear', 'plum', 'pineapple', 'kiwi'];
+
+      sharedRoomData.userId = $cookies.get('jb_user_id');
+      sharedRoomData.userName = $cookies.get('jb_user_name');
+      if (!sharedRoomData.userId || !sharedRoomData.userName) {
+        sharedRoomData.userName = POTENTIAL_USERNAMES[Math.floor(Math.random()*POTENTIAL_USERNAMES.length)];
+        console.log("Your username will be", sharedRoomData.userName);
+        createUser(sharedRoomData.userName);
+      } else {
+        console.log("You already have a username! It is", sharedRoomData.userName);
+        joinRoom(); // join room if you haven't already
+      }
+
+      function createUser(name) {
+        backendAPI.registerUser({
+          username: name,
+        }).success(function(data) {
+          sharedRoomData.userId = data.data;
+          $cookies.put('jb_user_name', sharedRoomData.userName);
+          $cookies.put('jb_user_id', sharedRoomData.userId);
+          joinRoom();
+          console.log('createUser ->', data);
+        }).error(function(error) {
+          console.log(error);
+        })
+      }
 
       // Example usage of backendAPI factory
       // TODO: All of these should probably be moved to a separate service...
@@ -22,39 +47,50 @@
         backendAPI.joinRoom({
           room_id: sharedRoomData.roomId,
           user_id: sharedRoomData.userId,
-          password: sharedRoomData.password,
+          password: $cookies.get(sharedRoomData.roomId) ? $cookies.get(sharedRoomData.roomId) : sharedRoomData.password,
         }).success(function(data) {
           console.log(data);
-          if (data.status === 'NOT OK') {
-            $scope.status = data.message;
+          if (data.status === 'OK') {
+            console.log('SUCCESS joinRoom ->', data);
+            getSongQueue();
           } else {
-            console.log('Join room was a success!');
-            console.log(data);
+            if (data.message == "The correct password was not provided.") { // TODO: reuse this code below?
+              sharedRoomData.passwordProtected = true;
+              sharedRoomData.password = window.prompt("Enter the password:");
+              $cookies.put(sharedRoomData.roomId, sharedRoomData.password);
+              joinRoom();
+            } else {
+              console.log('FAIL joinRoom ->', data);
+            }
           }
         }).error(function(error) {
           $scope.status = error.message;
         });
       }
 
-      // joinRoom();
-
       function getSongQueue() {
         backendAPI.getSongQueue({
           room_id: sharedRoomData.roomId,
-          password: sharedRoomData.password,
+          password: $cookies.get(sharedRoomData.roomId) ? $cookies.get(sharedRoomData.roomId) : sharedRoomData.password,
         }).success(function(data) {
           if (data.status === 'OK') {
             sharedRoomData.roomName = data.room_name;
             sharedRoomData.queue = data.data;
+            console.log('SUCCESS getSongQueue ->', data);
           } else {
-            console.log('getSongQueue ->', data);
+            if (data.message == "The correct password was not provided.") {
+              sharedRoomData.passwordProtected = true;
+              sharedRoomData.password = window.prompt("Enter the password:");
+              $cookies.put(sharedRoomData.roomId, sharedRoomData.password);
+              getSongQueue();
+            } else {
+              console.log('FAIL getSongQueue ->', data);
+            }
           }
         }).error(function(error) {
           console.log(error);
         });
       }
-
-      getSongQueue();
 
       function changeSongPosition(songId, newPos) {
         backendAPI.reorderSong({
