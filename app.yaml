@@ -21,8 +21,6 @@ handlers:
   static_dir: src/app/queue
 - url: /search
   static_dir: src/app/search
-- url: /todo
-  static_dir: src/app/todo # remove this later
 - url: /app.js
   static_files: src/app/app.js
   upload: src/files/app.js
@@ -33,14 +31,14 @@ handlers:
   script: handler.application
 - url: /api/.*
   script: handler.application
-# - url: .*
-#   static_files: src/app/index.html
-#   upload: src/app/index.html
-- url: /dist
-  static_dir: dist
 - url: .*
-  static_files: dist/index.html
-  upload: dist/index.html
+  static_files: src/app/index.html
+  upload: src/app/index.html
+# - url: /dist
+#   static_dir: dist
+# - url: .*
+#   static_files: dist/index.html
+#   upload: dist/index.html
 
 builtins:
 - deferred: on
@@ -54,4 +52,4 @@ skip_files: # TODO: flesh this out
 - ^app$
 - ^node_modules$
 - ^bower_components$
-# - ^src$
+# - ^src$ # TODO: figure out why this needs to be included
