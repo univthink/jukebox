@@ -1,4 +1,6 @@
-.header {
+$record-size: 240px;
+
+.header-info {
   padding-top: 10px;
   text-align: center;
   height: 50px;
@@ -14,5 +16,29 @@
       color: $light-gray-1;
       font-size: 12px;
     }
+  }
+}
+
+.record-player {
+  padding-top: 20px;
+  height: 288px;
+  position: relative;
+  background-color: #FFF;
+  width: 120%;
+  left: -10%;
+  border-bottom-left-radius: 50%;
+  border-bottom-right-radius: 50%;
+}
+
+.record {
+  display: block;
+  height: $record-size;
+  width: $record-size;
+  margin: 0 auto;
+
+  img {
+    width: 100%;
+    height: 100%;
+    border-radius: $record-size/2;
   }
 }
