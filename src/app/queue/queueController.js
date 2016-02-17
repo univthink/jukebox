@@ -7,10 +7,7 @@
     .controller('QueueController', function($scope, $routeParams, $cookies, backendAPI, sharedRoomData) {
       $scope.pageClass = 'queue-page';
 
-      $scope.status = '';
       $scope.room = sharedRoomData;
-      $scope.roomId = $routeParams.roomId;
-
       sharedRoomData.roomId = $routeParams.roomId;
 
       // TODO: move this elsewhere
