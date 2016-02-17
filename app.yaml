@@ -47,10 +47,11 @@ builtins:
 - remote_api: on
 
 skip_files: # TODO: flesh this out
-#- ^(.*/)?#.*#$
 - ^(.*/)?.*~$
 - ^(.*/)?.*\.py[co]$
 - ^(.*/)?.*/RCS/.*$
 - ^(.*/)?\..*$
 - ^app$
 - ^node_modules$
+- ^bower_components$
+- ^src$
