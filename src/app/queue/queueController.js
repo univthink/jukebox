@@ -9,6 +9,7 @@
 
       $scope.room = sharedRoomData;
       sharedRoomData.roomId = $routeParams.roomId;
+      $scope.roomId = sharedRoomData.roomId; //TODO(kyle): Remove this after plusButton.directive.js has been updated by justin
 
       // TODO: move this elsewhere
       var POTENTIAL_USERNAMES = ['banana', 'apple', 'peach', 'mango', 'cherry', 'grape', 'pear', 'plum', 'pineapple', 'kiwi'];

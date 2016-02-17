@@ -1,4 +1,4 @@
-// .search-page.ng-enter { 
+// .search-page.ng-enter {
 //   animation: slideInUp 0.5s both;
 // }
 // .search-page.ng-leave {
@@ -44,37 +44,14 @@
   margin-top: 6px;
 
   .song-search-result {
-    display: flex;
-    align-items: center;
-    margin: 6px 0;
 
-    .song-image {
-      flex: 0 0 50px;
-      height: 50px;
-      width: 50px;
+    &:last-child {
+      margin-bottom: 0;
     }
 
-    .song-info {
-      flex: 1;
-      margin-left: 2px;
-
-      p {
-        margin: 0;
-        padding: 4px;
-        font-size: 14px;
-      }
+    &:hover {
+      cursor: pointer;
+      background-color: $dark-gray-1;
     }
-  }
-  a.song-search-result {
-    color: #FFF;
-  }
-
-  .song-search-result:last-child {
-    margin-bottom: 0;
-  }
-
-  .song-search-result:hover {
-    cursor: pointer;
-    background-color: grey;
   }
 }

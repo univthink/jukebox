@@ -1,36 +1,8 @@
 .song-queue-item {
-  display: flex;
-  align-items: center;
-  margin: 10px 0;
-
-  .song-image {
-    flex: 0 0 54px;
-    height: 54px;
-    width: 54px;
-    margin-left: 10px;
-  }
-
-  .song-info {
-    flex: 1;
-    margin-top: -4px;
-    margin-left: 10px;
-
-    .song-title {
-      font: $song-title-font;
-    }
-
-    .song-artist {
-      font: $song-artist-font;
-    }
-
-    .song-user {
-      font: $song-user-font;
-      color: $light-gray-1;
-    }
-  }
 
   .drag-button,
   .delete-button {
+
     float: right;
     height: 50px;
     width: 50px;

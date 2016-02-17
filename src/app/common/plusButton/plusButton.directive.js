@@ -15,7 +15,7 @@
       },
       templateUrl: 'common/plusButton/plusButton.html',
       controller: ['$scope', function($scope) {
-
+        // TODO(justin): Update this to get roomId from sharedRoomData instead of scope
       }]
     };
   }
