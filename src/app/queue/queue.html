@@ -6,7 +6,7 @@
   </div>
   -->
   <div ng-if="queueData.length > 0"><span>Your Song Queue</span></div>
-    <div data-as-sortable="dragControlListeners" data-ng-model="room.queue">
+    <div class="song-queue" data-as-sortable="dragControlListeners" data-ng-model="room.queue">
       <div ng-repeat="song in room.queue">
         <div class="song-queue-item noselect" data-uuid="{{ song.unique_id }}" data-as-sortable-item ng-swipe-left="showDeleteButton = true" ng-swipe-right="showDeleteButton = false">
           <img src="{{ song.image_url }}" class="song-image">
