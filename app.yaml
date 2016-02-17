@@ -54,4 +54,4 @@ skip_files: # TODO: flesh this out
 - ^app$
 - ^node_modules$
 - ^bower_components$
-- ^src$
+# - ^src$

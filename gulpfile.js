@@ -76,7 +76,7 @@ gulp.task('csslint', ['styles'], function () {
 /**
  * Minify and store svgs
  */
-gulp.task('svgstore', function() {
+gulp.task('svg-store', function() {
   return gulp
     .src(['./src/app/assets/*.svg'])
     .pipe(svgmin())
@@ -123,7 +123,7 @@ gulp.task('vendors', function () {
  * Index
  */
 gulp.task('index', index);
-gulp.task('build-all', ['styles', 'templates'], index);
+gulp.task('build-all', ['styles', 'templates', 'svg-store'], index);
 
 function index () {
   var opt = {read: false};
@@ -154,12 +154,19 @@ gulp.task('assets', function () {
 /**
  * Dist
  */
-gulp.task('dist', ['vendors', 'assets', 'styles-dist', 'scripts-dist'], function () {
+gulp.task('dist', ['vendors', 'assets', 'styles-dist', 'scripts-dist', 'svg-store'], function () {
   return gulp.src('./src/app/index.html')
     // .pipe(g.inject(gulp.src('./dist/vendors.min.{js,css}'), {ignorePath: 'dist', starttag: '<!-- inject:vendor:{{ext}} -->'}))
     // .pipe(g.inject(gulp.src('./dist/' + bower.name + '.min.{js,css}'), {ignorePath: 'dist'}))
     .pipe(g.inject(gulp.src('./dist/vendors.min.{js,css}'), {starttag: '<!-- inject:vendor:{{ext}} -->'}))
     .pipe(g.inject(gulp.src('./dist/' + bower.name + '.min.{js,css}')))
+    .pipe(g.inject(gulp.src(['./src/app/assets/assets.svg']), {
+      starttag: '<!-- inject:svg -->',
+      transform: function (filePath, file) {
+        // return file contents as string
+        return file.contents.toString('utf8');
+      }
+    }))
     .pipe(g.htmlmin(htmlminOpts))
     .pipe(gulp.dest('./dist/'));
 });
@@ -220,7 +227,7 @@ gulp.task('watch', ['gae-serve', 'default'], function () {
       g.livereload.changed(evt);
     }
   });
-  gulp.watch(['./src/app/assets/*.svg'], ['svgstore']).on('change', function (evt) {
+  gulp.watch(['./src/app/assets/*.svg'], ['svg-store']).on('change', function (evt) {
     console.log('bah');
     if (evt.type !== 'changed') {
       gulp.start('index');
