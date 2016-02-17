@@ -5,8 +5,8 @@ $plus-color: $background;
   position: fixed;
   bottom: 0;
   right: 0;
-  width: 60px;
-  height: 60px;
+  width: 64px;
+  height: 64px;
   background-color: $plus-button-color;
   border-top-left-radius: 100%;
   border: none;
@@ -14,8 +14,8 @@ $plus-color: $background;
 
   .plus-icon {
     position: absolute;
-    right: 6px;
-    bottom: 6px;
+    right: 13px;
+    bottom: 13px;
     transition: .4s transform;
     svg {
       width: 20px;
