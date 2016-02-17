@@ -16,8 +16,10 @@
       // TODO: move this elsewhere
       var POTENTIAL_USERNAMES = ['banana', 'apple', 'peach', 'mango', 'cherry', 'grape', 'pear', 'plum', 'pineapple', 'kiwi'];
 
-      sharedRoomData.userId = $cookies.get('jb_user_id');
+      sharedRoomData.userId = $cookies.get('jb_user_id'); // TODO: think about moving this to sharedRoomData factory initialization
       sharedRoomData.userName = $cookies.get('jb_user_name');
+      sharedRoomData.password = $cookies.get(sharedRoomData.roomId) ? $cookies.get(sharedRoomData.roomId) : '';
+
       if (!sharedRoomData.userId || !sharedRoomData.userName) {
         sharedRoomData.userName = POTENTIAL_USERNAMES[Math.floor(Math.random()*POTENTIAL_USERNAMES.length)];
         console.log("Your username will be", sharedRoomData.userName);
@@ -50,7 +52,7 @@
         backendAPI.joinRoom({
           room_id: sharedRoomData.roomId,
           user_id: sharedRoomData.userId,
-          password: $cookies.get(sharedRoomData.roomId) ? $cookies.get(sharedRoomData.roomId) : sharedRoomData.password,
+          password: sharedRoomData.password,
         }).success(function(data) {
           if (data.status === 'OK') {
             console.log('OK backendAPI.joinRoom', data);
@@ -72,7 +74,7 @@
       function getSongQueue() {
         backendAPI.getSongQueue({
           room_id: sharedRoomData.roomId,
-          password: $cookies.get(sharedRoomData.roomId) ? $cookies.get(sharedRoomData.roomId) : sharedRoomData.password,
+          password: sharedRoomData.password,
         }).success(function(data) {
           if (data.status === 'OK') {
             sharedRoomData.roomName = data.room_name;
