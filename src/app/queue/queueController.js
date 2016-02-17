@@ -46,7 +46,6 @@
           if (data.status === 'OK') {
             sharedRoomData.roomName = data.room_name;
             sharedRoomData.queue = data.data;
-            console.log(data.data);
           } else {
             console.log('getSongQueue ->', data);
           }

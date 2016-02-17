@@ -12,15 +12,15 @@
   <div ng-if="queueData.length > 0"><span>Your Song Queue</span></div>
     <div data-as-sortable="dragControlListeners" data-ng-model="room.queue">
       <div ng-repeat="song in room.queue">
-        <div class="song-queue-item" data-uuid="{{ song.unique_id }}" data-as-sortable-item ng-swipe-left="showDeleteButton = true" ng-swipe-right="showDeleteButton = false">
-          <img src="{{ song.image_url }}" class="song-image" data-as-sortable-item-handle>
+        <div class="song-queue-item noselect" data-uuid="{{ song.unique_id }}" data-as-sortable-item ng-swipe-left="showDeleteButton = true" ng-swipe-right="showDeleteButton = false">
+          <img src="{{ song.image_url }}" class="song-image">
           <div class="song-info">
             <div class="song-title">{{ song.track }}</div>
             <div class="song-artist">{{ song.artist }}</div>
             <div class="song-user">@{{ song.submitter }}</div>
           </div>
-          <div class="delete-button" ng-show="showDeleteButton" ng-click="deleteSong($event)"></div>
-          <!-- <div data-as-sortable-item-handle></div> -->
+          <i class="fa fa-trash fa-lg delete-button" ng-show="showDeleteButton" ng-click="deleteSong($event)"></i>
+          <i class="fa fa-th-list drag-button" ng-show="!showDeleteButton" data-as-sortable-item-handle></i>
         </div>
       </div>
     </div>

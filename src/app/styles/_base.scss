@@ -7,9 +7,9 @@ body {
 }
 
 .page {
-    // bottom: 0; 
-    // position: absolute; 
-    // top: 0;  
+    // bottom: 0;
+    // position: absolute;
+    // top: 0;
     // width: 100%;
     background: $background;
 }
@@ -23,4 +23,8 @@ button {
 svg g,
 svg path {
     fill: inherit; /* this allows CSS to override an element's fill when a fill has already been baked in to the svg file */
+}
+
+.noselect {
+  user-select: none;
 }

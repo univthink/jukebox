@@ -128,7 +128,7 @@ gulp.task('build-all', ['styles', 'templates'], index);
 function index () {
   var opt = {read: false};
   return gulp.src('./src/app/index.html')
-    .pipe(g.inject(gulp.src(bowerFiles(), opt), {ignorePath: 'bower_components', starttag: '<!-- inject:vendor:{{ext}} -->'}))
+    .pipe(g.inject(gulp.src(bowerFiles(), opt), {starttag: '<!-- inject:vendor:{{ext}} -->'}))
     .pipe(g.inject(es.merge(appFiles(), cssFiles(opt)), {ignorePath: ['.tmp', 'src/app']}))
     .pipe(g.inject(gulp.src(['./src/app/assets/assets.svg']), {
       starttag: '<!-- inject:svg -->',
