@@ -25,11 +25,10 @@
       });
       spotifyResponsePromise.success(function(data) {
         $scope.myData.spotify.results = data.tracks.items;
-        console.log($scope.myData.spotify.results);
       });
       spotifyResponsePromise.error(function() {
         $scope.myData.spotify = {};
-        console.log('AJAX failed!');
+        console.log('ERROR returning results from spotify');
       });
 
       // // soundcloud API
@@ -58,11 +57,12 @@
         if (data.status === 'OK') {
           sharedRoomData.roomName = data.room_name;
           sharedRoomData.queue = data.data;
+          console.log('OK backendAPI.getSongQueue', data);
         } else {
-          console.log('getSongQueue ->', data);
+          console.log('NOT OK backendAPI.getSongQueue', data);
         }
       }).error(function(error) {
-        console.log(error);
+        console.log('ERROR backendAPI.getSongQueue', error);
       });
     }
 
@@ -78,20 +78,16 @@
           album: album,
           album_art_url: album_art_url
         }).success(function(data) {
-          console.log(data);
-          if (data.status === 'NOT OK') {
-            console.log('NOT OK', data);
-          } else {
-            console.log('OK', data);
-
+          if (data.status === 'OK') {
             $('#slide-bottom-popup').modal('hide'); // TODO: Don't do this
-
             // refresh song queue, call getSongQueue() from queueController
             getSongQueue(); // TODO: make this a service
-
+            console.log('OK backendAPI.addSong', data);
+          } else {
+            console.log('NOT OK backendAPI.addSong', data);
           }
         }).error(function(error) {
-          console.log('FAIL', data.message);
+          console.log('ERROR backendAPI.addSong', error);
         });
 
     }

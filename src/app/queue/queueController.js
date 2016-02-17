@@ -31,17 +31,20 @@
         backendAPI.registerUser({
           username: name,
         }).success(function(data) {
-          sharedRoomData.userId = data.data;
-          $cookies.put('jb_user_name', sharedRoomData.userName);
-          $cookies.put('jb_user_id', sharedRoomData.userId);
-          joinRoom();
-          console.log('createUser ->', data);
+          if (data.status === 'OK') {
+            sharedRoomData.userId = data.data;
+            $cookies.put('jb_user_name', sharedRoomData.userName);
+            $cookies.put('jb_user_id', sharedRoomData.userId);
+            joinRoom();
+            console.log('OK backendAPI.registerUser', data);
+          } else {
+            console.log('NOT OK backendAPI.registerUser', data);
+          }
         }).error(function(error) {
-          console.log(error);
+          console.log('ERROR backendAPI.registerUser', error);
         })
       }
 
-      // Example usage of backendAPI factory
       // TODO: All of these should probably be moved to a separate service...
       function joinRoom() {
         backendAPI.joinRoom({
@@ -49,9 +52,8 @@
           user_id: sharedRoomData.userId,
           password: $cookies.get(sharedRoomData.roomId) ? $cookies.get(sharedRoomData.roomId) : sharedRoomData.password,
         }).success(function(data) {
-          console.log(data);
           if (data.status === 'OK') {
-            console.log('SUCCESS joinRoom ->', data);
+            console.log('OK backendAPI.joinRoom', data);
             getSongQueue();
           } else {
             if (data.message == "The correct password was not provided.") { // TODO: reuse this code below?
@@ -59,12 +61,11 @@
               sharedRoomData.password = window.prompt("Enter the password:");
               $cookies.put(sharedRoomData.roomId, sharedRoomData.password);
               joinRoom();
-            } else {
-              console.log('FAIL joinRoom ->', data);
             }
+            console.log('NOT OK backendAPI.joinRoom', data);
           }
         }).error(function(error) {
-          $scope.status = error.message;
+          console.log('ERROR backendAPI.joinRoom', error);
         });
       }
 
@@ -76,19 +77,18 @@
           if (data.status === 'OK') {
             sharedRoomData.roomName = data.room_name;
             sharedRoomData.queue = data.data;
-            console.log('SUCCESS getSongQueue ->', data);
+            console.log('OK backendAPI.getSongQueue', data);
           } else {
             if (data.message == "The correct password was not provided.") {
               sharedRoomData.passwordProtected = true;
               sharedRoomData.password = window.prompt("Enter the password:");
               $cookies.put(sharedRoomData.roomId, sharedRoomData.password);
               getSongQueue();
-            } else {
-              console.log('FAIL getSongQueue ->', data);
             }
+            console.log('NOT OK backendAPI.getSongQueue', data);
           }
         }).error(function(error) {
-          console.log(error);
+          console.log('ERROR backendAPI.getSongQueue', error);
         });
       }
 
@@ -100,10 +100,14 @@
           song_id: songId,
           new_pos: newPos,
         }).success(function(data) {
-          console.log('changeSongPosition ->',data);
-          getSongQueue();
+          if (data.status === 'OK') {
+            console.log('OK backendAPI.reorderSong', data);
+            getSongQueue();
+          } else {
+            console.log('NOT OK backendAPI.reorderSong', data);
+          }
         }).error(function(data) {
-          console.log(error);
+          console.log('ERROR backendAPI.reorderSong', error);
         });
       }
 
@@ -114,10 +118,14 @@
           password: sharedRoomData.password,
           song_id: songId,
         }).success(function(data) {
-          console.log('deleteSong ->', data);
-          getSongQueue();
+          if (data.status === 'OK') {
+            console.log('OK backendAPI.deleteSong', data);
+            getSongQueue();
+          } else {
+            console.log('NOT OK backendAPI.deleteSong', data);
+          }
         }).error(function(data) {
-          console.log(error);
+          console.log('ERROR backendAPI.deleteSong', error);
         });
       }
 
