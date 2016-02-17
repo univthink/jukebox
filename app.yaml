@@ -33,9 +33,14 @@ handlers:
   script: handler.application
 - url: /api/.*
   script: handler.application
+# - url: .*
+#   static_files: src/app/index.html
+#   upload: src/app/index.html
+- url: /dist
+  static_dir: dist
 - url: .*
-  static_files: src/app/index.html
-  upload: src/app/index.html
+  static_files: dist/index.html
+  upload: dist/index.html
 
 builtins:
 - deferred: on
