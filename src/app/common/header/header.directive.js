@@ -11,9 +11,10 @@
       restrict: 'A',
       replace: true,
       scope: {
-
+        currentlyPlaying: '='
       },
-      templateUrl: 'common/header/header.html'
+      templateUrl: 'common/header/header.html',
+      controller: headerController
     };
   }
 
