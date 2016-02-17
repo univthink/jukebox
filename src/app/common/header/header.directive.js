@@ -13,8 +13,7 @@
       scope: {
         currentlyPlaying: '='
       },
-      templateUrl: 'common/header/header.html',
-      controller: headerController
+      templateUrl: 'common/header/header.html'
     };
   }
 
