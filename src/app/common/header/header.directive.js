@@ -11,7 +11,7 @@
       restrict: 'A',
       replace: true,
       scope: {
-
+        currentlyPlaying: '='
       },
       templateUrl: 'common/header/header.html'
     };
