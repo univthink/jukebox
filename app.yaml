@@ -13,32 +13,8 @@ handlers:
   static_dir: src/app
 - url: /css
   static_dir: .tmp/css
-- url: /angular
-  static_dir: bower_components/angular
-- url: /angular-animate
-  static_dir: bower_components/angular-animate
-- url: /angular-bootstrap
-  static_dir: bower_components/angular-bootstrap
-- url: /angular-route
-  static_dir: bower_components/angular-route
-- url: /angular-mocks
-  static_dir: bower_components/angular-mocks
-- url: /angular-touch
-  static_dir: bower_components/angular-touch
-- url: /angular-ui
-  static_dir: bower_components/angular-ui
-- url: /ng-sortable
-  static_dir: bower_components/ng-sortable
-- url: /bootstrap
-  static_dir: bower_components/bootstrap
-- url: /jquery
-  static_dir: bower_components/jquery
-- url: /jquery-ui
-  static_dir: bower_components/jquery-ui
-- url: /normalize-css
-  static_dir: bower_components/normalize-css
-- url: /font-awesome
-  static_dir: bower_components/font-awesome
+- url: /bower_components
+  static_dir: bower_components
 - url: /common
   static_dir: src/app/common
 - url: /queue
