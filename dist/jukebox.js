@@ -11,9 +11,13 @@
         controller: 'SearchController',
         templateUrl: 'search/search.html'
       })
-      .when('/:roomId?', {
+      .when('/:roomId', {
         controller: 'QueueController',
         templateUrl: 'queue/queue.html'
+      })
+      .when('/', {
+        controller: 'HomeController',
+        templateUrl: 'home/home.html'
       })
       .otherwise({
         redirectTo: '/'
@@ -563,6 +567,31 @@
   });
 
 })();
+(function () {
+
+  'use strict';
+
+  angular
+    .module('jukebox')
+    .controller('HomeController', homeController);
+
+  function homeController($scope) {
+    $scope.pageClass = 'home-page';
+  }
+
+})();
+(function(module) {
+try {
+  module = angular.module('jukebox');
+} catch (e) {
+  module = angular.module('jukebox', []);
+}
+module.run(['$templateCache', function($templateCache) {
+  $templateCache.put('/jukebox/home/home.html',
+    '<div class="home-page"><div class="jb-icon"><svg><use xlink:href="#plus-icon"></use></svg></div></div>');
+}]);
+})();
+
 (function(module) {
 try {
   module = angular.module('jukebox');

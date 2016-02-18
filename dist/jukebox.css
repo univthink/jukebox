@@ -326,3 +326,32 @@ svg path {
   .song-search-results .song-search-result:hover {
     cursor: pointer;
     background-color: #424242; }
+
+.home-page {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  width: 100%;
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-align-items: center;
+  -ms-flex-align: center;
+  align-items: center;
+  -webkit-justify-content: center;
+  -ms-flex-pack: center;
+  justify-content: center;
+  background: radial-gradient(circle at center, #242424 0%, #191919 150%); }
+  .home-page .jb-icon {
+    position: relative;
+    margin: 0 auto; }
+    .home-page .jb-icon svg {
+      -webkit-transform: rotate(45deg);
+      transform: rotate(45deg);
+      width: 100px;
+      height: 100px;
+      fill: black;
+      transition: fill 1s ease; }
+      .home-page .jb-icon svg:hover {
+        fill: white; }
