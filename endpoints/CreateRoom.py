@@ -21,14 +21,14 @@ def load_image_stuff(song_key,url):
 #all_admin: 0 false, 1 true
 #password
 #initial playlist: JSON blob with songs to add initially
- 
+
 #Creates room according to the parameters passed to it
 class CreateRoom(webapp2.RequestHandler):
 
 	def post(self):
 		self.response.headers['Content-Type'] = 'application/json'
 		roomlist_name = utils.DEFAULT_ROOMLIST_NAME
-		
+
 		has_coordinates = True
 		if self.request.get("coordinates") != '':
 			try:
@@ -69,13 +69,13 @@ class CreateRoom(webapp2.RequestHandler):
 			hashed_password = hashlib.sha512(password).hexdigest() if password else ''
 
 			room = models.Room(parent=utils.roomlist_key(roomlist_name),
-							   creator=int(self.request.get('creator')),
-							   name=self.request.get('room_name'),
-							   mode=mode,
-							   all_admin=all_admin,
-							   password= hashed_password,
-							   queue=[],
-							   history=[])
+								 creator=int(self.request.get('creator')),
+								 name=self.request.get('room_name'),
+								 mode=mode,
+								 all_admin=all_admin,
+								 password= hashed_password,
+								 queue=[],
+								 history=[])
 
 
 			if has_coordinates:
@@ -95,14 +95,14 @@ class CreateRoom(webapp2.RequestHandler):
 							continue
 
 						song_model = models.Song(parent=room_key,
-										   url=song['url'],
-										   track=song['track'],
-										   artist=song['artist'],
-										   album=song['album'],
-										   history = False,
-										   image_url=None,
-										   status=0,
-										   submitter=guest.key)
+											 url=song['url'],
+											 track=song['track'],
+											 artist=song['artist'],
+											 album=song['album'],
+											 history = False,
+											 image_url=None,
+											 status=0,
+											 submitter=guest.key)
 
 						song_key = song_model.put()
 						try:

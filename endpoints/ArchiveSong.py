@@ -31,7 +31,7 @@ class ArchiveSong(webapp2.RequestHandler):
 		except:
 			self.response.write(json.dumps({"status": "NOT OK", "message": "The requested Room was not found."}))
 			return
-			
+
 		if not utils.checkPassword(self.request.get('password', ''), room.password):
 			self.response.write(json.dumps({"status": "NOT OK", "message": "The correct password was not provided."}))
 			return

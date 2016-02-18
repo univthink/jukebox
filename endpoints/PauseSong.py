@@ -35,7 +35,7 @@ class PauseSong(webapp2.RequestHandler):
 					except:
 						self.response.write(json.dumps({"status":"NOT OK", "message": "Errors pausing the song."}))
 
-				else: 
+				else:
 					try:
 						room.playing = True
 						room.put()

@@ -31,7 +31,7 @@ class CheckPlayStatus(webapp2.RequestHandler):
 			allowed = utils.checkPassword(self.request.get('password', ''), room.password)
 			if not allowed:
 				self.response.write(json.dumps({"status": "NOT OK", "message": "The correct password was not provided."}))
-			else: 
+			else:
 				try:
 					playing = room.playing
 				except:

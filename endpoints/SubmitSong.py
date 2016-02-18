@@ -83,15 +83,15 @@ class SubmitSong(webapp2.RequestHandler):
 							return
 
 						song = models.Song(parent=room.key,
-										   url=self.request.get('url'),
-										   track=self.request.get('track'),
-										   artist=self.request.get('artist'),
-										   album=self.request.get('album'),
-										   history=False,
-										   #image_url=imageStuff["thumbnail_url"] if imageStuff else None,
-										   image_url=albumArtUrl if albumArtUrl else None,
-										   status=0,
-										   submitter=guest[0].key)
+											 url=self.request.get('url'),
+											 track=self.request.get('track'),
+											 artist=self.request.get('artist'),
+											 album=self.request.get('album'),
+											 history=False,
+											 #image_url=imageStuff["thumbnail_url"] if imageStuff else None,
+											 image_url=albumArtUrl if albumArtUrl else None,
+											 status=0,
+											 submitter=guest[0].key)
 
 						song_key = song.put()
 
