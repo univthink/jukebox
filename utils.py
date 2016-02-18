@@ -39,7 +39,7 @@ def is_admin(room,user_id):
 	userlist_name = DEFAULT_USERLIST_NAME
 	user = models.User.get_by_id(int(user_id),parent=userlist_key(userlist_name))
 
-	
+
 	if user == None:
 		return False
 
@@ -62,12 +62,15 @@ class JSONEncoder(json.JSONEncoder):
         	obj['id'] = o.key.integer_id()
         	if isinstance(o, models.Room):
         		#Removes song queue and song history, changes creator_id to creator, changes password hash to existence of password.
-        		user = models.User.get_by_id(int(obj['creator']),parent=userlist_key(DEFAULT_USERLIST_NAME))
         		del obj['creator']
         		del obj['queue']
         		del obj['history']
-        		obj['creator_name'] = user.username
-        		obj['password'] =  bool(obj['password'])
+            obj['password'] =  bool(obj['password'])
+            try:
+              user = models.User.get_by_id(int(obj['creator']),parent=userlist_key(DEFAULT_USERLIST_NAME))
+        		  obj['creator_name'] = user.username
+            except:
+              obj['creator_name'] = '' # temporary fix for when the database is wonky
         	return obj
         elif isinstance(o, (ndb.GeoPt)):
             return str(o)  # Or whatever other date format you're OK with...
@@ -81,7 +84,7 @@ def distanceBetween(lat1, lon1, lat2, lon2):
 	lat2 = toRad(lat2);
 
 	a = math.sin(dLat/2) * math.sin(dLat/2) + math.sin(dLon/2) * math.sin(dLon/2) * math.cos(lat1) * math.cos(lat2)
-	c = 2 * math.atan2(math.sqrt(a), math.sqrt(1-a)); 
+	c = 2 * math.atan2(math.sqrt(a), math.sqrt(1-a));
 	d = R * c;
 	return d;
 

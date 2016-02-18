@@ -28,7 +28,7 @@ class SearchRoom(webapp2.RequestHandler):
 				pass
 
 		roomlist_name = utils.DEFAULT_ROOMLIST_NAME
-		room_id = self.request.get('room_id')
+		#room_id = self.request.get('room_id')
 		room = models.Room.query(ancestor=utils.roomlist_key(roomlist_name))
 		if self.request.get('name'):
 			room = room.filter(models.Room.name == self.request.get('name'))
@@ -45,7 +45,7 @@ class SearchRoom(webapp2.RequestHandler):
 			try:
 				[lat, lon] = self.request.get('coordinates').split(',')
 				[latMin, latMax, lonMin, lonMax] = utils.boundingBox(float(lat), float(lon), float(self.request.get('distance', '1000')))
-				#Because ndb doesn't allow filtering on multiple inequalities, latitude is filtered using ndb, and longitude is filtered 
+				#Because ndb doesn't allow filtering on multiple inequalities, latitude is filtered using ndb, and longitude is filtered
 				#later programtically.
 				room = room.filter(models.Room.lat >= latMin, models.Room.lat <= latMax)
 				filterLon = True

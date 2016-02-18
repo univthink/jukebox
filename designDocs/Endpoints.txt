@@ -10,7 +10,7 @@ iPhone Endpoints
 	-Send: username
 	-Return: user ID
 -Search Rooms
-	-Send: (username), (coordinates), (room name)
+	-Send: (member_id), (coordinates), (room name)
 	-Return: Table (Room #, username, coordinates, room name)
 -Get Song Queue
 	-Send: Room # (security)
