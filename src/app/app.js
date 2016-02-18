@@ -11,9 +11,13 @@
         controller: 'SearchController',
         templateUrl: 'search/search.html'
       })
-      .when('/:roomId?', {
+      .when('/:roomId', {
         controller: 'QueueController',
         templateUrl: 'queue/queue.html'
+      })
+      .when('/', {
+        controller: 'HomeController',
+        templateUrl: 'home/home.html'
       })
       .otherwise({
         redirectTo: '/'
