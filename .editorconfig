@@ -1,13 +1,21 @@
-# http://editorconfig.org
+# EditorConfig is awesome: http://EditorConfig.org
+
+# top-most EditorConfig file
 root = true
 
+# Defaults
 [*]
 indent_style = space
 indent_size = 2
-end_of_line = lf
 charset = utf-8
-trim_trailing_whitespace = true
+end_of_line = lf
 insert_final_newline = true
+trim_trailing_whitespace = true
 
+# Tab indentation override for Python files
+[*.py]
+indent_style = tab
+
+# Exception for README
 [*.md]
 trim_trailing_whitespace = false
