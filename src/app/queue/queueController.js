@@ -42,7 +42,7 @@
           }
         }).error(function(error) {
           console.log('ERROR backendAPI.registerUser', error);
-        })
+        });
       }
 
       // TODO: All of these should probably be moved to a separate service...

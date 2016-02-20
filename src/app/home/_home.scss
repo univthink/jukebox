@@ -10,6 +10,10 @@
 
   background: radial-gradient(circle at center, #242424 0%, #191919 150%);
 
+  #lg {
+    animation-fill-mode: forwards;
+  }
+
   .jb-icon {
     position: relative;
     margin: 0 auto;
@@ -19,10 +23,12 @@
       width: 100px;
       height: 100px;
       fill: black;
-      transition: fill 1s ease;
+      fill: url(#lg);
+
+      //transition: fill 1s ease;
 
       &:hover {
-        fill: white;
+        //fill: white;
       }
     }
   }

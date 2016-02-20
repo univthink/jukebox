@@ -158,6 +158,21 @@
             return $http.post(urlBase + '/delete_song', data);
         };
 
+        /* Search for rooms
+         *
+         * data = {
+         *   coordinates: String,   (optional)  // e.g. '37.4243622,-122.1472004'
+         *   distance: String,      (optional)  // defaults to '1000'
+         *   member_id: String,     (optional)
+         *   name: String,          (optional)
+         *   creator_id: String,    (optional)
+         * }
+         *
+         */
+        backendAPI.searchRooms = function(data) {
+            return $http.post(urlBase + '/search_room', data);
+        };
+
         return backendAPI;
     }]);
 
