@@ -1,10 +1,25 @@
 import webapp2, models, forms, json, utils, os
 from endpoints import *
 from google.appengine.ext import ndb
+# from google.appengine.api import users
 
 
 class APIDebugger(webapp2.RequestHandler):
 	def get(self):
+
+		# user = users.get_current_user()
+		# if user:
+		# 	if not users.is_current_user_admin():
+		# 		self.response.write('Access denied.')
+		# 		return
+		# 	self.response.headers['Content-Type'] = 'text/html; charset=utf-8'
+		# 	self.response.write('Hello, ' + user.nickname() + '. ')
+		# else:
+		# 	self.redirect(users.create_login_url(self.request.uri))
+
+		# self.response.headers['Content-Type'] = 'text/html; charset=utf-8'
+		# self.response.write('Hello, ' + user.nickname() + '. ')
+
 		self.response.write('Welcome to the Jukebox API Debugger!')
 		self.response.write(forms.CREATE_ROOM_FORM)
 
@@ -19,9 +34,9 @@ class APIDebugger(webapp2.RequestHandler):
 			self.response.write("<br>")
 
 			users_query = models.Guest.query(ancestor=room.key)
-			users = users_query.fetch()
+			room_users = users_query.fetch()
 			self.response.write("Users:<br>")
-			for user in users:
+			for user in room_users:
 				self.response.write(user)
 				self.response.write("<br>")
 
@@ -49,9 +64,9 @@ class APIDebugger(webapp2.RequestHandler):
 
 		userlist_name = self.request.get('userlist_name', utils.DEFAULT_USERLIST_NAME)
 		user_query = models.User.query(ancestor=utils.userlist_key(userlist_name))
-		users = user_query.fetch(10)
+		room_users = user_query.fetch(10)
 
-		for user in users:
+		for user in room_users:
 			self.response.write(user)
 			self.response.write("<br>")
 

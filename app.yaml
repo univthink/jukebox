@@ -31,6 +31,7 @@ handlers:
   upload: .tmp/jukebox-templates.js
 - url: /api
   script: handler.application
+  login: admin
 - url: /api/.*
   script: handler.application
 - url: .*
