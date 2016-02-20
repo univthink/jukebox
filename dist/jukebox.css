@@ -343,6 +343,9 @@ svg path {
   -ms-flex-pack: center;
   justify-content: center;
   background: radial-gradient(circle at center, #242424 0%, #191919 150%); }
+  .home-page #lg {
+    -webkit-animation-fill-mode: forwards;
+    animation-fill-mode: forwards; }
   .home-page .jb-icon {
     position: relative;
     margin: 0 auto; }
@@ -352,6 +355,4 @@ svg path {
       width: 100px;
       height: 100px;
       fill: black;
-      transition: fill 1s ease; }
-      .home-page .jb-icon svg:hover {
-        fill: white; }
+      fill: url(#lg); }
