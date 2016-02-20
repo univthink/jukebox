@@ -6,6 +6,12 @@ class ReorderSong(webapp2.RequestHandler):
 	def post(self):
 		self.response.headers['Content-Type'] = 'application/json'
 
+		try:
+			int(self.request.get('user_id'))
+		except:
+			self.response.write(json.dumps({"status": "NOT OK", "message": "Valid user_id must be supplied."}))
+			return
+
 		room_exists = True
 
 		roomlist_name = self.request.get('roomlist_name',utils.DEFAULT_ROOMLIST_NAME)
