@@ -7,18 +7,22 @@ $record-size: 240px;
 .header-info {
   padding-top: 10px;
   text-align: center;
-  height: 50px;
   background: white;
   color: $dark-gray-1;
 
   .header-label {
     text-align: center;
     &.song {
-      font-size: 20px;
+      font: $header-title-font;
     }
     &.artist {
+      font: $header-artist-font;
+      margin-top: -2px;
+    }
+    &.user {
+      font: $header-user-font;
       color: $light-gray-1;
-      font-size: 12px;
+      margin-top: 1px;
     }
   }
 }

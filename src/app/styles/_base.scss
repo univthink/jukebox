@@ -50,15 +50,15 @@ svg path {
     margin-left: 10px;
 
     .song-title {
-      font: $song-title-font;
+      font: $queue-title-font;
     }
 
     .song-artist {
-      font: $song-artist-font;
+      font: $queue-artist-font;
     }
 
     .song-user {
-      font: $song-user-font;
+      font: $queue-user-font;
       color: $light-gray-1;
     }
   }
