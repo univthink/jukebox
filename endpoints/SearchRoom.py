@@ -1,8 +1,6 @@
 import webapp2, models, forms, json, endpoints, utils
 from google.appengine.ext import ndb
 
-import logging
-
 class SearchRoom(webapp2.RequestHandler):
 
 	def post(self):
@@ -45,9 +43,7 @@ class SearchRoom(webapp2.RequestHandler):
 		if self.request.get('coordinates'):
 			try:
 				[lat, lon] = self.request.get('coordinates').split(',')
-				logging.info(str([lat,lon]))
 				[latMin, latMax, lonMin, lonMax] = utils.boundingBox(float(lat), float(lon), float(self.request.get('distance', '1000')))
-				logging.info(str([latMin, latMax, lonMin, lonMax]))
 				#Because ndb doesn't allow filtering on multiple inequalities, latitude is filtered using ndb, and longitude is filtered
 				#later programtically.
 				room = room.filter(models.Room.lat >= latMin, models.Room.lat <= latMax)
@@ -57,9 +53,7 @@ class SearchRoom(webapp2.RequestHandler):
 			# room = room.filter(models.Room.lon >= lonMin, models.Room.lon <= lonMax)
 
 		rooms = room.fetch()
-		logging.info(str(rooms))
 		#Programatically filtering by longitude.
 		if filterLon:
 			rooms = [p for p in rooms if (p.lon != None and p.lon>= lonMin and p.lon <= lonMax)]
-		logging.info(str(rooms))
 		self.response.write(utils.JSONEncoder().encode({"status":"OK", "data": rooms}))
