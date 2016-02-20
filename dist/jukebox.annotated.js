@@ -107,6 +107,26 @@
 })();
 (function () {
 
+  'use strict';
+
+  angular
+    .module('jukebox')
+    .directive('footer', footer);
+
+  function footer() {
+    return {
+      restrict: 'A',
+      replace: true,
+      scope: {
+
+      },
+      templateUrl: 'common/footer/footer.html'
+    };
+  }
+
+})();
+(function () {
+
     'use strict';
 
     angular
@@ -282,26 +302,6 @@
 
         return backendAPI;
     }]);
-
-})();
-(function () {
-
-  'use strict';
-
-  angular
-    .module('jukebox')
-    .directive('footer', footer);
-
-  function footer() {
-    return {
-      restrict: 'A',
-      replace: true,
-      scope: {
-
-      },
-      templateUrl: 'common/footer/footer.html'
-    };
-  }
 
 })();
 (function () {
@@ -704,8 +704,8 @@ try {
   module = angular.module('jukebox', []);
 }
 module.run(['$templateCache', function($templateCache) {
-  $templateCache.put('/jukebox/common/header/header.html',
-    '<div class="header"><div class="header-info"><div class="header-label song"><span>{{ currentlyPlaying.track }}</span></div><div class="header-label artist"><span>{{ currentlyPlaying.artist }}</span></div></div><div class="record-player"><div class="record" ng-if="currentlyPlaying"><img src="{{ currentlyPlaying.image_url }}"></div></div></div>');
+  $templateCache.put('/jukebox/common/plusButton/plusButton.html',
+    '<a href="#/{{ roomId }}/s" class="plus-button"><div class="plus-icon"><svg><use xlink:href="#plus-icon"></use></svg></div></a>');
 }]);
 })();
 
@@ -716,7 +716,7 @@ try {
   module = angular.module('jukebox', []);
 }
 module.run(['$templateCache', function($templateCache) {
-  $templateCache.put('/jukebox/common/plusButton/plusButton.html',
-    '<a href="#/{{ roomId }}/s" class="plus-button"><div class="plus-icon"><svg><use xlink:href="#plus-icon"></use></svg></div></a>');
+  $templateCache.put('/jukebox/common/header/header.html',
+    '<div class="header"><div class="header-info"><div class="header-label song"><span>{{ currentlyPlaying.track }}</span></div><div class="header-label artist"><span>{{ currentlyPlaying.artist }}</span></div></div><div class="record-player"><div class="record" ng-if="currentlyPlaying"><img src="{{ currentlyPlaying.image_url }}"></div></div></div>');
 }]);
 })();
