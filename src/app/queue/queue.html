@@ -15,8 +15,8 @@
             <div class="song-artist">{{ song.artist }}</div>
             <div class="song-user">@{{ song.submitter }}</div>
           </div>
-          <i class="fa fa-th-list drag-button" ng-show="!showDeleteButton" data-as-sortable-item-handle></i>
-          <i class="fa fa-trash fa-lg delete-button" ng-show="showDeleteButton" ng-click="deleteSong($event)"></i>
+          <i class="fa fa-th-list drag-button" ng-if="!showDeleteButton" data-as-sortable-item-handle></i>
+          <i class="fa fa-trash fa-lg delete-button" ng-if="showDeleteButton" ng-click="deleteSong($event)"></i>
         </div>
       </div>
     </div>
