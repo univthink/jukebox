@@ -7,7 +7,7 @@
 
   function routeProvider($routeProvider) {
     $routeProvider
-      .when('/:roomId?', {
+      .when('/:roomId', {
         controller: 'QueueController',
         templateUrl: 'queue/queue.html'
       })
