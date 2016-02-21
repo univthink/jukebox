@@ -10,12 +10,17 @@
     return {
       restrict: 'A',
       replace: true,
-      scope: {
-        roomId: '='
-      },
       templateUrl: 'common/plusButton/plusButton.html',
-      controller: ['$scope', function($scope) {
-        // TODO(justin): Update this to get roomId from sharedRoomData instead of scope
+      controller: ['$scope', '$uibModal', function($scope, $uibModal) {
+        $scope.showSearch = function() {
+          console.log('opening search modal');
+          var modalInstance = $uibModal.open({
+            templateUrl: 'search/search.html',
+            controller: 'SearchController',
+            windowClass: 'search-page',
+            keyboard: false
+          });
+        };
       }]
     };
   }

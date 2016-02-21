@@ -6,9 +6,7 @@
     .module('jukebox')
     .controller('SearchController', searchController);
 
-  function searchController($scope, $routeParams, $http, backendAPI, sharedRoomData) {
-    $scope.pageClass = 'search-page';
-
+  function searchController($scope, $routeParams, $http, backendAPI, sharedRoomData, $uibModalInstance) {
     $scope.roomId = $routeParams.roomId;
 
     $scope.myData = {};
@@ -66,6 +64,10 @@
       });
     }
 
+    $scope.closeSearch = function() {
+      $uibModalInstance.close();
+    };
+
     $scope.addSong = function(url, name, artist, album, album_art_url) {
 
         backendAPI.addSong({
@@ -79,18 +81,17 @@
           album_art_url: album_art_url
         }).success(function(data) {
           if (data.status === 'OK') {
-            $('#slide-bottom-popup').modal('hide'); // TODO: Don't do this
-            // refresh song queue, call getSongQueue() from queueController
             getSongQueue(); // TODO: make this a service
             console.log('OK backendAPI.addSong', data);
           } else {
             console.log('NOT OK backendAPI.addSong', data);
           }
+          $scope.closeSearch();
         }).error(function(error) {
           console.log('ERROR backendAPI.addSong', error);
         });
 
-    }
+    };
   }
 
 })();

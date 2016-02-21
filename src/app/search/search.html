@@ -1,9 +1,9 @@
 <div class="search-wrapper">
   <div class="search-header-items">
     <div class="search-header-item close-search">
-      <a href="#/{{ roomId }}">
+      <button ng-click="closeSearch()">
         <span>Cancel</span>
-      </a>
+      </button>
     </div>
     <div class="search-header-item search">
       <input id="song-search-box" type="search" ng-model="searchText" ng-model-options="{ debounce: 500 }" ng-change="myData.sendQuery()" autofocus/>
