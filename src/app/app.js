@@ -7,11 +7,7 @@
 
   function routeProvider($routeProvider) {
     $routeProvider
-      .when('/:roomId/s', {
-        controller: 'SearchController',
-        templateUrl: 'search/search.html'
-      })
-      .when('/:roomId', {
+      .when('/:roomId?', {
         controller: 'QueueController',
         templateUrl: 'queue/queue.html'
       })
@@ -23,20 +19,4 @@
         redirectTo: '/'
       });
   }
-
 })();
-// angular.module('jukebox', [
-//   'ngRoute',
-//   'jukebox.todo'
-// ])
-// .config(function ($routeProvider) {
-//   'use strict';
-//   $routeProvider
-//     .when('/todo', {
-//       controller: 'TodoCtrl',
-//       templateUrl: '/jukebox/todo/todo.html'
-//     })
-//     .otherwise({
-//       redirectTo: '/todo'
-//     });
-// });
