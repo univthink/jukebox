@@ -91,26 +91,6 @@
 })();
 (function () {
 
-  'use strict';
-
-  angular
-    .module('jukebox')
-    .directive('footer', footer);
-
-  function footer() {
-    return {
-      restrict: 'A',
-      replace: true,
-      scope: {
-
-      },
-      templateUrl: 'common/footer/footer.html'
-    };
-  }
-
-})();
-(function () {
-
     'use strict';
 
     angular
@@ -687,8 +667,8 @@ try {
   module = angular.module('jukebox', []);
 }
 module.run(['$templateCache', function($templateCache) {
-  $templateCache.put('/jukebox/common/footer/footer.html',
-    '<div class="footer"><div class="footer-label"><span>Jukebox App</span></div><div class="footer-copyright"><span>&copy; 2016, All rights reserved.</span></div></div>');
+  $templateCache.put('/jukebox/common/plusButton/plusButton.html',
+    '<a href="#/{{ roomId }}/s" class="plus-button"><div class="plus-icon"><svg><use xlink:href="#plus-icon"></use></svg></div></a>');
 }]);
 })();
 
