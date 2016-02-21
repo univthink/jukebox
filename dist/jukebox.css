@@ -199,16 +199,19 @@ svg path {
 .header-info {
   padding-top: 10px;
   text-align: center;
-  height: 50px;
   background: white;
   color: #424242; }
   .header-info .header-label {
     text-align: center; }
     .header-info .header-label.song {
-      font-size: 20px; }
+      font: 20px "Lato", "Helvetica Neue", "Lucida Grande", Verdana, sans-serif; }
     .header-info .header-label.artist {
+      font: 18px "Lato", "Helvetica Neue", "Lucida Grande", Verdana, sans-serif;
+      margin-top: -2px; }
+    .header-info .header-label.user {
+      font: 12px "Lato", "Helvetica Neue", "Lucida Grande", Verdana, sans-serif;
       color: #9B9B9B;
-      font-size: 12px; }
+      margin-top: 1px; }
 
 .record-player {
   padding-top: 20px;
@@ -259,12 +262,7 @@ svg path {
       fill: #191919; }
 
 .plus-button:hover {
-  pointer: cursor;
-  -webkit-transform: scale(1.5, 1.5);
-  transform: scale(1.5, 1.5); }
-  .plus-button:hover .plus-icon {
-    -webkit-transform: translate(-8px, -8px);
-    transform: translate(-8px, -8px); }
+  pointer: cursor; }
 
 .plus-button:active {
   background-color: #191919; }
@@ -293,6 +291,17 @@ svg path {
 .song-queue-item .delete-button {
   background-color: red; }
 
+.search-page.modal {
+  background-color: #191919; }
+  .search-page.modal .modal-dialog {
+    margin: 0;
+    width: 100%;
+    height: 100%; }
+    .search-page.modal .modal-dialog .modal-content {
+      background-color: inherit;
+      border: 0;
+      box-shadow: none; }
+
 .search-wrapper {
   padding: 6px; }
 
@@ -310,14 +319,18 @@ svg path {
     .search-header-item.search input:focus {
       outline: 0; }
 
-.search-header-item.close {
+.search-header-item.close-search {
   float: right;
   width: 54px;
   text-align: right; }
-  .search-header-item.close a {
+  .search-header-item.close-search button {
     text-decoration: none;
     background-color: #191919;
-    color: #FFF; }
+    color: #FFF;
+    padding: 0;
+    border: 0; }
+    .search-header-item.close-search button:focus {
+      outline: 0; }
 
 .song-search-results {
   margin-top: 6px; }

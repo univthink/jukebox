@@ -7,10 +7,6 @@
 
   function routeProvider($routeProvider) {
     $routeProvider
-      .when('/:roomId/s', {
-        controller: 'SearchController',
-        templateUrl: 'search/search.html'
-      })
       .when('/:roomId', {
         controller: 'QueueController',
         templateUrl: 'queue/queue.html'
@@ -24,23 +20,7 @@
       });
   }
   routeProvider.$inject = ["$routeProvider"];
-
 })();
-// angular.module('jukebox', [
-//   'ngRoute',
-//   'jukebox.todo'
-// ])
-// .config(function ($routeProvider) {
-//   'use strict';
-//   $routeProvider
-//     .when('/todo', {
-//       controller: 'TodoCtrl',
-//       templateUrl: '/jukebox/todo/todo.html'
-//     })
-//     .otherwise({
-//       redirectTo: '/todo'
-//     });
-// });
 
 (function () {
 
@@ -74,12 +54,17 @@
     return {
       restrict: 'A',
       replace: true,
-      scope: {
-        roomId: '='
-      },
       templateUrl: 'common/plusButton/plusButton.html',
-      controller: ['$scope', function($scope) {
-        // TODO(justin): Update this to get roomId from sharedRoomData instead of scope
+      controller: ['$scope', '$uibModal', function($scope, $uibModal) {
+        $scope.showSearch = function() {
+          console.log('opening search modal');
+          var modalInstance = $uibModal.open({
+            templateUrl: 'search/search.html',
+            controller: 'SearchController',
+            windowClass: 'search-page',
+            keyboard: false
+          });
+        };
       }]
     };
   }
@@ -335,9 +320,7 @@
     .module('jukebox')
     .controller('SearchController', searchController);
 
-  function searchController($scope, $routeParams, $http, backendAPI, sharedRoomData) {
-    $scope.pageClass = 'search-page';
-
+  function searchController($scope, $routeParams, $http, backendAPI, sharedRoomData, $uibModalInstance) {
     $scope.roomId = $routeParams.roomId;
 
     $scope.myData = {};
@@ -395,6 +378,10 @@
       });
     }
 
+    $scope.closeSearch = function() {
+      $uibModalInstance.close();
+    };
+
     $scope.addSong = function(url, name, artist, album, album_art_url) {
 
         backendAPI.addSong({
@@ -408,20 +395,19 @@
           album_art_url: album_art_url
         }).success(function(data) {
           if (data.status === 'OK') {
-            $('#slide-bottom-popup').modal('hide'); // TODO: Don't do this
-            // refresh song queue, call getSongQueue() from queueController
             getSongQueue(); // TODO: make this a service
             console.log('OK backendAPI.addSong', data);
           } else {
             console.log('NOT OK backendAPI.addSong', data);
           }
+          $scope.closeSearch();
         }).error(function(error) {
           console.log('ERROR backendAPI.addSong', error);
         });
 
-    }
+    };
   }
-  searchController.$inject = ["$scope", "$routeParams", "$http", "backendAPI", "sharedRoomData"];
+  searchController.$inject = ["$scope", "$routeParams", "$http", "backendAPI", "sharedRoomData", "$uibModalInstance"];
 
 })();
 (function () {
@@ -669,7 +655,7 @@ try {
 }
 module.run(['$templateCache', function($templateCache) {
   $templateCache.put('/jukebox/queue/queue.html',
-    '<div class="container"><div header currently-playing="room.queue[0]"></div><div ng-if="queueData.length > 0"><span>Your Song Queue</span></div><div class="song-queue" data-as-sortable="dragControlListeners" data-ng-model="room.queue"><div ng-repeat="song in room.queue"><div class="song-queue-item noselect" data-uuid="{{ song.unique_id }}" data-as-sortable-item ng-swipe-left="showDeleteButton = true" ng-swipe-right="showDeleteButton = false"><img src="{{ song.image_url }}" class="song-image"><div class="song-info"><div class="song-title">{{ song.track }}</div><div class="song-artist">{{ song.artist }}</div><div class="song-user">@{{ song.submitter }}</div></div><i class="fa fa-th-list drag-button" ng-show="!showDeleteButton" data-as-sortable-item-handle></i> <i class="fa fa-trash fa-lg delete-button" ng-show="showDeleteButton" ng-click="deleteSong($event)"></i></div></div></div></div><div plus-button room-id="roomId"></div>');
+    '<div class="queue-wrapper"><div header currently-playing="room.queue[0]"></div><div ng-if="queueData.length > 0"><span>Your Song Queue</span></div><div class="song-queue" data-as-sortable="dragControlListeners" data-ng-model="room.queue"><div ng-repeat="song in room.queue" ng-if="!$first"><div class="song-queue-item noselect" data-uuid="{{ song.unique_id }}" data-as-sortable-item ng-swipe-left="showDeleteButton = true" ng-swipe-right="showDeleteButton = false"><img src="{{ song.image_url }}" class="song-image"><div class="song-info"><div class="song-title">{{ song.track }}</div><div class="song-artist">{{ song.artist }}</div><div class="song-user">@{{ song.submitter }}</div></div><i class="fa fa-th-list drag-button" ng-if="!showDeleteButton" data-as-sortable-item-handle></i> <i class="fa fa-trash fa-lg delete-button" ng-if="showDeleteButton" ng-click="deleteSong($event)"></i></div></div></div></div><div plus-button></div>');
 }]);
 })();
 
@@ -681,7 +667,19 @@ try {
 }
 module.run(['$templateCache', function($templateCache) {
   $templateCache.put('/jukebox/search/search.html',
-    '<div class="search-wrapper"><div class="search-header-items"><div class="search-header-item close"><a href="#/{{ roomId }}"><span>Cancel</span></a></div><div class="search-header-item search"><input id="song-search-box" type="search" ng-model="searchText" ng-model-options="{ debounce: 500 }" ng-change="myData.sendQuery()" autofocus></div></div><div class="song-search-results"><div ng-if="myData.spotify.results.length > 0"><span>Spotify Results</span></div><div ng-repeat="result in myData.spotify.results"><div ng-click="addSong(result.uri, result.name, result.artists[0].name, result.album.name, result.album.images[0].url)" class="song-search-result"><img src="{{ result.album.images[0].url }}" class="song-image"><div class="song-info"><div class="song-title">{{ result.name }}</div><div class="song-artist">{{ result.artists[0].name }}</div></div></div></div></div></div>');
+    '<div class="search-wrapper"><div class="search-header-items"><div class="search-header-item close-search"><button ng-click="closeSearch()"><span>Cancel</span></button></div><div class="search-header-item search"><input id="song-search-box" type="search" ng-model="searchText" ng-model-options="{ debounce: 500 }" ng-change="myData.sendQuery()" autofocus></div></div><div class="song-search-results"><div ng-if="myData.spotify.results.length > 0"><span>Spotify Results</span></div><div ng-repeat="result in myData.spotify.results"><div ng-click="addSong(result.uri, result.name, result.artists[0].name, result.album.name, result.album.images[0].url)" class="song-search-result"><img src="{{ result.album.images[0].url }}" class="song-image"><div class="song-info"><div class="song-title">{{ result.name }}</div><div class="song-artist">{{ result.artists[0].name }}</div></div></div></div></div></div>');
+}]);
+})();
+
+(function(module) {
+try {
+  module = angular.module('jukebox');
+} catch (e) {
+  module = angular.module('jukebox', []);
+}
+module.run(['$templateCache', function($templateCache) {
+  $templateCache.put('/jukebox/common/header/header.html',
+    '<div class="header"><div class="header-info" ng-if="currentlyPlaying"><div class="header-label song"><span>{{ currentlyPlaying.track }}</span></div><div class="header-label artist"><span>{{ currentlyPlaying.artist }}</span></div><div class="header-label user"><span>@{{ currentlyPlaying.submitter }}</span></div></div><div class="record-player"><div class="record" ng-if="currentlyPlaying"><img src="{{ currentlyPlaying.image_url }}"></div></div></div>');
 }]);
 })();
 
@@ -705,18 +703,6 @@ try {
 }
 module.run(['$templateCache', function($templateCache) {
   $templateCache.put('/jukebox/common/plusButton/plusButton.html',
-    '<a href="#/{{ roomId }}/s" class="plus-button"><div class="plus-icon"><svg><use xlink:href="#plus-icon"></use></svg></div></a>');
-}]);
-})();
-
-(function(module) {
-try {
-  module = angular.module('jukebox');
-} catch (e) {
-  module = angular.module('jukebox', []);
-}
-module.run(['$templateCache', function($templateCache) {
-  $templateCache.put('/jukebox/common/header/header.html',
-    '<div class="header"><div class="header-info"><div class="header-label song"><span>{{ currentlyPlaying.track }}</span></div><div class="header-label artist"><span>{{ currentlyPlaying.artist }}</span></div></div><div class="record-player"><div class="record" ng-if="currentlyPlaying"><img src="{{ currentlyPlaying.image_url }}"></div></div></div>');
+    '<button ng-click="showSearch()" class="plus-button"><div class="plus-icon"><svg><use xlink:href="#plus-icon"></use></svg></div></button>');
 }]);
 })();
