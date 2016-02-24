@@ -1,12 +1,7 @@
 <div class="desktop-content">
   <div ng-controller="YoutubeController" ng-if="room.queue[0]">
-    <div class="iframe-youtube-player">
-      <div class="iframe-youtube" ng-if="room.queue[0]">
-        <div class="iframe-container">
-          <iframe id="ytplayer" type="text/html" width="640" height="390" allowfullscreen ng-src="{{ yt_video_id | youtubeEmbedUrl }}" frameborder="0"/>
-          <!-- <iframe ng-src="{{ currentlyPlaying.url | spotifyEmbedUrl }}" width="160" height="160" frameborder="0" allowtransparency="true" scrolling="no"></iframe> -->
-        </div>
-      </div>
+    <div class="iframe-container">
+      <iframe id="ytplayer" type="text/html" ng-src="{{ yt_video_id | youtubeEmbedUrl }}" frameborder="0" allowfullscreen/>
     </div>
   </div>
 </div>

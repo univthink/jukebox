@@ -16,18 +16,22 @@ body {
   display: none;
 }
 
-.page.desktop .desktop-content {
-  display: block;
-  float: left
-}
+.page.desktop {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
 
-.page.desktop .queue-wrapper {
-  width: 400px;
-  height: 100vh;
-  overflow: scroll;
-  float: right;
+  .desktop-content {
+    display: block;
+    flex: 2.5;
+    align-self: center;
+  }
+  .queue-wrapper {
+    flex: 1;
+    height: 100vh;
+    overflow: scroll;
+  }
 }
-
 
 input,
 textarea,
