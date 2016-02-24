@@ -38,12 +38,6 @@
       "dependencies": {
         "jquery": "^2.2.0"
       }
-    },
-    "bootstrap" : {
-      "main": [
-         "dist/css/bootstrap.css",
-         "dist/js/bootstrap.js"
-       ]
     }
   }
 }
