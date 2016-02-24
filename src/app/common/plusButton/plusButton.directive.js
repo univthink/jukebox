@@ -13,8 +13,7 @@
       templateUrl: 'common/plusButton/plusButton.html',
       controller: ['$scope', '$uibModal', function($scope, $uibModal) {
         $scope.showSearch = function() {
-          console.log('opening search modal');
-          var modalInstance = $uibModal.open({
+          $uibModal.open({
             templateUrl: 'search/search.html',
             controller: 'SearchController',
             windowClass: 'search-page',

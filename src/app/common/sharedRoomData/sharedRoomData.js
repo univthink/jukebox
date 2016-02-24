@@ -13,7 +13,7 @@
                 userId: '',
                 userName: '',
                 queue: {},
-            }
+            };
             return data;
         });
 
