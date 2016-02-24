@@ -78,6 +78,7 @@
             sharedRoomData.roomName = data.room_name;
             sharedRoomData.queue = data.data;
             console.log('OK backendAPI.getSongQueue', data);
+            $scope.$emit('someEvent', {});
           } else {
             if (data.message == "The correct password was not provided.") {
               sharedRoomData.passwordProtected = true;

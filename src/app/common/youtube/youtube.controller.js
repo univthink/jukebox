@@ -4,24 +4,43 @@
 
   angular
     .module('jukebox')
-    .controller('YoutubeController', function($scope, $http, $sce) {
+    .controller('YoutubeController', YoutubeController)
+    .filter('youtubeEmbedUrl', function($sce) {
+      return function(youtubeVideoId) {
+        return $sce.trustAsResourceUrl('http://www.youtube.com/embed/' + youtubeVideoId + '?autoplay=1&iv_load_policy=3&origin=http://letsjukebox.com/');
+      };
+    });
 
-      $scope.yt_id = '';
-      console.log($scope.currentlyPlaying);
+
+    function YoutubeController($scope, $http, $sce, sharedRoomData) {
 
       var yt_api_key = 'AIzaSyALGbklexv5u7P3zjV4xJCYfEYLwwukfkE';
-      console.log("youtube loaded.");
 
-      getMusicVideos()
-        .success(function(data) {
-          console.log(data);
-          if (data.items.length >= 1) {
-            $scope.yt_id = data.items[0].id.videoId;
-          }
-        })
-        .error(function(error) {
-          console.log(error);
-        })
+      $scope.room = sharedRoomData;
+      $scope.yt_video_id = '';
+      var firstTrackUUID = '';
+
+      $scope.$watch('room.queue', function() {
+        if ($scope.room.queue[0].unique_id !== firstTrackUUID) {
+          updateCurrentVideo();
+        }
+      });
+
+      updateCurrentVideo();
+
+      function updateCurrentVideo() {
+        firstTrackUUID = sharedRoomData.queue[0].unique_id;
+        getMusicVideos()
+          .success(function(data) {
+            console.log(data);
+            if (data.items.length >= 1) {
+              $scope.yt_video_id = data.items[0].id.videoId;
+            }
+          })
+          .error(function(error) {
+            console.log(error);
+          });
+      }
 
       function getMusicVideos() {
         return $http({
@@ -30,17 +49,13 @@
           params: {
             part: 'snippet',
             key: yt_api_key,
-            q: 'Kanye,West,Blood,on,the,leaves',
+            q: $scope.room.queue[0].track + ' ' + $scope.room.queue[0].artist,
             type: 'video',
             videoEmbeddable: 'true',
           }
         });
       }
 
-      function youtubeEmbedUrl(youtubeVideoId) {
-        return $sce.trustAsResourceUrl('http://www.youtube.com/embed/' + youtubeVideoId + '?autoplay=1&origin=http://letsjukebox.com/');
-      }
-
-    });
+    }
 
 })();
