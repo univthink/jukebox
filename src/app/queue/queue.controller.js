@@ -6,6 +6,7 @@
     .module('jukebox')
     .controller('QueueController', function($scope, $routeParams, $cookies, backendAPI, sharedRoomData) {
       $scope.pageClass = 'queue-page';
+      $scope.responsiveVersion = 'desktop';
 
       $scope.room = sharedRoomData;
       sharedRoomData.roomId = $routeParams.roomId;

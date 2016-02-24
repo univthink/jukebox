@@ -12,6 +12,23 @@ body {
     background: $background;
 }
 
+.page .desktop-content {
+  display: none;
+}
+
+.page.desktop .desktop-content {
+  display: block;
+  float: left
+}
+
+.page.desktop .queue-wrapper {
+  width: 400px;
+  height: 100vh;
+  overflow: scroll;
+  float: right;
+}
+
+
 input,
 textarea,
 button {
