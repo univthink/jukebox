@@ -20,36 +20,28 @@
       $scope.yt_video_id = '';
       var firstTrackUUID = '';
 
-      $scope.$watch('room.queue', function() {
-        if ($scope.room.queue[0].unique_id !== firstTrackUUID) {
-          updateCurrentVideo();
-        }
+      $rootScope.$watch('responsiveVersion', function() {
+        updateCurrentVideo();
       });
 
-      $rootScope.$watch('responsiveVersion', function() {
-        if ($rootScope.responsiveVersion == 'desktop') {
-          if ($scope.room.queue[0].unique_id !== firstTrackUUID) {
-            updateCurrentVideo();
-          }
-        } else {
-          // $scope.yt_video_id = '';
-        }
+      $scope.$watch('room.queue', function() {
+        updateCurrentVideo();
       });
 
       function updateCurrentVideo() {
+        if ($rootScope.responsiveVersion == 'mobile' && $scope.yt_video_id === '') return; // don't query on mobile
+        if ($scope.room.queue[0].unique_id == firstTrackUUID) return; // no need to requery youtube if the query hasn't changed
         firstTrackUUID = sharedRoomData.queue[0].unique_id;
-        if ($rootScope.responsiveVersion == 'desktop') {
-          getMusicVideos()
-            .success(function(data) {
-              console.log(data);
-              if (data.items.length >= 1) {
-                $scope.yt_video_id = data.items[0].id.videoId;
-              }
-            })
-            .error(function(error) {
-              console.log(error);
-            });
-          }
+        getMusicVideos()
+          .success(function(data) {
+            console.log('OK YoutubeController.updateCurrentVideo', data);
+            if (data.items.length >= 1) {
+              $scope.yt_video_id = data.items[0].id.videoId;
+            }
+          })
+          .error(function(error) {
+            console.log('ERROR YoutubeController.updateCurrentVideo', error);
+          });
       }
 
       function getMusicVideos() {
