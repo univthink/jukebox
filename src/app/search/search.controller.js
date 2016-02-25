@@ -13,6 +13,17 @@
     $scope.myData.spotify = {};
     // $scope.myData.soundcloud = {};
 
+    $http.get('http://localhost:8001/browse')
+      .then(function(data) {
+        console.log(data.data);
+        $scope.myData.spotify.suggestions = data.data.map(function(e) {
+          return e.track;
+        });
+      }, function(err) {
+        $scope.myData.spotify.suggestions = null;
+        console.log('Could not retrieve suggestions');
+      });
+
     $scope.myData.sendQuery = function() {
       //spotify API
       var spotifyResponsePromise = $http.get('https://api.spotify.com/v1/search', {
@@ -25,7 +36,7 @@
         $scope.myData.spotify.results = data.tracks.items;
       });
       spotifyResponsePromise.error(function() {
-        $scope.myData.spotify = {};
+        $scope.myData.spotify.results = null;
         console.log('ERROR returning results from spotify');
       });
 
