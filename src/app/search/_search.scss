@@ -1,3 +1,5 @@
+$content-padding: 6px;
+
 .search-page.modal {
   background-color: $background;
 
@@ -13,24 +15,25 @@
   }
 }
 
-.search-wrapper {
-  padding: 6px;
-}
-
 .search-header-items {
+  padding: $content-padding;
   line-height: 28px;
+  display: flex;
 }
 
 .search-header-item {
   &.search {
     color: $background;
     overflow: hidden;
+    flex: 1;
     input {
+      -webkit-appearance: none;
+      $text-padding: 8px;
       padding: 0;
-      padding-left: 8px;
+      padding-left: $text-padding;
       border-width: 0;
       border-radius: 4px;
-      width: 100%;
+      width: calc(100% - #{$text-padding});
       &:focus {
         outline: 0;
       }
@@ -38,8 +41,7 @@
   }
 
   &.close-search {
-    float: right;
-    width: 54px;
+    flex: 0 0 54px;
     text-align: right;
     button {
       text-decoration: none;
@@ -56,6 +58,9 @@
 
 .song-search-results, .song-suggestions {
   margin-top: 6px;
+  .song-results-header {
+    padding: $content-padding;
+  }
 
   .song-search-result {
 
