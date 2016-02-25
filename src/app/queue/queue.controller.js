@@ -4,7 +4,7 @@
 
   angular
     .module('jukebox')
-    .controller('QueueController', function($scope, $rootScope, $interval, $routeParams, $cookies, backendAPI, sharedRoomData, screenSize) {
+    .controller('QueueController', function($scope, $rootScope, $interval, $routeParams, $cookies, $uibModal, backendAPI, sharedRoomData, screenSize) {
 
       $scope.pageClass = 'queue-page';
       var autoRefreshQueue = undefined;
@@ -31,10 +31,19 @@
       if (!sharedRoomData.userId || !sharedRoomData.userName) {
         sharedRoomData.userName = POTENTIAL_USERNAMES[Math.floor(Math.random()*POTENTIAL_USERNAMES.length)];
         console.log("Your username will be", sharedRoomData.userName);
+        sharedRoomData.userName = promptForUsername();
         createUser(sharedRoomData.userName);
       } else {
         console.log("You already have a username! It is", sharedRoomData.userName);
         joinRoom(); // join room if you haven't already
+      }
+
+      function promptForUsername() {
+        console.log('prompting for username');
+        var modalInstance = $uibModal.open({
+          templateUrl: 'common/ui-elements/defaultModal.html'
+        });
+        return 'mitch';
       }
 
       function createUser(name) {

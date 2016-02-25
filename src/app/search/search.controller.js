@@ -22,11 +22,12 @@
         }
       });
       spotifyResponsePromise.success(function(data) {
+        console.log('OK SearchController.sendQuery', data);
         $scope.myData.spotify.results = data.tracks.items;
       });
-      spotifyResponsePromise.error(function() {
+      spotifyResponsePromise.error(function(error) {
         $scope.myData.spotify = {};
-        console.log('ERROR returning results from spotify');
+        console.log('ERROR SearchController.sendQuery', error);
       });
 
       // // soundcloud API
@@ -69,7 +70,6 @@
     };
 
     $scope.addSong = function(url, name, artist, album, album_art_url) {
-
         backendAPI.addSong({
           room_id: sharedRoomData.roomId,
           user_id: sharedRoomData.userId,
