@@ -2,7 +2,17 @@
   'use strict';
 
   angular
-    .module('jukebox', ['ngRoute', 'ngAnimate', 'ui.bootstrap', 'as.sortable', 'ngTouch', 'ngCookies'])
+    .module('jukebox', ['ngRoute', 'ngAnimate', 'ui.bootstrap', 'as.sortable', 'ngTouch', 'ngCookies', 'matchMedia'])
+    .directive('compile', function($compile, $timeout) {
+      return {
+        restrict: 'A',
+        link: function(scope, elem, attrs) {
+          $timeout(function() {
+            $compile(elem.contents())(scope);
+          });
+        }
+      }
+    })
     .config(routeProvider);
 
   function routeProvider($routeProvider) {
@@ -19,4 +29,5 @@
         redirectTo: '/'
       });
   }
+
 })();

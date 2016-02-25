@@ -1,0 +1,12 @@
+<div class="default">
+  <div class="modal-header">
+    <h3 class="modal-title">{{ modal_title }}</h3>
+  </div>
+  <div class="modal-body" compile ng-bind-html="modal_body_html"></div>
+  <div class="modal-footer">
+    <button class="btn btn-primary" type="button" ng-click="ok()">{{ primary_btn_text }}</button>
+    <div ng-if="secondary_btn_text">
+      <button class="btn btn-warning" type="button" ng-click="cancel()">{{ secondary_btn_text }}</button>
+    </div>
+  </div>
+</div>

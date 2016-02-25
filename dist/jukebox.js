@@ -2,15 +2,21 @@
   'use strict';
 
   angular
-    .module('jukebox', ['ngRoute', 'ngAnimate', 'ui.bootstrap', 'as.sortable', 'ngTouch', 'ngCookies'])
+    .module('jukebox', ['ngRoute', 'ngAnimate', 'ui.bootstrap', 'as.sortable', 'ngTouch', 'ngCookies', 'matchMedia'])
+    .directive('compile', function($compile, $timeout) {
+      return {
+        restrict: 'A',
+        link: function(scope, elem, attrs) {
+          $timeout(function() {
+            $compile(elem.contents())(scope);
+          });
+        }
+      }
+    })
     .config(routeProvider);
 
   function routeProvider($routeProvider) {
     $routeProvider
-      .when('/:roomId/s', {
-        controller: 'SearchController',
-        templateUrl: 'search/search.html'
-      })
       .when('/:roomId', {
         controller: 'QueueController',
         templateUrl: 'queue/queue.html'
@@ -25,22 +31,70 @@
   }
 
 })();
-// angular.module('jukebox', [
-//   'ngRoute',
-//   'jukebox.todo'
-// ])
-// .config(function ($routeProvider) {
-//   'use strict';
-//   $routeProvider
-//     .when('/todo', {
-//       controller: 'TodoCtrl',
-//       templateUrl: '/jukebox/todo/todo.html'
-//     })
-//     .otherwise({
-//       redirectTo: '/todo'
-//     });
-// });
 
+(function () {
+
+  'use strict';
+
+  angular
+    .module('jukebox')
+    .controller('YoutubeController', YoutubeController)
+    .filter('youtubeEmbedUrl', function($sce) {
+      return function(youtubeVideoId) {
+        return $sce.trustAsResourceUrl('http://www.youtube.com/embed/' + youtubeVideoId + '?autoplay=1&iv_load_policy=3&origin=http://letsjukebox.com/');
+      };
+    });
+
+
+    function YoutubeController($scope, $rootScope, $http, $sce, sharedRoomData) {
+
+      var yt_api_key = 'AIzaSyALGbklexv5u7P3zjV4xJCYfEYLwwukfkE';
+
+      $scope.room = sharedRoomData;
+      $scope.yt_video_id = '';
+      var firstTrackUUID = '';
+
+      $rootScope.$watch('responsiveVersion', function() {
+        updateCurrentVideo();
+      });
+
+      $scope.$watch('room.queue', function() {
+        updateCurrentVideo();
+      });
+
+      function updateCurrentVideo() {
+        if ($rootScope.responsiveVersion == 'mobile' && $scope.yt_video_id === '') return; // don't query on mobile
+        if ($scope.room.queue[0].unique_id == firstTrackUUID) return; // no need to requery youtube if the query hasn't changed
+        firstTrackUUID = sharedRoomData.queue[0].unique_id;
+        getMusicVideos()
+          .success(function(data) {
+            console.log('OK YoutubeController.updateCurrentVideo', data);
+            if (data.items.length >= 1) {
+              $scope.yt_video_id = data.items[0].id.videoId;
+            }
+          })
+          .error(function(error) {
+            console.log('ERROR YoutubeController.updateCurrentVideo', error);
+          });
+      }
+
+      function getMusicVideos() {
+        return $http({
+          url: 'https://www.googleapis.com/youtube/v3/search',
+          method: 'GET',
+          params: {
+            part: 'snippet',
+            key: yt_api_key,
+            q: $scope.room.queue[0].track + ' ' + $scope.room.queue[0].artist,
+            type: 'video',
+            videoEmbeddable: 'true',
+          }
+        });
+      }
+
+    }
+
+})();
 (function () {
 
     'use strict';
@@ -73,12 +127,16 @@
     return {
       restrict: 'A',
       replace: true,
-      scope: {
-        roomId: '='
-      },
       templateUrl: 'common/plusButton/plusButton.html',
-      controller: ['$scope', function($scope) {
-        // TODO(justin): Update this to get roomId from sharedRoomData instead of scope
+      controller: ['$scope', '$uibModal', function($scope, $uibModal) {
+        $scope.showSearch = function() {
+          var modalInstance = $uibModal.open({
+            templateUrl: 'search/search.html',
+            controller: 'SearchController',
+            windowClass: 'search-page',
+            keyboard: false
+          });
+        };
       }]
     };
   }
@@ -90,7 +148,12 @@
 
   angular
     .module('jukebox')
-    .directive('header', header);
+    .directive('header', header)
+    .filter('spotifyEmbedUrl', function($sce) {
+      return function(spotifyUri) {
+        return $sce.trustAsResourceUrl('https://embed.spotify.com/?uri=' + spotifyUri);
+      };
+    });
 
   function header() {
     return {
@@ -284,6 +347,21 @@
             return $http.post(urlBase + '/delete_song', data);
         };
 
+        /* Search for rooms
+         *
+         * data = {
+         *   coordinates: String,   (optional)  // e.g. '37.4243622,-122.1472004'
+         *   distance: String,      (optional)  // defaults to '1000'
+         *   member_id: String,     (optional)
+         *   name: String,          (optional)
+         *   creator_id: String,    (optional)
+         * }
+         *
+         */
+        backendAPI.searchRooms = function(data) {
+            return $http.post(urlBase + '/search_room', data);
+        };
+
         return backendAPI;
     }]);
 
@@ -294,27 +372,179 @@
 
   angular
     .module('jukebox')
-    .controller('QueueController', function($scope, $routeParams, $cookies, backendAPI, sharedRoomData) {
+    .directive('search', search);
+
+  function search() {
+    return {
+      restrict: 'A',
+      replace: true,
+      scope: {
+
+      },
+      templateUrl: 'search/search.html',
+      controller: ['$scope', function($scope) {
+
+      }]
+    };
+  }
+
+})();
+(function () {
+
+  'use strict';
+
+  angular
+    .module('jukebox')
+    .controller('SearchController', searchController);
+
+  function searchController($scope, $routeParams, $http, backendAPI, sharedRoomData, $uibModalInstance) {
+    $scope.roomId = $routeParams.roomId;
+
+    $scope.myData = {};
+    $scope.myData.spotify = {};
+    // $scope.myData.soundcloud = {};
+
+    $scope.myData.sendQuery = function() {
+      //spotify API
+      var spotifyResponsePromise = $http.get('https://api.spotify.com/v1/search', {
+        'params' : {
+          'q' : $scope.searchText,
+          'type' : 'track'
+        }
+      });
+      spotifyResponsePromise.success(function(data) {
+        console.log('OK SearchController.sendQuery', data);
+        $scope.myData.spotify.results = data.tracks.items;
+      });
+      spotifyResponsePromise.error(function(error) {
+        $scope.myData.spotify = {};
+        console.log('ERROR SearchController.sendQuery', error);
+      });
+
+      // // soundcloud API
+      // var clientId = '09ae0464d724195b755f6205f2753390';
+      // var soundcloudResponsePromise = $http.get('http://api.soundcloud.com/tracks/', {
+      //   'params' : {
+      //     'q' : $scope.searchText,
+      //     'client_id' : clientId
+      //   }
+      // });
+      // soundcloudResponsePromise.success(function(data) {
+      //   $scope.myData.soundcloud.results = data;
+      // });
+      // soundcloudResponsePromise.error(function() {
+      //   $scope.myData.soundcloud = {};
+      //   console.log('AJAX failed!');
+      // });
+    };
+
+    // TODO: this is duplicate code from queueController, it should be made into a service
+    function getSongQueue() {
+      backendAPI.getSongQueue({
+        room_id: sharedRoomData.roomId,
+        password: sharedRoomData.password,
+      }).success(function(data) {
+        if (data.status === 'OK') {
+          sharedRoomData.roomName = data.room_name;
+          sharedRoomData.queue = data.data;
+          console.log('OK backendAPI.getSongQueue', data);
+        } else {
+          console.log('NOT OK backendAPI.getSongQueue', data);
+        }
+      }).error(function(error) {
+        console.log('ERROR backendAPI.getSongQueue', error);
+      });
+    }
+
+    $scope.closeSearch = function() {
+      $uibModalInstance.close();
+    };
+
+    $scope.addSong = function(url, name, artist, album, album_art_url) {
+        backendAPI.addSong({
+          room_id: sharedRoomData.roomId,
+          user_id: sharedRoomData.userId,
+          password: sharedRoomData.password,
+          url: url,
+          track: name,
+          artist: artist,
+          album: album,
+          album_art_url: album_art_url
+        }).success(function(data) {
+          if (data.status === 'OK') {
+            getSongQueue(); // TODO: make this a service
+            console.log('OK backendAPI.addSong', data);
+          } else {
+            console.log('NOT OK backendAPI.addSong', data);
+          }
+          $scope.closeSearch();
+        }).error(function(error) {
+          console.log('ERROR backendAPI.addSong', error);
+        });
+
+    };
+  }
+
+})();
+(function () {
+
+  'use strict';
+
+  angular
+    .module('jukebox')
+    .controller('QueueController', function($scope, $rootScope, $interval, $routeParams, $cookies, $uibModal, backendAPI, sharedRoomData, screenSize) {
+
       $scope.pageClass = 'queue-page';
+      var autoRefreshQueue = undefined;
+      var QUEUE_REFRESH_RATE = 3000; // in ms
+
+      $rootScope.responsiveVersion = screenSize.is('xs, sm') ? 'mobile' : 'desktop';
+      // angular-match-media: updates the variable on window resize
+      $scope.mobile = screenSize.on('xs, sm', function(match) {
+          $scope.mobile = match;
+          $rootScope.responsiveVersion = match ? 'mobile' : 'desktop';
+      });
 
       $scope.room = sharedRoomData;
       sharedRoomData.roomId = $routeParams.roomId;
       $scope.roomId = sharedRoomData.roomId; //TODO(kyle): Remove this after plusButton.directive.js has been updated by justin
 
       // TODO: move this elsewhere
-      var POTENTIAL_USERNAMES = ['banana', 'apple', 'peach', 'mango', 'cherry', 'grape', 'pear', 'plum', 'pineapple', 'kiwi'];
+      //var POTENTIAL_USERNAMES = ['banana', 'apple', 'peach', 'mango', 'cherry', 'grape', 'pear', 'plum', 'pineapple', 'kiwi'];
+      var POTENTIAL_USERNAMES = ['BlueTrout', 'YellowDuck', 'RedHerring', 'BoredMoose', 'SillyWhale', 'OrangeEagle', 'VelvetMouse', 'GreenMonkey', 'VioletLobster', 'ConfusedTucan', 'WileySloth'];
 
       sharedRoomData.userId = $cookies.get('jb_user_id'); // TODO: think about moving this to sharedRoomData factory initialization
       sharedRoomData.userName = $cookies.get('jb_user_name');
       sharedRoomData.password = $cookies.get(sharedRoomData.roomId) ? $cookies.get(sharedRoomData.roomId) : '';
 
       if (!sharedRoomData.userId || !sharedRoomData.userName) {
-        sharedRoomData.userName = POTENTIAL_USERNAMES[Math.floor(Math.random()*POTENTIAL_USERNAMES.length)];
-        console.log("Your username will be", sharedRoomData.userName);
+        var autoGeneratedUsername = POTENTIAL_USERNAMES[Math.floor(Math.random()*POTENTIAL_USERNAMES.length)];
+        promptForUsername(autoGeneratedUsername);
         createUser(sharedRoomData.userName);
       } else {
-        console.log("You already have a username! It is", sharedRoomData.userName);
+        console.log("You already have a username! It is " + sharedRoomData.userName);
         joinRoom(); // join room if you haven't already
+      }
+
+      function promptForUsername(placeholder) {
+        var modalInstance = $uibModal.open({
+          templateUrl: 'common/ui-elements/defaultModal.html',
+          controller: ['$scope', '$sce', '$uibModalInstance', 'sharedRoomData', function($scope, $sce, $uibModalInstance, sharedRoomData) {
+            $scope.aliasInput = placeholder;
+            $scope.modal_title = 'Enter Your Alias';
+            $scope.modal_body_html = $sce.trustAsHtml('<span>@</span><input type="text" ng-model="aliasInput" class="form-control" placeholder="' + placeholder + '" required />');
+            $scope.primary_btn_text = 'CONTINUE';
+            $scope.ok = function() {
+              console.log($scope.aliasInput);
+              if (/[^a-zA-Z0-9]/.test($scope.aliasInput)) return; // check if alphanumeric
+              $uibModalInstance.close();
+              sharedRoomData.userName = $scope.aliasInput;
+              createUser(sharedRoomData.userName);
+            };
+          }],
+          backdrop: 'static',
+          windowClass: 'default'
+        });
       }
 
       function createUser(name) {
@@ -332,7 +562,7 @@
           }
         }).error(function(error) {
           console.log('ERROR backendAPI.registerUser', error);
-        })
+        });
       }
 
       // TODO: All of these should probably be moved to a separate service...
@@ -367,6 +597,12 @@
           if (data.status === 'OK') {
             sharedRoomData.roomName = data.room_name;
             sharedRoomData.queue = data.data;
+            // start interval if it hasn't been started already
+            if (!autoRefreshQueue) {
+              autoRefreshQueue = $interval(function() {
+                getSongQueue();
+              }, QUEUE_REFRESH_RATE);
+            }
             console.log('OK backendAPI.getSongQueue', data);
           } else {
             if (data.message == "The correct password was not provided.") {
@@ -454,129 +690,65 @@
 
   angular
     .module('jukebox')
-    .directive('search', search);
-
-  function search() {
-    return {
-      restrict: 'A',
-      replace: true,
-      scope: {
-
-      },
-      templateUrl: 'search/search.html',
-      controller: ['$scope', function($scope) {
-
-      }]
-    };
-  }
-
-})();
-(function () {
-
-  'use strict';
-
-  angular
-    .module('jukebox')
-    .controller('SearchController', searchController);
-
-  function searchController($scope, $routeParams, $http, backendAPI, sharedRoomData) {
-    $scope.pageClass = 'search-page';
-
-    $scope.roomId = $routeParams.roomId;
-
-    $scope.myData = {};
-    $scope.myData.spotify = {};
-    // $scope.myData.soundcloud = {};
-
-    $scope.myData.sendQuery = function() {
-      //spotify API
-      var spotifyResponsePromise = $http.get('https://api.spotify.com/v1/search', {
-        'params' : {
-          'q' : $scope.searchText,
-          'type' : 'track'
-        }
-      });
-      spotifyResponsePromise.success(function(data) {
-        $scope.myData.spotify.results = data.tracks.items;
-      });
-      spotifyResponsePromise.error(function() {
-        $scope.myData.spotify = {};
-        console.log('ERROR returning results from spotify');
-      });
-
-      // // soundcloud API
-      // var clientId = '09ae0464d724195b755f6205f2753390';
-      // var soundcloudResponsePromise = $http.get('http://api.soundcloud.com/tracks/', {
-      //   'params' : {
-      //     'q' : $scope.searchText,
-      //     'client_id' : clientId
-      //   }
-      // });
-      // soundcloudResponsePromise.success(function(data) {
-      //   $scope.myData.soundcloud.results = data;
-      // });
-      // soundcloudResponsePromise.error(function() {
-      //   $scope.myData.soundcloud = {};
-      //   console.log('AJAX failed!');
-      // });
-    };
-
-    // TODO: this is duplicate code from queueController, it should be made into a service
-    function getSongQueue() {
-      backendAPI.getSongQueue({
-        room_id: sharedRoomData.roomId,
-        password: sharedRoomData.password,
-      }).success(function(data) {
-        if (data.status === 'OK') {
-          sharedRoomData.roomName = data.room_name;
-          sharedRoomData.queue = data.data;
-          console.log('OK backendAPI.getSongQueue', data);
-        } else {
-          console.log('NOT OK backendAPI.getSongQueue', data);
-        }
-      }).error(function(error) {
-        console.log('ERROR backendAPI.getSongQueue', error);
-      });
-    }
-
-    $scope.addSong = function(url, name, artist, album, album_art_url) {
-
-        backendAPI.addSong({
-          room_id: sharedRoomData.roomId,
-          user_id: sharedRoomData.userId,
-          password: sharedRoomData.password,
-          url: url,
-          track: name,
-          artist: artist,
-          album: album,
-          album_art_url: album_art_url
-        }).success(function(data) {
-          if (data.status === 'OK') {
-            $('#slide-bottom-popup').modal('hide'); // TODO: Don't do this
-            // refresh song queue, call getSongQueue() from queueController
-            getSongQueue(); // TODO: make this a service
-            console.log('OK backendAPI.addSong', data);
-          } else {
-            console.log('NOT OK backendAPI.addSong', data);
-          }
-        }).error(function(error) {
-          console.log('ERROR backendAPI.addSong', error);
-        });
-
-    }
-  }
-
-})();
-(function () {
-
-  'use strict';
-
-  angular
-    .module('jukebox')
     .controller('HomeController', homeController);
 
-  function homeController($scope) {
+  function homeController($scope, $location, backendAPI) {
+
+    var GEOLOCATION_TIMEOUT = 30; // in seconds
+    var OLDEST_CACHED_GEOLOCATION_TO_ACCEPT = 60; // in seconds
+
     $scope.pageClass = 'home-page';
+    $scope.coordinates = [];
+
+    // $scope.logoFill = 'black';
+
+    function getLocation(callbackOnSuccess, callbackOnFailure) {
+      if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(
+          function(position) {
+            $scope.logoFill = 'url(#lg)';
+            console.log('Location acquired.');
+            var lat = position.coords.latitude;
+            var lng = position.coords.longitude;
+            $scope.coordinates = [lat, lng];
+            console.log($scope.coordinates);
+            if (callbackOnSuccess) callbackOnSuccess();
+          },
+          function() {
+            if (callbackOnFailure) callbackOnFailure();
+          },
+          { timeout: GEOLOCATION_TIMEOUT * 1000 },
+          { maximumAge: OLDEST_CACHED_GEOLOCATION_TO_ACCEPT * 1000 } // I'm not sure if this is helpful
+        );
+      } else {
+        if (callbackOnFailure) callbackOnFailure(); // browser/device does not support geolocation
+      }
+    }
+
+    getLocation(
+      function() { // success
+        backendAPI.searchRooms({
+          coordinates: $scope.coordinates[0] + ',' + $scope.coordinates[1],
+          distance: '10000'
+        }).success(function(data) {
+          if (data.status === 'OK') {
+            console.log('OK backendAPI.searchRooms', data);
+            if (data.data.length >= 1) {
+              $location.path(data.data[0].id);
+            } else {
+              console.log('No nearby rooms available.');
+            }
+          } else {
+            console.log('NOT OK backendAPI.searchRooms', data);
+          }
+        }).error(function(data) {
+          console.log('NOT OK backendAPI.searchRooms', data);
+        });
+      },
+      function() { // failure
+        console.log("Could not get location.");
+      });
+
   }
 
 })();
@@ -588,7 +760,7 @@ try {
 }
 module.run(['$templateCache', function($templateCache) {
   $templateCache.put('/jukebox/home/home.html',
-    '<div class="home-page"><div class="jb-icon"><svg><use xlink:href="#plus-icon"></use></svg></div></div>');
+    '<div class="home-page"><div class="jb-icon"><svg><lineargradient id="lg" x1="1" y1="1" x2="0" y2="0"><stop offset="0%" stop-opacity="1" stop-color="white"><stop offset="0%" stop-opacity="1" stop-color="white"><animate attributename="offset" values="0;1" fill="freeze" repeatcount="0" dur="5s" begin="0s"></stop><stop offset="0%" stop-opacity="1" stop-color="black"><animate attributename="offset" values="0;1" fill="freeze" repeatcount="0" dur="5s" begin="0s"></stop><stop offset="100%" stop-opacity="1" stop-color="black"></lineargradient><use xlink:href="#plus-icon"></use></svg></div></div>');
 }]);
 })();
 
@@ -600,7 +772,7 @@ try {
 }
 module.run(['$templateCache', function($templateCache) {
   $templateCache.put('/jukebox/queue/queue.html',
-    '<div class="container"><div header currently-playing="room.queue[0]"></div><div ng-if="queueData.length > 0"><span>Your Song Queue</span></div><div class="song-queue" data-as-sortable="dragControlListeners" data-ng-model="room.queue"><div ng-repeat="song in room.queue"><div class="song-queue-item noselect" data-uuid="{{ song.unique_id }}" data-as-sortable-item ng-swipe-left="showDeleteButton = true" ng-swipe-right="showDeleteButton = false"><img src="{{ song.image_url }}" class="song-image"><div class="song-info"><div class="song-title">{{ song.track }}</div><div class="song-artist">{{ song.artist }}</div><div class="song-user">@{{ song.submitter }}</div></div><i class="fa fa-th-list drag-button" ng-show="!showDeleteButton" data-as-sortable-item-handle></i> <i class="fa fa-trash fa-lg delete-button" ng-show="showDeleteButton" ng-click="deleteSong($event)"></i></div></div></div></div><div plus-button room-id="roomId"></div>');
+    '<div class="desktop-content"><div ng-controller="YoutubeController" ng-if="room.queue[0]"><div class="iframe-container"><iframe id="ytplayer" type="text/html" ng-src="{{ yt_video_id | youtubeEmbedUrl }}" frameborder="0" allowfullscreen></div></div></div><div class="queue-wrapper"><div header currently-playing="room.queue[0]"></div><div ng-if="queueData.length > 0"><span>Your Song Queue</span></div><div class="song-queue" data-as-sortable="dragControlListeners" data-ng-model="room.queue"><div ng-repeat="song in room.queue" ng-if="!$first"><div class="song-queue-item noselect" data-uuid="{{ song.unique_id }}" data-as-sortable-item ng-swipe-left="showDeleteButton = true" ng-swipe-right="showDeleteButton = false"><img src="{{ song.image_url }}" class="song-image"><div class="song-info"><div class="song-title">{{ song.track }}</div><div class="song-artist">{{ song.artist }}</div><div class="song-user">@{{ song.submitter }}</div></div><i class="fa fa-th-list drag-button" ng-if="!showDeleteButton" data-as-sortable-item-handle></i> <i class="fa fa-trash fa-lg delete-button" ng-if="showDeleteButton" ng-click="deleteSong($event)"></i></div></div></div></div><div plus-button></div>');
 }]);
 })();
 
@@ -612,19 +784,7 @@ try {
 }
 module.run(['$templateCache', function($templateCache) {
   $templateCache.put('/jukebox/search/search.html',
-    '<div class="search-wrapper"><div class="search-header-items"><div class="search-header-item close"><a href="#/{{ roomId }}"><span>Cancel</span></a></div><div class="search-header-item search"><input id="song-search-box" type="search" ng-model="searchText" ng-model-options="{ debounce: 500 }" ng-change="myData.sendQuery()" autofocus></div></div><div class="song-search-results"><div ng-if="myData.spotify.results.length > 0"><span>Spotify Results</span></div><div ng-repeat="result in myData.spotify.results"><div ng-click="addSong(result.uri, result.name, result.artists[0].name, result.album.name, result.album.images[0].url)" class="song-search-result"><img src="{{ result.album.images[0].url }}" class="song-image"><div class="song-info"><div class="song-title">{{ result.name }}</div><div class="song-artist">{{ result.artists[0].name }}</div></div></div></div></div></div>');
-}]);
-})();
-
-(function(module) {
-try {
-  module = angular.module('jukebox');
-} catch (e) {
-  module = angular.module('jukebox', []);
-}
-module.run(['$templateCache', function($templateCache) {
-  $templateCache.put('/jukebox/common/header/header.html',
-    '<div class="header"><div class="header-info"><div class="header-label song"><span>{{ currentlyPlaying.track }}</span></div><div class="header-label artist"><span>{{ currentlyPlaying.artist }}</span></div></div><div class="record-player"><div class="record" ng-if="currentlyPlaying"><img src="{{ currentlyPlaying.image_url }}"></div></div></div>');
+    '<div class="search-wrapper"><div class="search-header-items"><div class="search-header-item close-search"><button ng-click="closeSearch()"><span>Cancel</span></button></div><div class="search-header-item search"><input id="song-search-box" type="search" ng-model="searchText" ng-model-options="{ debounce: 500 }" ng-change="myData.sendQuery()" placeholder="Search Spotify..." autofocus></div></div><div class="song-search-results"><div ng-repeat="result in myData.spotify.results"><div ng-click="addSong(result.uri, result.name, result.artists[0].name, result.album.name, result.album.images[0].url)" class="song-search-result"><img src="{{ result.album.images[0].url }}" class="song-image"><div class="song-info"><div class="song-title">{{ result.name }}</div><div class="song-artist">{{ result.artists[0].name }}</div></div></div></div></div></div>');
 }]);
 })();
 
@@ -647,7 +807,31 @@ try {
   module = angular.module('jukebox', []);
 }
 module.run(['$templateCache', function($templateCache) {
+  $templateCache.put('/jukebox/common/header/header.html',
+    '<div class="header"><div class="header-info" ng-if="currentlyPlaying"><div class="header-label song"><span>{{ currentlyPlaying.track }}</span></div><div class="header-label artist"><span>{{ currentlyPlaying.artist }}</span></div><div class="header-label user"><span>@{{ currentlyPlaying.submitter }}</span></div></div><div class="record-player"><div class="record" ng-if="currentlyPlaying"><img src="{{ currentlyPlaying.image_url }}"></div></div></div>');
+}]);
+})();
+
+(function(module) {
+try {
+  module = angular.module('jukebox');
+} catch (e) {
+  module = angular.module('jukebox', []);
+}
+module.run(['$templateCache', function($templateCache) {
   $templateCache.put('/jukebox/common/plusButton/plusButton.html',
-    '<a href="#/{{ roomId }}/s" class="plus-button"><div class="plus-icon"><svg><use xlink:href="#plus-icon"></use></svg></div></a>');
+    '<button ng-click="showSearch()" class="plus-button"><div class="plus-icon"><svg><use xlink:href="#plus-icon"></use></svg></div></button>');
+}]);
+})();
+
+(function(module) {
+try {
+  module = angular.module('jukebox');
+} catch (e) {
+  module = angular.module('jukebox', []);
+}
+module.run(['$templateCache', function($templateCache) {
+  $templateCache.put('/jukebox/common/ui-elements/defaultModal.html',
+    '<div class="default"><div class="modal-header"><h3 class="modal-title">{{ modal_title }}</h3></div><div class="modal-body" compile ng-bind-html="modal_body_html"></div><div class="modal-footer"><button class="btn btn-primary" type="button" ng-click="ok()">{{ primary_btn_text }}</button><div ng-if="secondary_btn_text"><button class="btn btn-warning" type="button" ng-click="cancel()">{{ secondary_btn_text }}</button></div></div></div>');
 }]);
 })();

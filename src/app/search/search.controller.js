@@ -33,6 +33,7 @@
         }
       });
       spotifyResponsePromise.success(function(data) {
+        console.log('OK SearchController.sendQuery', data);
         $scope.myData.spotify.results = data.tracks.items;
       });
       spotifyResponsePromise.error(function() {
@@ -80,7 +81,6 @@
     };
 
     $scope.addSong = function(url, name, artist, album, album_art_url) {
-
         backendAPI.addSong({
           room_id: sharedRoomData.roomId,
           user_id: sharedRoomData.userId,
