@@ -4,9 +4,16 @@
 
   angular
     .module('jukebox')
-    .controller('QueueController', function($scope, $routeParams, $cookies, backendAPI, sharedRoomData) {
+    .controller('QueueController', function($scope, $rootScope, $routeParams, $cookies, backendAPI, sharedRoomData, screenSize) {
+
       $scope.pageClass = 'queue-page';
-      $scope.responsiveVersion = 'desktop';
+
+      $rootScope.responsiveVersion = screenSize.is('xs, sm') ? 'mobile' : 'desktop';
+      // angular-match-media: updates the variable on window resize
+      $scope.mobile = screenSize.on('xs, sm', function(match) {
+          $scope.mobile = match;
+          $rootScope.responsiveVersion = match ? 'mobile' : 'desktop';
+      });
 
       $scope.room = sharedRoomData;
       sharedRoomData.roomId = $routeParams.roomId;

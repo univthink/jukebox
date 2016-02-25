@@ -12,7 +12,7 @@
     });
 
 
-    function YoutubeController($scope, $http, $sce, sharedRoomData) {
+    function YoutubeController($scope, $rootScope, $http, $sce, sharedRoomData) {
 
       var yt_api_key = 'AIzaSyALGbklexv5u7P3zjV4xJCYfEYLwwukfkE';
 
@@ -26,20 +26,30 @@
         }
       });
 
-      updateCurrentVideo();
+      $rootScope.$watch('responsiveVersion', function() {
+        if ($rootScope.responsiveVersion == 'desktop') {
+          if ($scope.room.queue[0].unique_id !== firstTrackUUID) {
+            updateCurrentVideo();
+          }
+        } else {
+          // $scope.yt_video_id = '';
+        }
+      });
 
       function updateCurrentVideo() {
         firstTrackUUID = sharedRoomData.queue[0].unique_id;
-        getMusicVideos()
-          .success(function(data) {
-            console.log(data);
-            if (data.items.length >= 1) {
-              $scope.yt_video_id = data.items[0].id.videoId;
-            }
-          })
-          .error(function(error) {
-            console.log(error);
-          });
+        if ($rootScope.responsiveVersion == 'desktop') {
+          getMusicVideos()
+            .success(function(data) {
+              console.log(data);
+              if (data.items.length >= 1) {
+                $scope.yt_video_id = data.items[0].id.videoId;
+              }
+            })
+            .error(function(error) {
+              console.log(error);
+            });
+          }
       }
 
       function getMusicVideos() {
