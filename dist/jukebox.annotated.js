@@ -776,7 +776,7 @@ try {
 }
 module.run(['$templateCache', function($templateCache) {
   $templateCache.put('/jukebox/queue/queue.html',
-    '<div class="desktop-content"><div ng-controller="YoutubeController" ng-if="room.queue[0]"><div class="iframe-container"><iframe id="ytplayer" type="text/html" ng-src="{{ yt_video_id | youtubeEmbedUrl }}" frameborder="0" allowfullscreen></div></div></div><div class="queue-wrapper"><div header currently-playing="room.queue[0]"></div><div ng-if="queueData.length > 0"><span>Your Song Queue</span></div><div class="song-queue" data-as-sortable="dragControlListeners" data-ng-model="room.queue"><div ng-repeat="song in room.queue"><div class="song-queue-item noselect" data-uuid="{{ song.unique_id }}" data-as-sortable-item ng-swipe-left="showDeleteButton = true" ng-swipe-right="showDeleteButton = false"><img src="{{ song.image_url }}" class="song-image"><div class="song-info"><div class="song-title">{{ song.track }}</div><div class="song-artist">{{ song.artist }}</div><div class="song-user">@{{ song.submitter }}</div></div><i class="fa fa-th-list drag-button" ng-if="!showDeleteButton" data-as-sortable-item-handle></i> <i class="fa fa-trash fa-lg delete-button" ng-if="showDeleteButton" ng-click="deleteSong($event)"></i></div></div></div></div><div plus-button></div>');
+    '<div class="desktop-content"><div ng-controller="YoutubeController" ng-if="room.queue[0]"><div class="iframe-container"><iframe id="ytplayer" type="text/html" ng-src="{{ yt_video_id | youtubeEmbedUrl }}" frameborder="0" allowfullscreen></div></div></div><div class="queue-wrapper"><div header currently-playing="room.queue[0]"></div><div ng-if="queueData.length > 0"><span>Your Song Queue</span></div><div class="song-queue" data-as-sortable="dragControlListeners" data-ng-model="room.queue"><div ng-repeat="song in room.queue" ng-if="!$first"><div class="song-queue-item noselect" data-uuid="{{ song.unique_id }}" data-as-sortable-item ng-swipe-left="showDeleteButton = true" ng-swipe-right="showDeleteButton = false"><img src="{{ song.image_url }}" class="song-image"><div class="song-info"><div class="song-title">{{ song.track }}</div><div class="song-artist">{{ song.artist }}</div><div class="song-user">@{{ song.submitter }}</div></div><i class="fa fa-th-list drag-button" ng-if="!showDeleteButton" data-as-sortable-item-handle></i> <i class="fa fa-trash fa-lg delete-button" ng-if="showDeleteButton" ng-click="deleteSong($event)"></i></div></div></div></div><div plus-button></div>');
 }]);
 })();
 
@@ -811,8 +811,8 @@ try {
   module = angular.module('jukebox', []);
 }
 module.run(['$templateCache', function($templateCache) {
-  $templateCache.put('/jukebox/common/plusButton/plusButton.html',
-    '<button ng-click="showSearch()" class="plus-button"><div class="plus-icon"><svg><use xlink:href="#plus-icon"></use></svg></div></button>');
+  $templateCache.put('/jukebox/common/header/header.html',
+    '<div class="header"><div class="header-info" ng-if="currentlyPlaying"><div class="header-label song"><span>{{ currentlyPlaying.track }}</span></div><div class="header-label artist"><span>{{ currentlyPlaying.artist }}</span></div><div class="header-label user"><span>@{{ currentlyPlaying.submitter }}</span></div></div><div class="record-player"><div class="record" ng-if="currentlyPlaying"><img src="{{ currentlyPlaying.image_url }}"></div></div></div>');
 }]);
 })();
 
@@ -823,8 +823,8 @@ try {
   module = angular.module('jukebox', []);
 }
 module.run(['$templateCache', function($templateCache) {
-  $templateCache.put('/jukebox/common/header/header.html',
-    '<div class="header"><div class="header-info" ng-if="currentlyPlaying"><div class="header-label song"><span>{{ currentlyPlaying.track }}</span></div><div class="header-label artist"><span>{{ currentlyPlaying.artist }}</span></div><div class="header-label user"><span>@{{ currentlyPlaying.submitter }}</span></div></div><div class="record-player"><div class="record" ng-if="currentlyPlaying"><img src="{{ currentlyPlaying.image_url }}"></div></div></div>');
+  $templateCache.put('/jukebox/common/plusButton/plusButton.html',
+    '<button ng-click="showSearch()" class="plus-button"><div class="plus-icon"><svg><use xlink:href="#plus-icon"></use></svg></div></button>');
 }]);
 })();
 
