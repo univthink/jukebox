@@ -141,6 +141,34 @@ body {
 .page {
   background: #191919; }
 
+.page .desktop-content {
+  display: none; }
+
+.page.desktop {
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-flex-direction: row;
+  -ms-flex-direction: row;
+  flex-direction: row;
+  -webkit-justify-content: center;
+  -ms-flex-pack: center;
+  justify-content: center; }
+  .page.desktop .desktop-content {
+    display: block;
+    -webkit-flex: 2.5;
+    -ms-flex: 2.5;
+    flex: 2.5;
+    -webkit-align-self: center;
+    -ms-flex-item-align: center;
+    align-self: center; }
+  .page.desktop .queue-wrapper {
+    -webkit-flex: 1;
+    -ms-flex: 1;
+    flex: 1;
+    height: 100vh;
+    overflow: scroll; }
+
 input,
 textarea,
 button {
@@ -273,6 +301,19 @@ svg path {
   outline: 0; }
 
 /* Main */
+#ytplayer {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%; }
+
+.iframe-container {
+  position: relative;
+  width: 100%;
+  height: 0;
+  padding-bottom: 56.25%; }
+
 .song-queue:last-child {
   margin-bottom: 64px; }
 

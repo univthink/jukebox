@@ -2,7 +2,7 @@
   'use strict';
 
   angular
-    .module('jukebox', ['ngRoute', 'ngAnimate', 'ui.bootstrap', 'as.sortable', 'ngTouch', 'ngCookies'])
+    .module('jukebox', ['ngRoute', 'ngAnimate', 'ui.bootstrap', 'as.sortable', 'ngTouch', 'ngCookies', 'matchMedia'])
     .config(routeProvider);
 
   function routeProvider($routeProvider) {
@@ -22,6 +22,70 @@
   routeProvider.$inject = ["$routeProvider"];
 })();
 
+(function () {
+
+  'use strict';
+
+  angular
+    .module('jukebox')
+    .controller('YoutubeController', YoutubeController)
+    .filter('youtubeEmbedUrl', ["$sce", function($sce) {
+      return function(youtubeVideoId) {
+        return $sce.trustAsResourceUrl('http://www.youtube.com/embed/' + youtubeVideoId + '?autoplay=1&iv_load_policy=3&origin=http://letsjukebox.com/');
+      };
+    }]);
+
+
+    function YoutubeController($scope, $rootScope, $http, $sce, sharedRoomData) {
+
+      var yt_api_key = 'AIzaSyALGbklexv5u7P3zjV4xJCYfEYLwwukfkE';
+
+      $scope.room = sharedRoomData;
+      $scope.yt_video_id = '';
+      var firstTrackUUID = '';
+
+      $rootScope.$watch('responsiveVersion', function() {
+        updateCurrentVideo();
+      });
+
+      $scope.$watch('room.queue', function() {
+        updateCurrentVideo();
+      });
+
+      function updateCurrentVideo() {
+        if ($rootScope.responsiveVersion == 'mobile' && $scope.yt_video_id === '') return; // don't query on mobile
+        if ($scope.room.queue[0].unique_id == firstTrackUUID) return; // no need to requery youtube if the query hasn't changed
+        firstTrackUUID = sharedRoomData.queue[0].unique_id;
+        getMusicVideos()
+          .success(function(data) {
+            console.log('OK YoutubeController.updateCurrentVideo', data);
+            if (data.items.length >= 1) {
+              $scope.yt_video_id = data.items[0].id.videoId;
+            }
+          })
+          .error(function(error) {
+            console.log('ERROR YoutubeController.updateCurrentVideo', error);
+          });
+      }
+
+      function getMusicVideos() {
+        return $http({
+          url: 'https://www.googleapis.com/youtube/v3/search',
+          method: 'GET',
+          params: {
+            part: 'snippet',
+            key: yt_api_key,
+            q: $scope.room.queue[0].track + ' ' + $scope.room.queue[0].artist,
+            type: 'video',
+            videoEmbeddable: 'true',
+          }
+        });
+      }
+
+    }
+    YoutubeController.$inject = ["$scope", "$rootScope", "$http", "$sce", "sharedRoomData"];
+
+})();
 (function () {
 
     'use strict';
@@ -76,7 +140,12 @@
 
   angular
     .module('jukebox')
-    .directive('header', header);
+    .directive('header', header)
+    .filter('spotifyEmbedUrl', ["$sce", function($sce) {
+      return function(spotifyUri) {
+        return $sce.trustAsResourceUrl('https://embed.spotify.com/?uri=' + spotifyUri);
+      };
+    }]);
 
   function header() {
     return {
@@ -416,8 +485,18 @@
 
   angular
     .module('jukebox')
-    .controller('QueueController', ["$scope", "$routeParams", "$cookies", "backendAPI", "sharedRoomData", function($scope, $routeParams, $cookies, backendAPI, sharedRoomData) {
+    .controller('QueueController', ["$scope", "$rootScope", "$interval", "$routeParams", "$cookies", "backendAPI", "sharedRoomData", "screenSize", function($scope, $rootScope, $interval, $routeParams, $cookies, backendAPI, sharedRoomData, screenSize) {
+
       $scope.pageClass = 'queue-page';
+      var autoRefreshQueue = undefined;
+      var QUEUE_REFRESH_RATE = 3000; // in ms
+
+      $rootScope.responsiveVersion = screenSize.is('xs, sm') ? 'mobile' : 'desktop';
+      // angular-match-media: updates the variable on window resize
+      $scope.mobile = screenSize.on('xs, sm', function(match) {
+          $scope.mobile = match;
+          $rootScope.responsiveVersion = match ? 'mobile' : 'desktop';
+      });
 
       $scope.room = sharedRoomData;
       sharedRoomData.roomId = $routeParams.roomId;
@@ -489,6 +568,12 @@
           if (data.status === 'OK') {
             sharedRoomData.roomName = data.room_name;
             sharedRoomData.queue = data.data;
+            // start interval if it hasn't been started already
+            if (!autoRefreshQueue) {
+              autoRefreshQueue = $interval(function() {
+                getSongQueue();
+              }, QUEUE_REFRESH_RATE);
+            }
             console.log('OK backendAPI.getSongQueue', data);
           } else {
             if (data.message == "The correct password was not provided.") {
@@ -619,7 +704,11 @@
         }).success(function(data) {
           if (data.status === 'OK') {
             console.log('OK backendAPI.searchRooms', data);
-            $location.path(data.data[0].id);
+            if (data.data.length >= 1) {
+              $location.path(data.data[0].id);
+            } else {
+              console.log('No nearby rooms available.');
+            }
           } else {
             console.log('NOT OK backendAPI.searchRooms', data);
           }
@@ -655,7 +744,7 @@ try {
 }
 module.run(['$templateCache', function($templateCache) {
   $templateCache.put('/jukebox/queue/queue.html',
-    '<div class="queue-wrapper"><div header currently-playing="room.queue[0]"></div><div ng-if="queueData.length > 0"><span>Your Song Queue</span></div><div class="song-queue" data-as-sortable="dragControlListeners" data-ng-model="room.queue"><div ng-repeat="song in room.queue" ng-if="!$first"><div class="song-queue-item noselect" data-uuid="{{ song.unique_id }}" data-as-sortable-item ng-swipe-left="showDeleteButton = true" ng-swipe-right="showDeleteButton = false"><img src="{{ song.image_url }}" class="song-image"><div class="song-info"><div class="song-title">{{ song.track }}</div><div class="song-artist">{{ song.artist }}</div><div class="song-user">@{{ song.submitter }}</div></div><i class="fa fa-th-list drag-button" ng-if="!showDeleteButton" data-as-sortable-item-handle></i> <i class="fa fa-trash fa-lg delete-button" ng-if="showDeleteButton" ng-click="deleteSong($event)"></i></div></div></div></div><div plus-button></div>');
+    '<div class="desktop-content"><div ng-controller="YoutubeController" ng-if="room.queue[0]"><div class="iframe-container"><iframe id="ytplayer" type="text/html" ng-src="{{ yt_video_id | youtubeEmbedUrl }}" frameborder="0" allowfullscreen></div></div></div><div class="queue-wrapper"><div header currently-playing="room.queue[0]"></div><div ng-if="queueData.length > 0"><span>Your Song Queue</span></div><div class="song-queue" data-as-sortable="dragControlListeners" data-ng-model="room.queue"><div ng-repeat="song in room.queue"><div class="song-queue-item noselect" data-uuid="{{ song.unique_id }}" data-as-sortable-item ng-swipe-left="showDeleteButton = true" ng-swipe-right="showDeleteButton = false"><img src="{{ song.image_url }}" class="song-image"><div class="song-info"><div class="song-title">{{ song.track }}</div><div class="song-artist">{{ song.artist }}</div><div class="song-user">@{{ song.submitter }}</div></div><i class="fa fa-th-list drag-button" ng-if="!showDeleteButton" data-as-sortable-item-handle></i> <i class="fa fa-trash fa-lg delete-button" ng-if="showDeleteButton" ng-click="deleteSong($event)"></i></div></div></div></div><div plus-button></div>');
 }]);
 })();
 
@@ -690,8 +779,8 @@ try {
   module = angular.module('jukebox', []);
 }
 module.run(['$templateCache', function($templateCache) {
-  $templateCache.put('/jukebox/common/plusButton/plusButton.html',
-    '<button ng-click="showSearch()" class="plus-button"><div class="plus-icon"><svg><use xlink:href="#plus-icon"></use></svg></div></button>');
+  $templateCache.put('/jukebox/common/header/header.html',
+    '<div class="header"><div class="header-info" ng-if="currentlyPlaying"><div class="header-label song"><span>{{ currentlyPlaying.track }}</span></div><div class="header-label artist"><span>{{ currentlyPlaying.artist }}</span></div><div class="header-label user"><span>@{{ currentlyPlaying.submitter }}</span></div></div><div class="record-player"><div class="record" ng-if="currentlyPlaying"><img src="{{ currentlyPlaying.image_url }}"></div></div></div>');
 }]);
 })();
 
@@ -702,7 +791,7 @@ try {
   module = angular.module('jukebox', []);
 }
 module.run(['$templateCache', function($templateCache) {
-  $templateCache.put('/jukebox/common/header/header.html',
-    '<div class="header"><div class="header-info" ng-if="currentlyPlaying"><div class="header-label song"><span>{{ currentlyPlaying.track }}</span></div><div class="header-label artist"><span>{{ currentlyPlaying.artist }}</span></div><div class="header-label user"><span>@{{ currentlyPlaying.submitter }}</span></div></div><div class="record-player"><div class="record" ng-if="currentlyPlaying"><img src="{{ currentlyPlaying.image_url }}"></div></div></div>');
+  $templateCache.put('/jukebox/common/plusButton/plusButton.html',
+    '<button ng-click="showSearch()" class="plus-button"><div class="plus-icon"><svg><use xlink:href="#plus-icon"></use></svg></div></button>');
 }]);
 })();
