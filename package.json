@@ -7,7 +7,8 @@
     "test": "gulp test"
   },
   "dependencies": {
-    "normalize-scss": "^4.0.3"
+    "normalize-scss": "^4.0.3",
+    "spotify-web-api-node": "^2.2.0"
   },
   "devDependencies": {
     "chai": "^3.5.0",
