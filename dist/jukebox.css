@@ -300,6 +300,50 @@ svg path {
 .plus-button:focus {
   outline: 0; }
 
+.default.modal {
+  top: 75px; }
+
+.default .modal-dialog {
+  color: #191919; }
+  .default .modal-dialog .modal-content {
+    background-color: white;
+    text-align: center;
+    max-width: 400px;
+    margin: 0 auto; }
+  .default .modal-dialog .modal-header, .default .modal-dialog .modal-footer {
+    border: none; }
+  .default .modal-dialog .modal-header {
+    padding-bottom: 0; }
+  .default .modal-dialog .modal-footer {
+    display: -webkit-flex;
+    display: -ms-flexbox;
+    display: flex;
+    -webkit-justify-content: center;
+    -ms-flex-pack: center;
+    justify-content: center;
+    padding-top: 0; }
+  .default .modal-dialog .btn-primary {
+    border-color: #191919;
+    background-color: #191919; }
+  .default .modal-dialog .btn-warning {
+    border-color: #424242;
+    background-color: #424242; }
+  .default .modal-dialog .modal-body {
+    display: -webkit-flex;
+    display: -ms-flexbox;
+    display: flex;
+    -webkit-justify-content: center;
+    -ms-flex-pack: center;
+    justify-content: center;
+    -webkit-align-items: center;
+    -ms-flex-align: center;
+    align-items: center; }
+    .default .modal-dialog .modal-body input {
+      max-width: 200px; }
+    .default .modal-dialog .modal-body span {
+      padding-bottom: 4px;
+      padding-right: 4px; }
+
 /* Main */
 #ytplayer {
   position: absolute;
@@ -354,6 +398,7 @@ svg path {
   overflow: hidden; }
   .search-header-item.search input {
     padding: 0;
+    padding-left: 8px;
     border-width: 0;
     border-radius: 4px;
     width: 100%; }

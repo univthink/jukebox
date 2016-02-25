@@ -6,11 +6,11 @@
       </button>
     </div>
     <div class="search-header-item search">
-      <input id="song-search-box" type="search" ng-model="searchText" ng-model-options="{ debounce: 500 }" ng-change="myData.sendQuery()" autofocus/>
+      <input id="song-search-box" type="search" ng-model="searchText" ng-model-options="{ debounce: 500 }" ng-change="myData.sendQuery()" placeholder="Search Spotify..." autofocus/>
     </div>
   </div>
   <div class="song-search-results">
-    <div ng-if="myData.spotify.results.length > 0"><span>Spotify Results</span></div>
+    <!-- <div ng-if="myData.spotify.results.length > 0"><span>Spotify Results</span></div> -->
     <div ng-repeat="result in myData.spotify.results">
       <div ng-click="addSong(result.uri, result.name, result.artists[0].name, result.album.name, result.album.images[0].url)" class="song-search-result">
         <img src="{{ result.album.images[0].url }}" class="song-image">
