@@ -1,13 +1,16 @@
+<div class="desktop-content">
+  <div ng-controller="YoutubeController" ng-if="room.queue[0]">
+    <div class="iframe-container">
+      <iframe id="ytplayer" type="text/html" ng-src="{{ yt_video_id | youtubeEmbedUrl }}" frameborder="0" allowfullscreen/>
+    </div>
+  </div>
+</div>
 <div class="queue-wrapper">
   <div header currently-playing="room.queue[0]"></div>
-  <!--
-  <div ng-repeat="song in songs | filter:searchText">
-    <a href="">{{ song.name }} <em>by</em> {{ song.artist }} <em>for</em> {{ song.price | currency }}</a>
-  </div>
-  -->
   <div ng-if="queueData.length > 0"><span>Your Song Queue</span></div>
     <div class="song-queue" data-as-sortable="dragControlListeners" data-ng-model="room.queue">
-      <div ng-repeat="song in room.queue" ng-if="!$first">
+      <!-- <div ng-repeat="song in room.queue" ng-if="!$first"> -->
+      <div ng-repeat="song in room.queue">
         <div class="song-queue-item noselect" data-uuid="{{ song.unique_id }}" data-as-sortable-item ng-swipe-left="showDeleteButton = true" ng-swipe-right="showDeleteButton = false">
           <img src="{{ song.image_url }}" class="song-image">
           <div class="song-info">

@@ -47,7 +47,11 @@
         }).success(function(data) {
           if (data.status === 'OK') {
             console.log('OK backendAPI.searchRooms', data);
-            $location.path(data.data[0].id);
+            if (data.data.length >= 1) {
+              $location.path(data.data[0].id);
+            } else {
+              console.log('No nearby rooms available.');
+            }
           } else {
             console.log('NOT OK backendAPI.searchRooms', data);
           }

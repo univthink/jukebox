@@ -22,7 +22,7 @@
         <svg xmlns="http://www.w3.org/2000/svg"><symbol id="assets"/><symbol id="plus-icon" viewBox="0 0 212 212"><title>plus-icon</title><path d="M130.717 131.43h72.502a7.997 7.997 0 0 0 7.997-8.004v-33.99c0-4.43-3.58-8.005-7.998-8.005h-72.503V8.93a7.997 7.997 0 0 0-8.006-8H88.723a7.996 7.996 0 0 0-8.005 8v72.5H8.215a7.997 7.997 0 0 0-7.998 8.007v33.99c0 4.43 3.58 8.004 7.998 8.004h72.502v72.504a7.997 7.997 0 0 0 8.005 7.997h33.99c4.43 0 8.005-3.58 8.005-7.996V131.43z" fill="#000" fill-rule="evenodd"/></symbol></svg>
         <!-- endinject -->
     </div>
-    <ng-view class="page {{ pageClass }}"></ng-view>
+    <ng-view class="page {{ pageClass }} {{ responsiveVersion }}"></ng-view>
     <!-- inject:vendor:js -->
     <script src="/bower_components/jquery/dist/jquery.js"></script>
     <script src="/bower_components/jquery-ui/jquery-ui.js"></script>
@@ -34,14 +34,16 @@
     <script src="/bower_components/ng-sortable/dist/ng-sortable.js"></script>
     <script src="/bower_components/angular-touch/angular-touch.js"></script>
     <script src="/bower_components/angular-cookies/angular-cookies.js"></script>
+    <script src="/bower_components/angular-media-queries/match-media.js"></script>
     <!-- endinject -->
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
     <!-- inject:js -->
     <script src="/app.js"></script>
     <script src="/common/header/header.directive.js"></script>
-    <script src="/common/sharedRoomData/sharedRoomData.js"></script>
-    <script src="/common/plusButton/plusButton.directive.js"></script>
     <script src="/common/footer/footer.js"></script>
+    <script src="/common/plusButton/plusButton.directive.js"></script>
+    <script src="/common/youtube/youtube.controller.js"></script>
+    <script src="/common/sharedRoomData/sharedRoomData.js"></script>
     <script src="/common/backendAPI/backendAPI.js"></script>
     <script src="/search/search.directive.js"></script>
     <script src="/search/search.controller.js"></script>

@@ -102,4 +102,4 @@ class SubmitSong(webapp2.RequestHandler):
 							room.queue.append(song_key.integer_id())
 
 						room.put()
-						self.response.write(json.dumps({"status":"OK"}))
+						self.response.write(json.dumps({"status":"OK", "data": song_key.integer_id()}))

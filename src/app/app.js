@@ -2,7 +2,7 @@
   'use strict';
 
   angular
-    .module('jukebox', ['ngRoute', 'ngAnimate', 'ui.bootstrap', 'as.sortable', 'ngTouch', 'ngCookies'])
+    .module('jukebox', ['ngRoute', 'ngAnimate', 'ui.bootstrap', 'as.sortable', 'ngTouch', 'ngCookies', 'matchMedia'])
     .config(routeProvider);
 
   function routeProvider($routeProvider) {
