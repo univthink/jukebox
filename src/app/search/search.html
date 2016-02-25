@@ -10,7 +10,7 @@
     </div>
   </div>
   <div class="song-suggestions" ng-if="!myData.spotify.results">
-    <div><span>Search Suggestions</span></div>
+    <div><span>Suggested</span></div>
     <div ng-repeat="result in myData.spotify.suggestions">
       <div ng-click="addSong(result.uri, result.name, result.artists[0].name, result.album.name, result.album.images[0].url)" class="song-search-result">
         <img src="{{ result.album.images[0].url }}" class="song-image">
