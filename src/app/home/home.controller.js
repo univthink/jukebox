@@ -6,7 +6,7 @@
     .module('jukebox')
     .controller('HomeController', homeController);
 
-  function homeController($scope, $location, backendAPI) {
+  function homeController($scope, $location, backendAPI, $http) {
 
     var GEOLOCATION_TIMEOUT = 30; // in seconds
     var OLDEST_CACHED_GEOLOCATION_TO_ACCEPT = 60; // in seconds

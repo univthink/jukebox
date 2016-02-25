@@ -16,7 +16,9 @@ var gulp = require('gulp'),
     gae = require('gulp-gae'),
     svgstore = require('gulp-svgstore'),
     svgmin = require('gulp-svgmin'),
+    nodemon = require('gulp-nodemon'),
     autoprefixer = require('gulp-autoprefixer'),
+
     isWatching = false;
 
 var htmlminOpts = {
@@ -204,10 +206,20 @@ gulp.task('gae-deploy', function() {
 });
 
 /**
+ * Node Server
+ */
+
+gulp.task('start', function () {  // TODO: add stuff to this if needed
+  nodemon({
+    script: 'server.js'
+  })
+});
+
+/**
  * Watch
  */
 gulp.task('serve', ['watch']);
-gulp.task('watch', ['gae-serve', 'default'], function () {
+gulp.task('watch', ['gae-serve', 'default', 'start'], function () {
   isWatching = true;
   // Initiate livereload server:
   g.livereload.listen(); // make sure to install the LiveReload plugin for Chrome
@@ -228,7 +240,6 @@ gulp.task('watch', ['gae-serve', 'default'], function () {
     }
   });
   gulp.watch(['./src/app/assets/*.svg'], ['svg-store']).on('change', function (evt) {
-    console.log('bah');
     if (evt.type !== 'changed') {
       gulp.start('index');
     } else {

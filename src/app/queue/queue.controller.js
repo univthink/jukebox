@@ -88,7 +88,7 @@
             console.log('OK backendAPI.joinRoom', data);
             getSongQueue();
           } else {
-            if (data.message == "The correct password was not provided.") { // TODO: reuse this code below?
+            if (data.message === "The correct password was not provided.") { // TODO: reuse this code below?
               sharedRoomData.passwordProtected = true;
               sharedRoomData.password = window.prompt("Enter the password:");
               $cookies.put(sharedRoomData.roomId, sharedRoomData.password);
@@ -117,7 +117,7 @@
             }
             console.log('OK backendAPI.getSongQueue', data);
           } else {
-            if (data.message == "The correct password was not provided.") {
+            if (data.message === "The correct password was not provided.") {
               sharedRoomData.passwordProtected = true;
               sharedRoomData.password = window.prompt("Enter the password:");
               $cookies.put(sharedRoomData.roomId, sharedRoomData.password);
