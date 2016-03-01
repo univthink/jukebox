@@ -15,4 +15,5 @@ __all__ = ["JoinRoom",
 		   "PauseSong",
 		   "CheckPlayStatus",
 		   "SetAdmin",
-		   "ChangeUsername"]
+		   "ChangeUsername",
+		   "GetTrendingSongs"]

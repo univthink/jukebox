@@ -112,5 +112,6 @@ application = webapp2.WSGIApplication([
 	('/api/pause_song', PauseSong.PauseSong),
 	('/api/check_play_status', CheckPlayStatus.CheckPlayStatus),
 	('/api/set_admin',SetAdmin.SetAdmin),
-	('/api/change_username',ChangeUsername.ChangeUsername)
+	('/api/change_username',ChangeUsername.ChangeUsername),
+	('/api/get_trending_songs', GetTrendingSongs.GetTrendingSongs)
 ], debug=True)

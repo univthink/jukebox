@@ -7,6 +7,8 @@ threadsafe: true
 libraries:
 - name: webapp2
   version: latest
+- name: ssl
+  version: latest
 
 handlers:
 - url: /src/app
@@ -32,6 +34,7 @@ handlers:
 - url: /api
   script: handler.application
   login: admin
+  secure: always
 - url: /api/.*
   script: handler.application
 - url: .*
@@ -42,6 +45,7 @@ handlers:
 # - url: .*
 #   static_files: dist/index.html
 #   upload: dist/index.html
+
 
 builtins:
 - deferred: on

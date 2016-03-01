@@ -173,6 +173,10 @@
             return $http.post(urlBase + '/search_room', data);
         };
 
+        backendAPI.getTrendingSongs = function() {
+            return $http.get(urlBase + '/get_trending_songs');
+        };
+
         return backendAPI;
     }]);
 

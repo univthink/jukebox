@@ -115,7 +115,7 @@
                 getSongQueue();
               }, QUEUE_REFRESH_RATE);
             }
-            console.log('OK backendAPI.getSongQueue', data);
+            //console.log('OK backendAPI.getSongQueue', data);
           } else {
             if (data.message === "The correct password was not provided.") {
               sharedRoomData.passwordProtected = true;

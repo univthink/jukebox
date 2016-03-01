@@ -13,16 +13,25 @@
     $scope.myData.spotify = {};
     // $scope.myData.soundcloud = {};
 
-    $http.get('http://localhost:8001/browse')
-      .then(function(data) {
-        console.log(data.data);
-        $scope.myData.spotify.suggestions = data.data.map(function(e) {
-          return e.track;
-        });
-      }, function(err) {
-        $scope.myData.spotify.suggestions = null;
-        console.log('Could not retrieve suggestions');
-      });
+    // $http.get('http://localhost:8001/browse')
+    //   .then(function(data) {
+    //     console.log(data.data);
+    //     $scope.myData.spotify.suggestions = data.data.map(function(e) {
+    //       return e.track;
+    //     });
+    //   }, function(err) {
+    //     $scope.myData.spotify.suggestions = null;
+    //     console.log('Could not retrieve suggestions');
+    //   });
+    backendAPI.getTrendingSongs().success(function(data) {
+      if (data.status === 'OK') {
+        console.log('OK backendAPI.getTrendingSongs', data);
+      } else {
+        console.log('NOT OK backendAPI.getTrendingSongs', data);
+      }
+    }).error(function(error) {
+      console.log('ERROR backendAPI.getTrendingSongs', error);
+    });
 
     $scope.myData.sendQuery = function() {
       //spotify API
