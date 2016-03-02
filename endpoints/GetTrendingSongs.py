@@ -1,12 +1,8 @@
-import webapp2, models, forms, json, endpoints, utils
-from google.appengine.ext import ndb
-
+import webapp2
 import requests
 import spotipy
-sp = spotipy.Spotify()
 
-from google.appengine.ext import vendor
-vendor.add('requests')
+sp = spotipy.Spotify()
 
 class GetTrendingSongs(webapp2.RequestHandler):
 
