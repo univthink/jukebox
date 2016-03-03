@@ -231,6 +231,7 @@
 
 (function () {
 
+<<<<<<< HEAD
   'use strict';
 
   angular.module('jukebox').controller('YoutubeController', YoutubeController).filter('youtubeEmbedUrl', ["$sce", function ($sce) {
@@ -410,6 +411,8 @@
 
 (function () {
 
+=======
+>>>>>>> Prep for deployment.
     'use strict';
 
     angular.module('jukebox').factory('backendAPI', ['$http', function ($http) {
@@ -586,7 +589,11 @@
             return $http.post(urlBase + '/search_room', data);
         };
 
+<<<<<<< HEAD
         backendAPI.getTrendingSongs = function () {
+=======
+        backendAPI.getTrendingSongs = function() {
+>>>>>>> Prep for deployment.
             return $http.get(urlBase + '/get_trending_songs');
         };
 
@@ -599,15 +606,119 @@
 
   'use strict';
 
+<<<<<<< HEAD
   angular.module('jukebox').directive('search', search);
+=======
+  angular
+    .module('jukebox')
+    .controller('YoutubeController', YoutubeController)
+    .filter('youtubeEmbedUrl', ["$sce", function($sce) {
+      return function(youtubeVideoId) {
+        return $sce.trustAsResourceUrl('http://www.youtube.com/embed/' + youtubeVideoId + '?autoplay=1&iv_load_policy=3&origin=http://letsjukebox.com/');
+      };
+    }]);
+>>>>>>> Prep for deployment.
 
-  function search() {
+
+    function YoutubeController($scope, $rootScope, $http, $sce, sharedRoomData) {
+
+      var yt_api_key = 'AIzaSyALGbklexv5u7P3zjV4xJCYfEYLwwukfkE';
+
+      $scope.room = sharedRoomData;
+      $scope.yt_video_id = '';
+      var firstTrackUUID = '';
+
+      $rootScope.$watch('responsiveVersion', function() {
+        updateCurrentVideo();
+      });
+
+      $scope.$watch('room.queue', function() {
+        updateCurrentVideo();
+      });
+
+      function updateCurrentVideo() {
+        if ($rootScope.responsiveVersion == 'mobile' && $scope.yt_video_id === '') return; // don't query on mobile
+        if ($scope.room.queue[0].unique_id == firstTrackUUID) return; // no need to requery youtube if the query hasn't changed
+        firstTrackUUID = sharedRoomData.queue[0].unique_id;
+        getMusicVideos()
+          .success(function(data) {
+            console.log('OK YoutubeController.updateCurrentVideo', data);
+            if (data.items.length >= 1) {
+              $scope.yt_video_id = data.items[0].id.videoId;
+            }
+          })
+          .error(function(error) {
+            console.log('ERROR YoutubeController.updateCurrentVideo', error);
+          });
+      }
+
+      function getMusicVideos() {
+        return $http({
+          url: 'https://www.googleapis.com/youtube/v3/search',
+          method: 'GET',
+          params: {
+            part: 'snippet',
+            key: yt_api_key,
+            q: $scope.room.queue[0].track + ' ' + $scope.room.queue[0].artist,
+            type: 'video',
+            videoEmbeddable: 'true',
+          }
+        });
+      }
+
+    }
+    YoutubeController.$inject = ["$scope", "$rootScope", "$http", "$sce", "sharedRoomData"];
+
+})();
+(function () {
+
+    'use strict';
+
+    angular
+        .module('jukebox')
+        .factory('sharedRoomData', function() {
+            var data = {
+                roomId: '',
+                roomName: '',
+                passwordProtected: false,
+                roomPassword: '',
+                userId: '',
+                userName: '',
+                queue: {},
+            };
+            return data;
+        });
+
+})();
+(function () {
+
+  'use strict';
+
+  angular
+    .module('jukebox')
+    .directive('plusButton', plusButton);
+
+  function plusButton() {
     return {
       restrict: 'A',
       replace: true,
+<<<<<<< HEAD
       scope: {},
       templateUrl: 'search/search.html',
       controller: ['$scope', function ($scope) {}]
+=======
+      templateUrl: 'common/plusButton/plusButton.html',
+      controller: ['$scope', '$uibModal', function($scope, $uibModal) {
+        $scope.showSearch = function() {
+          $uibModal.open({
+            templateUrl: 'search/search.html',
+            controller: 'SearchController',
+            windowClass: 'search-page',
+            keyboard: false
+          });
+        };
+      }]
+>>>>>>> Prep for deployment.
     };
   }
 })();
@@ -617,6 +728,7 @@
 
   'use strict';
 
+<<<<<<< HEAD
   angular.module('jukebox').controller('SearchController', searchController);
 
   function searchController($scope, $routeParams, $http, backendAPI, sharedRoomData, $uibModalInstance) {
@@ -649,24 +761,24 @@
         $scope.myData.spotify.results = null;
         console.log('ERROR returning results from spotify');
       });
+=======
+  angular
+    .module('jukebox')
+    .directive('footer', footer);
 
-      // // soundcloud API
-      // var clientId = '09ae0464d724195b755f6205f2753390';
-      // var soundcloudResponsePromise = $http.get('http://api.soundcloud.com/tracks/', {
-      //   'params' : {
-      //     'q' : $scope.searchText,
-      //     'client_id' : clientId
-      //   }
-      // });
-      // soundcloudResponsePromise.success(function(data) {
-      //   $scope.myData.soundcloud.results = data;
-      // });
-      // soundcloudResponsePromise.error(function() {
-      //   $scope.myData.soundcloud = {};
-      //   console.log('AJAX failed!');
-      // });
+  function footer() {
+    return {
+      restrict: 'A',
+      replace: true,
+      scope: {
+>>>>>>> Prep for deployment.
+
+      },
+      templateUrl: 'common/footer/footer.html'
     };
+  }
 
+<<<<<<< HEAD
     // TODO: this is duplicate code from queueController, it should be made into a service
     function getSongQueue() {
       backendAPI.getSongQueue({
@@ -713,6 +825,33 @@
     };
   }
   searchController.$inject = ["$scope", "$routeParams", "$http", "backendAPI", "sharedRoomData", "$uibModalInstance"];
+=======
+})();
+(function () {
+
+  'use strict';
+
+  angular
+    .module('jukebox')
+    .directive('header', header)
+    .filter('spotifyEmbedUrl', ["$sce", function($sce) {
+      return function(spotifyUri) {
+        return $sce.trustAsResourceUrl('https://embed.spotify.com/?uri=' + spotifyUri);
+      };
+    }]);
+
+  function header() {
+    return {
+      restrict: 'A',
+      replace: true,
+      scope: {
+        currentlyPlaying: '='
+      },
+      templateUrl: 'common/header/header.html'
+    };
+  }
+
+>>>>>>> Prep for deployment.
 })();
 'use strict';
 
@@ -830,6 +969,7 @@
       });
     }
 
+<<<<<<< HEAD
     function getSongQueue() {
       backendAPI.getSongQueue({
         room_id: sharedRoomData.roomId,
@@ -849,6 +989,48 @@
           }
           //console.log('OK backendAPI.getSongQueue', data);
         } else {
+=======
+      // TODO: All of these should probably be moved to a separate service...
+      function joinRoom() {
+        backendAPI.joinRoom({
+          room_id: sharedRoomData.roomId,
+          user_id: sharedRoomData.userId,
+          password: sharedRoomData.password,
+        }).success(function(data) {
+          if (data.status === 'OK') {
+            console.log('OK backendAPI.joinRoom', data);
+            getSongQueue();
+          } else {
+            if (data.message === "The correct password was not provided.") { // TODO: reuse this code below?
+              sharedRoomData.passwordProtected = true;
+              sharedRoomData.password = window.prompt("Enter the password:");
+              $cookies.put(sharedRoomData.roomId, sharedRoomData.password);
+              joinRoom();
+            }
+            console.log('NOT OK backendAPI.joinRoom', data);
+          }
+        }).error(function(error) {
+          console.log('ERROR backendAPI.joinRoom', error);
+        });
+      }
+
+      function getSongQueue() {
+        backendAPI.getSongQueue({
+          room_id: sharedRoomData.roomId,
+          password: sharedRoomData.password,
+        }).success(function(data) {
+          if (data.status === 'OK') {
+            sharedRoomData.roomName = data.room_name;
+            sharedRoomData.queue = data.data;
+            // start interval if it hasn't been started already
+            if (!autoRefreshQueue) {
+              autoRefreshQueue = $interval(function() {
+                getSongQueue();
+              }, QUEUE_REFRESH_RATE);
+            }
+            //console.log('OK backendAPI.getSongQueue', data);
+          } else {
+>>>>>>> Prep for deployment.
             if (data.message === "The correct password was not provided.") {
               sharedRoomData.passwordProtected = true;
               sharedRoomData.password = window.prompt("Enter the password:");
@@ -937,7 +1119,147 @@
 
   'use strict';
 
+<<<<<<< HEAD
   angular.module('jukebox').controller('HomeController', homeController);
+=======
+  angular
+    .module('jukebox')
+    .directive('search', search);
+
+  function search() {
+    return {
+      restrict: 'A',
+      replace: true,
+      scope: {
+
+      },
+      templateUrl: 'search/search.html',
+      controller: ['$scope', function($scope) {
+
+      }]
+    };
+  }
+
+})();
+(function () {
+
+  'use strict';
+
+  angular
+    .module('jukebox')
+    .controller('SearchController', searchController);
+
+  function searchController($scope, $routeParams, $http, backendAPI, sharedRoomData, $uibModalInstance) {
+    $scope.roomId = $routeParams.roomId;
+
+    $scope.myData = {};
+    $scope.myData.spotify = {};
+    // $scope.myData.soundcloud = {};
+
+    backendAPI.getTrendingSongs().success(function(data) {
+      if (data.status === 'OK') {
+        console.log('OK backendAPI.getTrendingSongs', data);
+        $scope.myData.spotify.suggestions = data.data.map(function(e) {
+          return e.track;
+        });
+      } else {
+        console.log('NOT OK backendAPI.getTrendingSongs', data);
+      }
+    }).error(function(error) {
+      console.log('ERROR backendAPI.getTrendingSongs', error);
+    });
+
+    $scope.myData.sendQuery = function() {
+      //spotify API
+      var spotifyResponsePromise = $http.get('https://api.spotify.com/v1/search', {
+        'params' : {
+          'q' : $scope.searchText,
+          'type' : 'track'
+        }
+      });
+      spotifyResponsePromise.success(function(data) {
+        console.log('OK SearchController.sendQuery', data);
+        $scope.myData.spotify.results = data.tracks.items;
+      });
+      spotifyResponsePromise.error(function() {
+        $scope.myData.spotify.results = null;
+        console.log('ERROR returning results from spotify');
+      });
+
+      // // soundcloud API
+      // var clientId = '09ae0464d724195b755f6205f2753390';
+      // var soundcloudResponsePromise = $http.get('http://api.soundcloud.com/tracks/', {
+      //   'params' : {
+      //     'q' : $scope.searchText,
+      //     'client_id' : clientId
+      //   }
+      // });
+      // soundcloudResponsePromise.success(function(data) {
+      //   $scope.myData.soundcloud.results = data;
+      // });
+      // soundcloudResponsePromise.error(function() {
+      //   $scope.myData.soundcloud = {};
+      //   console.log('AJAX failed!');
+      // });
+    };
+
+    // TODO: this is duplicate code from queueController, it should be made into a service
+    function getSongQueue() {
+      backendAPI.getSongQueue({
+        room_id: sharedRoomData.roomId,
+        password: sharedRoomData.password,
+      }).success(function(data) {
+        if (data.status === 'OK') {
+          sharedRoomData.roomName = data.room_name;
+          sharedRoomData.queue = data.data;
+          console.log('OK backendAPI.getSongQueue', data);
+        } else {
+          console.log('NOT OK backendAPI.getSongQueue', data);
+        }
+      }).error(function(error) {
+        console.log('ERROR backendAPI.getSongQueue', error);
+      });
+    }
+
+    $scope.closeSearch = function() {
+      $uibModalInstance.close();
+    };
+
+    $scope.addSong = function(url, name, artist, album, album_art_url) {
+        backendAPI.addSong({
+          room_id: sharedRoomData.roomId,
+          user_id: sharedRoomData.userId,
+          password: sharedRoomData.password,
+          url: url,
+          track: name,
+          artist: artist,
+          album: album,
+          album_art_url: album_art_url
+        }).success(function(data) {
+          if (data.status === 'OK') {
+            getSongQueue(); // TODO: make this a service
+            console.log('OK backendAPI.addSong', data);
+          } else {
+            console.log('NOT OK backendAPI.addSong', data);
+          }
+          $scope.closeSearch();
+        }).error(function(error) {
+          console.log('ERROR backendAPI.addSong', error);
+        });
+
+    };
+  }
+  searchController.$inject = ["$scope", "$routeParams", "$http", "backendAPI", "sharedRoomData", "$uibModalInstance"];
+
+})();
+(function () {
+
+  'use strict';
+
+  angular
+    .module('jukebox')
+    .controller('HomeController', homeController);
+>>>>>>> Prep for deployment.
 
   function homeController($scope, $location, backendAPI, $http) {
 
@@ -1166,6 +1488,7 @@
       });
     }
   }
+<<<<<<< HEAD
   datavizController.$inject = ["$scope", "$http", "Spotify"];
 })();
 'use strict';
@@ -1419,6 +1742,9 @@
         userFollowingContains: function userFollowingContains(type, ids) {
           return this.api('/me/following/contains', 'GET', { type: type, ids: ids }, null, this._auth());
         },
+=======
+  homeController.$inject = ["$scope", "$location", "backendAPI", "$http"];
+>>>>>>> Prep for deployment.
 
         followPlaylist: function followPlaylist(userId, playlistId, isPublic) {
           return this.api('/users/' + userId + '/playlists/' + playlistId + '/followers', 'PUT', null, {
@@ -1735,6 +2061,7 @@
   }]);
 })();
 
+<<<<<<< HEAD
 (function (module) {
   try {
     module = angular.module('jukebox');
@@ -1744,6 +2071,18 @@
   module.run(['$templateCache', function ($templateCache) {
     $templateCache.put('/jukebox/queue/queue.html', '<div class="desktop-content"><div ng-controller="YoutubeController" ng-if="room.queue[0] && !mobile"><div class="iframe-container"><iframe id="ytplayer" type="text/html" ng-src="{{ yt_video_id | youtubeEmbedUrl }}" frameborder="0" allowfullscreen></div></div></div><div class="queue-wrapper"><div ng-if="!room.loaded" spinner></div><div ng-if="room.loaded"><div header currently-playing="room.queue[0]"></div><div class="song-queue" data-as-sortable="dragControlListeners" data-ng-model="room.queue"><div ng-repeat="song in room.queue"><div class="song-queue-item noselect" data-uuid="{{ song.unique_id }}" data-as-sortable-item ng-swipe-left="showDeleteButton = true" ng-swipe-right="showDeleteButton = false"><img src="{{ song.image_url }}" class="song-image"><div class="song-info"><div class="song-title">{{ song.track }}</div><div class="song-artist">{{ song.artist }}</div><div class="song-user">@{{ song.submitter }}</div></div><i class="fa fa-th-list drag-button" ng-if="room.allAdmin && !showDeleteButton" data-as-sortable-item-handle></i> <i class="fa fa-trash fa-lg delete-button" ng-if="room.allAdmin && showDeleteButton" ng-click="deleteSong($event)"></i></div></div></div></div></div><div plus-button></div>');
   }]);
+=======
+(function(module) {
+try {
+  module = angular.module('jukebox');
+} catch (e) {
+  module = angular.module('jukebox', []);
+}
+module.run(['$templateCache', function($templateCache) {
+  $templateCache.put('/jukebox/search/search.html',
+    '<div class="search-wrapper"><div class="search-header-items"><div class="search-header-item search"><input id="song-search-box" type="search" ng-model="searchText" ng-model-options="{ debounce: 500 }" ng-change="myData.sendQuery()" placeholder="Search Spotify..." autofocus></div><div class="search-header-item close-search"><button ng-click="closeSearch()"><span>Cancel</span></button></div></div><div class="song-suggestions" ng-if="!myData.spotify.results"><div class="song-results-header"><span>Trending</span></div><div ng-repeat="result in myData.spotify.suggestions"><div ng-click="addSong(result.uri, result.name, result.artists[0].name, result.album.name, result.album.images[0].url)" class="song-search-result"><img src="{{ result.album.images[0].url }}" class="song-image"><div class="song-info"><div class="song-title">{{ result.name }}</div><div class="song-artist">{{ result.artists[0].name }}</div></div></div></div></div><div class="song-search-results"><div ng-repeat="result in myData.spotify.results"><div ng-click="addSong(result.uri, result.name, result.artists[0].name, result.album.name, result.album.images[0].url)" class="song-search-result"><img src="{{ result.album.images[0].url }}" class="song-image"><div class="song-info"><div class="song-title">{{ result.name }}</div><div class="song-artist">{{ result.artists[0].name }}</div></div></div></div></div></div>');
+}]);
+>>>>>>> Prep for deployment.
 })();
 
 (function (module) {
