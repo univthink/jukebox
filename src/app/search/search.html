@@ -9,29 +9,35 @@
       </button>
     </div>
   </div>
-  <div class="song-suggestions" ng-if="!myData.spotify.results">
+  <div class="song-suggestions" ng-if="!myData.spotify.results && !searchText">
     <div class="song-results-header"><span>Trending</span></div>
-    <div ng-repeat="result in myData.spotify.suggestions">
-      <div ng-click="addSong(result.uri, result.name, result.artists[0].name, result.album.name, result.album.images[0].url)" class="song-search-result">
-        <img src="{{ result.album.images[0].url }}" class="song-image">
-        <div class="song-info">
-          <div class="song-title">{{ result.name }}</div>
-          <div class="song-artist">{{ result.artists[0].name }}</div>
+    <div ng-if="myData.spotify.suggestions.length > 0">
+      <div ng-repeat="result in myData.spotify.suggestions">
+        <div ng-click="addSong(result.uri, result.name, result.artists[0].name, result.album.name, result.album.images[0].url)" class="song-search-result">
+          <img src="{{ result.album.images[0].url }}" class="song-image">
+          <div class="song-info">
+            <div class="song-title">{{ result.name }}</div>
+            <div class="song-artist">{{ result.artists[0].name }}</div>
+          </div>
         </div>
       </div>
     </div>
   </div>
   <div class="song-search-results">
-    <!-- <div ng-if="myData.spotify.results.length > 0"><span>Spotify Results</span></div> -->
-    <div ng-repeat="result in myData.spotify.results">
-      <div ng-click="addSong(result.uri, result.name, result.artists[0].name, result.album.name, result.album.images[0].url)" class="song-search-result">
-        <img src="{{ result.album.images[0].url }}" class="song-image">
-        <div class="song-info">
-          <div class="song-title">{{ result.name }}</div>
-          <div class="song-artist">{{ result.artists[0].name }}</div>
+    <div ng-if="myData.spotify.results.length > 0">
+      <div ng-repeat="result in myData.spotify.results">
+        <div ng-click="addSong(result.uri, result.name, result.artists[0].name, result.album.name, result.album.images[0].url)" class="song-search-result">
+          <img src="{{ result.album.images[0].url }}" class="song-image">
+          <div class="song-info">
+            <div class="song-title">{{ result.name }}</div>
+            <div class="song-artist">{{ result.artists[0].name }}</div>
+          </div>
         </div>
       </div>
     </div>
+  </div>
+  <div ng-if="querying">
+    <div spinner></div>
   </div>
   <!--
   <div class="song-search-results">
