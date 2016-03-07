@@ -22,8 +22,8 @@
       $scope.roomId = sharedRoomData.roomId; //TODO(kyle): Remove this after plusButton.directive.js has been updated by justin
 
       // TODO: move this elsewhere
-      //var POTENTIAL_USERNAMES = ['banana', 'apple', 'peach', 'mango', 'cherry', 'grape', 'pear', 'plum', 'pineapple', 'kiwi'];
       var POTENTIAL_USERNAMES = ['BlueTrout', 'YellowDuck', 'RedHerring', 'BoredMoose', 'SillyWhale', 'OrangeEagle', 'VelvetMouse', 'GreenMonkey', 'VioletLobster', 'ConfusedTucan', 'WileySloth'];
+      POTENTIAL_USERNAMES = ['']; // you must input a username
 
       sharedRoomData.userId = $cookies.get('jb_user_id'); // TODO: think about moving this to sharedRoomData factory initialization
       sharedRoomData.userName = $cookies.get('jb_user_name');
@@ -44,7 +44,7 @@
           controller: ['$scope', '$sce', '$uibModalInstance', 'sharedRoomData', function($scope, $sce, $uibModalInstance, sharedRoomData) {
             $scope.aliasInput = placeholder;
             $scope.modal_title = 'Enter Your Alias';
-            $scope.modal_body_html = $sce.trustAsHtml('<span>@</span><input type="text" ng-model="aliasInput" class="form-control" placeholder="' + placeholder + '" required />');
+            $scope.modal_body_html = $sce.trustAsHtml('<span>@</span><input type="text" ng-model="aliasInput" class="form-control" placeholder="' + placeholder + '" autofocus required />');
             $scope.primary_btn_text = 'CONTINUE';
             $scope.ok = function() {
               console.log($scope.aliasInput);
