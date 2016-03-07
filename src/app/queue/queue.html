@@ -1,5 +1,5 @@
 <div class="desktop-content">
-  <div ng-controller="YoutubeController" ng-if="room.queue[0]">
+  <div ng-controller="YoutubeController" ng-if="room.queue[0] && !mobile">
     <div class="iframe-container">
       <iframe id="ytplayer" type="text/html" ng-src="{{ yt_video_id | youtubeEmbedUrl }}" frameborder="0" allowfullscreen/>
     </div>

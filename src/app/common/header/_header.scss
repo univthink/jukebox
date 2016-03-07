@@ -2,6 +2,7 @@ $record-size: 240px;
 
 .header {
   overflow: hidden;
+  user-select: none;
 }
 
 .header-info {
