@@ -105,8 +105,10 @@
           password: sharedRoomData.password,
         }).success(function(data) {
           if (data.status === 'OK') {
+            console.log('OK backendAPI.getSongQueue', data);
             sharedRoomData.roomName = data.room_name;
             sharedRoomData.queue = data.data;
+            sharedRoomData.allAdmin = data.all_admin == '1' ? true : false;
             // start interval if it hasn't been started already
             if (!autoRefreshQueue) {
               autoRefreshQueue = $interval(function() {
