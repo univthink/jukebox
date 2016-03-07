@@ -57,6 +57,7 @@ svg path {
   display: flex;
   align-items: center;
   margin: 10px 0;
+  background-color: $background;
 
   .song-image {
     flex: 0 0 54px;

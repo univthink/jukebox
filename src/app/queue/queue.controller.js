@@ -7,6 +7,7 @@
     .controller('QueueController', function($scope, $rootScope, $interval, $routeParams, $cookies, $uibModal, backendAPI, sharedRoomData, screenSize) {
 
       $scope.pageClass = 'queue-page';
+      var inEditMode = false;
       var autoRefreshQueue = undefined;
       var QUEUE_REFRESH_RATE = 3000; // in ms
 
@@ -112,7 +113,7 @@
             // start interval if it hasn't been started already
             if (!autoRefreshQueue) {
               autoRefreshQueue = $interval(function() {
-                getSongQueue();
+                if (!inEditMode) getSongQueue();
               }, QUEUE_REFRESH_RATE);
             }
             //console.log('OK backendAPI.getSongQueue', data);
@@ -172,13 +173,18 @@
         accept: function (sourceItemHandleScope, destSortableScope) {
           return true; //override to determine drag is allowed or not. default is true.
         },
-        itemMoved: function (event) {},
+        dragStart: function(event) {
+          inEditMode = true;
+        },
+        dragEnd: function(event) {
+          inEditMode = false;
+        },
         orderChanged: function(event) {
           var songId = event.source.itemScope.element[0].dataset.uuid;
           var newPos = event.dest.index;
           changeSongPosition(songId, newPos);
         },
-        //containment: '#board', //optional param.
+        containment: '.song-queue'
         //clone: true, //optional param for clone feature.
         //allowDuplicates: false, //optional param allows duplicates to be dropped.
       };
