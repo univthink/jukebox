@@ -8,10 +8,12 @@
             var data = {
                 roomId: '',
                 roomName: '',
+                allAdmin: false,
                 passwordProtected: false,
                 roomPassword: '',
                 userId: '',
                 userName: '',
+                loaded: false,
                 queue: {},
             };
             return data;

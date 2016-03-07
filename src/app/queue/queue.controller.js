@@ -110,6 +110,7 @@
             sharedRoomData.roomName = data.room_name;
             sharedRoomData.queue = data.data;
             sharedRoomData.allAdmin = data.all_admin == '1' ? true : false;
+            sharedRoomData.loaded = true;
             // start interval if it hasn't been started already
             if (!autoRefreshQueue) {
               autoRefreshQueue = $interval(function() {
