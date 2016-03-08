@@ -37,6 +37,19 @@
         joinRoom(); // join room if you haven't already
       }
 
+      backendAPI.getTrendingSongs().success(function(data) {
+        if (data.status === 'OK') {
+          console.log('OK backendAPI.getTrendingSongs', data);
+          sharedRoomData.trending = data.data.map(function(e) {
+            return e.track;
+          });
+        } else {
+          console.log('NOT OK backendAPI.getTrendingSongs', data);
+        }
+      }).error(function(error) {
+        console.log('ERROR backendAPI.getTrendingSongs', error);
+      });
+
       function promptForUsername(placeholder) {
         var modalInstance = $uibModal.open({
           templateUrl: 'common/ui-elements/defaultModal.html',

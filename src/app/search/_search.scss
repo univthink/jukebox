@@ -15,6 +15,11 @@ $content-padding: 6px;
   }
 }
 
+.search-page.modal-open {
+  overflow: hidden;
+  position: fixed;
+}
+
 .search-header-items {
   padding: $content-padding;
   line-height: 28px;
