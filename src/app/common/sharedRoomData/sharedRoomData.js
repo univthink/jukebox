@@ -13,6 +13,7 @@
                 userId: '',
                 userName: '',
                 queue: {},
+                trending: []
             };
             return data;
         });
