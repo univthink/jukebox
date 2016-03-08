@@ -1,16 +1,16 @@
 <div class="desktop-content">
-  <div ng-controller="YoutubeController" ng-if="room.queue[0]">
+  <div ng-controller="YoutubeController" ng-if="room.queue[0] && !mobile">
     <div class="iframe-container">
       <iframe id="ytplayer" type="text/html" ng-src="{{ yt_video_id | youtubeEmbedUrl }}" frameborder="0" allowfullscreen/>
     </div>
   </div>
 </div>
 <div class="queue-wrapper">
-  <div header currently-playing="room.queue[0]"></div>
-  <div ng-if="queueData.length > 0"><span>Your Song Queue</span></div>
+  <div ng-if="!room.loaded" spinner></div>
+  <div ng-if="room.loaded">
+    <div header currently-playing="room.queue[0]"></div>
     <div class="song-queue" data-as-sortable="dragControlListeners" data-ng-model="room.queue">
       <div ng-repeat="song in room.queue" ng-if="!$first">
-      <!-- <div ng-repeat="song in room.queue"> -->
         <div class="song-queue-item noselect" data-uuid="{{ song.unique_id }}" data-as-sortable-item ng-swipe-left="showDeleteButton = true" ng-swipe-right="showDeleteButton = false">
           <img src="{{ song.image_url }}" class="song-image">
           <div class="song-info">
@@ -18,12 +18,12 @@
             <div class="song-artist">{{ song.artist }}</div>
             <div class="song-user">@{{ song.submitter }}</div>
           </div>
-          <i class="fa fa-th-list drag-button" ng-if="!showDeleteButton" data-as-sortable-item-handle></i>
-          <i class="fa fa-trash fa-lg delete-button" ng-if="showDeleteButton" ng-click="deleteSong($event)"></i>
+          <i class="fa fa-th-list drag-button" ng-if="room.allAdmin && !showDeleteButton" data-as-sortable-item-handle></i>
+          <i class="fa fa-trash fa-lg delete-button" ng-if="room.allAdmin && showDeleteButton" ng-click="deleteSong($event)"></i>
         </div>
       </div>
     </div>
   </div>
-<!--   <div footer></div> -->
-  <div plus-button></div>
 </div>
+<!-- <div footer></div> -->
+<div plus-button></div>

@@ -9,6 +9,7 @@
   function searchController($scope, $routeParams, $http, backendAPI, sharedRoomData, $uibModalInstance) {
     $scope.roomId = $routeParams.roomId;
 
+    $scope.querying = true;
     $scope.myData = {};
     $scope.myData.spotify = {};
     // $scope.myData.soundcloud = {};
@@ -17,6 +18,7 @@
 
     $scope.myData.sendQuery = function() {
       //spotify API
+      $scope.querying = true;
       var spotifyResponsePromise = $http.get('https://api.spotify.com/v1/search', {
         'params' : {
           'q' : $scope.searchText,
@@ -24,10 +26,13 @@
         }
       });
       spotifyResponsePromise.success(function(data) {
+        $scope.querying = false;
         console.log('OK SearchController.sendQuery', data);
+        //$scope.myData.spotify.query = data.tracks.href.split("?")[1].split("&")[0].split("=")[1];
         $scope.myData.spotify.results = data.tracks.items;
       });
       spotifyResponsePromise.error(function() {
+        $scope.querying = false;
         $scope.myData.spotify.results = null;
         console.log('ERROR returning results from spotify');
       });

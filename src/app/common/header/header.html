@@ -14,5 +14,10 @@
     <div class="record" ng-if="currentlyPlaying">
       <img src="{{ currentlyPlaying.image_url }}">
     </div>
+    <div class="record" ng-if="!currentlyPlaying">
+      <svg>
+        <use xlink:href="#plus-icon"></use>
+      </svg>
+    </div>
   </div>
 </div>

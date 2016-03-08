@@ -2,6 +2,7 @@ $record-size: 240px;
 
 .header {
   overflow: hidden;
+  user-select: none;
 }
 
 .header-info {
@@ -48,5 +49,13 @@ $record-size: 240px;
     width: 100%;
     height: 100%;
     border-radius: $record-size/2;
+  }
+
+  svg {
+    height: 100%;
+    width: 100%;
+    rotate: 45deg;
+    scale: 0.75;
+    fill: $background;
   }
 }
