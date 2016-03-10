@@ -29,18 +29,20 @@ handlers:
 - url: /jukebox-templates.js
   static_files: .tmp/jukebox-templates.js
   upload: .tmp/jukebox-templates.js
+- url: /about
+  script: handler.application
 - url: /api
   script: handler.application
   login: admin
   secure: always
 - url: /api/.*
   script: handler.application
-- url: .*
+- url: /.*
   static_files: src/app/index.html
   upload: src/app/index.html
 # - url: /dist
 #   static_dir: dist
-# - url: .*
+# - url: /.*
 #   static_files: dist/index.html
 #   upload: dist/index.html
 

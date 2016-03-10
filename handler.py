@@ -3,6 +3,9 @@ from endpoints import *
 from google.appengine.ext import ndb
 # from google.appengine.api import users
 
+class RedirectToProjectPage(webapp2.RequestHandler):
+	def get(self):
+		return self.redirect("http://hci.stanford.edu/courses/cs194h/2016/wi/projects/pickplay")
 
 class APIDebugger(webapp2.RequestHandler):
 	def get(self):
@@ -95,6 +98,7 @@ class APIDebugger(webapp2.RequestHandler):
 
 application = webapp2.WSGIApplication([
 	('/api', APIDebugger),
+	('/about', RedirectToProjectPage),
 	('/api/create_room', CreateRoom.CreateRoom),
 	('/api/register_user', RegisterUser.RegisterUser),
 	('/api/join_room', JoinRoom.JoinRoom),
