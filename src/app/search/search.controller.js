@@ -14,20 +14,7 @@
     $scope.myData.spotify = {};
     // $scope.myData.soundcloud = {};
 
-    backendAPI.getTrendingSongs().success(function(data) {
-      if (data.status === 'OK') {
-        $scope.querying = false;
-        console.log('OK backendAPI.getTrendingSongs', data);
-        $scope.myData.spotify.suggestions = data.data.map(function(e) {
-          return e.track;
-        });
-      } else {
-        console.log('NOT OK backendAPI.getTrendingSongs', data);
-      }
-    }).error(function(error) {
-      $scope.querying = false;
-      console.log('ERROR backendAPI.getTrendingSongs', error);
-    });
+    $scope.myData.spotify.suggestions = sharedRoomData.trending;
 
     $scope.myData.sendQuery = function() {
       //spotify API

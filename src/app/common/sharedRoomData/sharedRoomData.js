@@ -15,6 +15,7 @@
                 userName: '',
                 loaded: false,
                 queue: {},
+                trending: []
             };
             return data;
         });
