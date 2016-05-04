@@ -13,21 +13,20 @@
         }
       }
     })
-    .config(routeProvider);
-
-  function routeProvider($routeProvider) {
-    $routeProvider
-      .when('/:roomId', {
-        controller: 'QueueController',
-        templateUrl: 'queue/queue.html'
-      })
-      .when('/', {
-        controller: 'HomeController',
-        templateUrl: 'home/home.html'
-      })
-      .otherwise({
-        redirectTo: '/'
-      });
-  }
+    .config(['$compileProvider', '$routeProvider', function ($compileProvider, $routeProvider) {
+      $compileProvider.debugInfoEnabled(false);
+      $routeProvider
+        .when('/:roomId', {
+          controller: 'QueueController',
+          templateUrl: 'queue/queue.html'
+        })
+        .when('/', {
+          controller: 'HomeController',
+          templateUrl: 'home/home.html'
+        })
+        .otherwise({
+          redirectTo: '/'
+        });
+    }]);
 
 })();
