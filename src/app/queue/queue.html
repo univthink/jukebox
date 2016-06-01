@@ -10,7 +10,7 @@
   <div ng-if="room.loaded">
     <div header currently-playing="room.queue[0]"></div>
     <div class="song-queue" data-as-sortable="dragControlListeners" data-ng-model="room.queue">
-      <div ng-repeat="song in room.queue" ng-if="!$first">
+      <div ng-repeat="song in room.queue"> <!-- ng-if="!$first"> -->
         <div class="song-queue-item noselect" data-uuid="{{ song.unique_id }}" data-as-sortable-item ng-swipe-left="showDeleteButton = true" ng-swipe-right="showDeleteButton = false">
           <img src="{{ song.image_url }}" class="song-image">
           <div class="song-info">
