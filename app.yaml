@@ -23,6 +23,8 @@ handlers:
   static_dir: src/app/queue
 - url: /search
   static_dir: src/app/search
+- url: /dataviz
+  static_dir: src/app/dataviz
 - url: /app.js
   static_files: src/app/app.js
   upload: src/files/app.js

@@ -20,19 +20,22 @@
       $scope.yt_video_id = '';
       var firstTrackUUID = '';
 
-      $rootScope.$watch('responsiveVersion', function() {
-        updateCurrentVideo();
+      // TODO: Reimplement these!
+
+      // $rootScope.$watch('responsiveVersion', function() {
+      //   updateVideoToCurrentTopTrack();
+      // });
+
+      // $scope.$watch('room.queue', function() {
+      //   updateVideoToCurrentTopTrack();
+      // });
+
+      $scope.$on('updateVideoEvent', function(event, track_name, artist_name) {
+        updateCurrentVideo(track_name, artist_name);
       });
 
-      $scope.$watch('room.queue', function() {
-        updateCurrentVideo();
-      });
-
-      function updateCurrentVideo() {
-        if ($rootScope.responsiveVersion == 'mobile' && $scope.yt_video_id === '') return; // don't query on mobile
-        if ($scope.room.queue[0].unique_id == firstTrackUUID) return; // no need to requery youtube if the query hasn't changed
-        firstTrackUUID = sharedRoomData.queue[0].unique_id;
-        getMusicVideos()
+      function updateCurrentVideo(track_name, artist_name) {
+        getMusicVideos(track_name, artist_name)
           .success(function(data) {
             console.log('OK YoutubeController.updateCurrentVideo', data);
             if (data.items.length >= 1) {
@@ -44,14 +47,30 @@
           });
       }
 
-      function getMusicVideos() {
+      function updateVideoToCurrentTopTrack() {
+        if ($rootScope.responsiveVersion == 'mobile' && $scope.yt_video_id === '') return; // don't query on mobile
+        if ($scope.room.queue[0].unique_id == firstTrackUUID) return; // no need to requery youtube if the query hasn't changed
+        firstTrackUUID = sharedRoomData.queue[0].unique_id;
+        getMusicVideos($scope.room.queue[0].track, $scope.room.queue[0].artist)
+          .success(function(data) {
+            console.log('OK YoutubeController.updateVideoToCurrentTopTrack', data);
+            if (data.items.length >= 1) {
+              $scope.yt_video_id = data.items[0].id.videoId;
+            }
+          })
+          .error(function(error) {
+            console.log('ERROR YoutubeController.updateVideoToCurrentTopTrack', error);
+          });
+      }
+
+      function getMusicVideos(track_name, artist_name) {
         return $http({
           url: 'https://www.googleapis.com/youtube/v3/search',
           method: 'GET',
           params: {
             part: 'snippet',
             key: yt_api_key,
-            q: $scope.room.queue[0].track + ' ' + $scope.room.queue[0].artist,
+            q: track_name + ' ' + artist_name,
             type: 'video',
             videoEmbeddable: 'true',
           }
