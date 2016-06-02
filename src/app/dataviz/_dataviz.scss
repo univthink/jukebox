@@ -1,0 +1,34 @@
+.dataviz-page {
+
+  color: white;
+  font-size: 100px;
+  padding-bottom: 90px;
+
+  .song-list {
+    font-size: 20px;
+    margin-top: 20px;
+
+    button {
+      background-color: black;
+      border: 2px solid white;
+      margin-top: 3px;
+    }
+  }
+
+  iframe#ytplayer {
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    width: 100%;
+    height: 90px;
+  }
+
+  .iframe-container {
+    position: fixed;
+    width: 100%;
+    bottom: 0;
+    height: 0;
+    //padding-bottom: 56.25%;
+  }
+
+}

@@ -1,0 +1,15 @@
+<div class="dataviz-page">
+  <span>Hello World</span>
+  <button ng-click="login()">Login</button>
+  <button ng-click="getSongs()">Get Songs</button>
+  <div class="song-list">
+    <div ng-repeat="song in songList">
+      <button ng-click="playSelectedSong(song.track.name, song.track.artists[0].name)"><span>{{song.track.name}}</span> by <span>{{song.track.artists[0].name}}</span></button>
+    </div>
+  </div>
+  <div ng-controller="YoutubeController">
+    <div class="iframe-container">
+      <iframe id="ytplayer" type="text/html" ng-src="{{ yt_video_id | youtubeEmbedUrl }}" frameborder="0" allowfullscreen/>
+    </div>
+  </div>
+</div>

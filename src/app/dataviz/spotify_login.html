@@ -1,0 +1,17 @@
+<script>
+  var hash = window.location.hash;
+  if (window.location.search.substring(1).indexOf("error") !== -1) {
+    // login failure
+    console.log("Spotify login failure.");
+    window.close();
+  } else if (hash) {
+    var token = window.location.hash.split('&')[0].split('=')[1];
+    if (token) {
+      // login success
+      console.log("Spotify login success.");
+      localStorage.setItem('spotify-token', token);
+    } else {
+      console.log("Spotify token is undefined.");
+    }
+  }
+</script>
