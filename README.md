@@ -11,5 +11,10 @@ Make sure to install the [LiveReload plugin](https://chrome.google.com/webstore/
 
 Visit our [Slack channel](https://jukebox-app.slack.com/) for support.
 
+To deploy (use the `deployed` branch):
+```
+appcfg.py update ./
+```
+
 pip install requests
 pip install urllib3
