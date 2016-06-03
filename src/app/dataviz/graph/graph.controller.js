@@ -10,6 +10,7 @@
     $scope.selectedTimePeriod = "long_term";
     $scope.xAxisCategory = "time";
     $scope.yAxisCategory = "energy";
+    $scope.yAxisIsLocked = false; // TODO: debug this
     // Adopted from here: https://github.com/bhargavavn/Scatterplot_zoom/blob/master/scatter.html
 
     // Set the dimensions of the svg / graph
@@ -128,16 +129,34 @@
     // Call funtion zoom
     svg.call(d3.behavior.zoom().x(x).y(y).on("zoom", zoom));
 
+    // TODO: Investigate why neither of these work.
+    // $scope.$watch('yAxisIsLocked', function() {
+    //   console.log($scope.yAxisIsLocked);
+    // });
+    // $scope.$watch('nonTopTracksHidden', function() {
+    //   console.log($scope.nonTopTracksHidden);
+    // });
+
+    $scope.toggleYAxisLock = function() {
+      $scope.yAxisIsLocked = !$scope.yAxisIsLocked;
+    }
+
     // Zoom into data (.dot)
     function zoom() {
       // console.log(d3.event.scale);
-      svg.selectAll("circle")
-        //.attr("r", (8 * d3.event.scale))
-        .classed("animate", false)
-        .attr("cx", function(d) { return x(d.date); })
-        .attr("cy", function(d) { return y(d["y_category"]); });
-      d3.select('.x.axis').call(xAxis);
-      d3.select('.y.axis').call(yAxis);
+      if (!$scope.yAxisIsLocked) {
+        svg.selectAll("circle")
+          .classed("animate", false)
+          .attr("cx", function(d) { return x(d.date); })
+          .attr("cy", function(d) { return y(d["y_category"]); });
+        d3.select('.x.axis').call(xAxis);
+        d3.select('.y.axis').call(yAxis);
+      } else {
+        svg.selectAll("circle")
+          .classed("animate", false)
+          .attr("cx", function(d) { return x(d.date); })
+        }
+        d3.select('.x.axis').call(xAxis);
     }
 
     $scope.updateGraph = function() {

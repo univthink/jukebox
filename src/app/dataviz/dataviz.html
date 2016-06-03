@@ -41,6 +41,10 @@
           <select ng-model="xAxisCategory" ng-change="changeXAxisCategory()" name="x-axis-category">
             <option value="time">Date added</option>
           </select>
+          <br>
+          Lock Y-axis on zoom?
+          <input type="checkbox" ng-change="toggleYAxisLock()" ng-model="yAxisIsLocked" name="lock-y-axis">
+          <br>
         </div>
       </div>
     </div>

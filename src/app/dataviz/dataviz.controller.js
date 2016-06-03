@@ -11,6 +11,7 @@
     $scope.pageClass = 'dataviz-page';
     $scope.musicLoadingIsComplete = false;
     $scope.getSongsClicked = false;
+
     $scope.musicData = {}; // maps spotify ids to data objects
     $scope.musicTracks = [];
     $scope.savedTrackList = [];
