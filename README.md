@@ -11,10 +11,23 @@ Make sure to install the [LiveReload plugin](https://chrome.google.com/webstore/
 
 Visit our [Slack channel](https://jukebox-app.slack.com/) for support.
 
-To deploy (use the `deployed` branch):
+Ensure that remote has lasted `deployed` branch:
 ```
-appcfg.py update ./
+git rebase master
+gulp && gulp dist
+git push origin deployed --force
 ```
 
+Try not to run `gulp dist` on master or you'll have to deal with merging everything in `dist/`.
+
+To deploy:
+```
+appcfg.py update ./ # from root dir
+```
+
+To set up:
+```
 pip install requests
 pip install urllib3
+npm install
+```
