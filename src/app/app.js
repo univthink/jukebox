@@ -42,7 +42,8 @@
 
       SpotifyProvider.setClientId('39903cb10e0a4f6da882d6c53db62776');
       //SpotifyProvider.setRedirectUri('http://127.0.0.1:8080/spotify_login/');
-      SpotifyProvider.setRedirectUri('http://localhost:8080/spotify_login/');
+      // SpotifyProvider.setRedirectUri('http://localhost:8080/spotify_login/');
+      SpotifyProvider.setRedirectUri('http://letsjukebox.com/spotify_login/');
       SpotifyProvider.setScope('user-library-read user-top-read');
       // If you already have an auth token
       // SpotifyProvider.setAuthToken('zoasliu1248sdfuiknuha7882iu4rnuwehifskmkiuwhjg23');
