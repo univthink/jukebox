@@ -1,0 +1,16 @@
+.graph-controls-view {
+  font-size: 20px;
+  .control-box {
+    position: fixed;
+    top: 120px;
+    right: 10px;
+    width: 400px;
+    height: 470px;
+    background-color: #2ebd59;
+    color: white;
+    box-shadow: 0px 2px 5px black;
+    .content {
+      padding: 20px;
+    }
+  }
+}

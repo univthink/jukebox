@@ -25,6 +25,10 @@ handlers:
   static_dir: src/app/search
 - url: /dataviz
   static_dir: src/app/dataviz
+- url: /dataviz/graph
+  static_dir: src/app/dataviz/graph
+- url: /dataviz/graph/graph_controls
+  static_dir: src/app/dataviz/graph/graph_controls
 - url: /app.js
   static_files: src/app/app.js
   upload: src/files/app.js

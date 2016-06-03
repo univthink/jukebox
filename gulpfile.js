@@ -18,6 +18,7 @@ var gulp = require('gulp'),
     svgmin = require('gulp-svgmin'),
     nodemon = require('gulp-nodemon'),
     autoprefixer = require('gulp-autoprefixer'),
+    babel = require('gulp-babel'),
 
     isWatching = false;
 
@@ -317,6 +318,9 @@ function appFiles () {
     '!./src/app/**/*_test.js'
   ];
   return gulp.src(files)
+    .pipe(babel({
+      presets: ['es2015']
+    }))
     .pipe(g.angularFilesort());
 }
 

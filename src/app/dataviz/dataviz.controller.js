@@ -10,7 +10,9 @@
 
     $scope.pageClass = 'dataviz-page';
     $scope.musicLoadingIsComplete = false;
+    $scope.getSongsClicked = false;
     $scope.musicData = {}; // maps spotify ids to data objects
+    $scope.musicTracks = [];
     $scope.savedTrackList = [];
     $scope.topTracks = {
       "long_term" : {},
@@ -29,9 +31,22 @@
     function isEmpty(obj) {
       return Object.keys(obj).length === 0;
     }
-    $scope.$watch('musicLoadingIsComplete', function() {
-      if ($scope.musicLoadingIsComplete) {
+
+    $scope.getSongs = function() {
+      $scope.getSongsClicked = true;
+      getSavedTracksFromSpotify(0, 50);
+    }
+
+    $scope.playSelectedSong = function(track_name, artist_name) {
+      $scope.$broadcast('updateVideoEvent', track_name, artist_name);
+    }
+
+    $scope.$watch('featureRequestsToMake', function() {
+      //console.log($scope.featureRequestsToMake);
+      if ($scope.featureRequestsToMake == 0) {
         console.log("Music loading is complete!", $scope.musicData);
+        $scope.musicTracks = Object.keys($scope.musicData).map(key => $scope.musicData[key]);
+        $scope.musicLoadingIsComplete = true;
       }
     });
 
@@ -49,32 +64,39 @@
             if ($scope.topTracks["short_term"][track_obj.id]) track_obj["is_top"].push("short_term");
             $scope.musicData[track_obj.id] = track_obj;
           }
-          getAndAddAudioFeaturesToTracks(Object.keys($scope.musicData));
+          addAudioFeaturesToTracks(Object.keys($scope.musicData));
       }
     }, true);
 
-    function getAndAddAudioFeaturesToTracks(idList) {
+    function getTracksAudioFeatures(track_ids_str, offset, idList) {
+      Spotify.getTracksAudioFeatures(track_ids_str).then(function (data) {
+        $scope.featureRequestsToMake -= 1;
+        for (var j = 0; j < data["audio_features"].length; j++) {
+          if ( offset+1 == idList.length ) { // last run of getTracks
+            if (idList[idList.length-(idList.length % 100)+j] != data["audio_features"][j].id) console.log("There is a problem at ", offset, j);
+            $scope.musicData[idList[idList.length-(idList.length % 100)+j]]["audio_features"] = data["audio_features"][j];
+          } else if ( (offset+1) % 100 == 0 ) { // mid run of getTracks
+            if (idList[(offset+1)-100+j] != data["audio_features"][j].id) console.log("There is a problem at ", offset, j);
+            $scope.musicData[idList[(offset+1)-100+j]]["audio_features"] = data["audio_features"][j];
+          } else {
+            console.log("This should never happen...");
+          }
+        }
+      }).catch(function(e) {
+        console.log("Something went wrong!");
+        console.log(e); // "oh, no!"
+      });
+    }
+
+    function addAudioFeaturesToTracks(idList) {
+      $scope.featureRequestsToMake = Math.ceil(idList.length / 100);
+      console.log($scope.featureRequestsToMake);
       var track_ids_str = "";
       for (var i = 0; i < idList.length; i++) {
         track_ids_str += idList[i] + ',';
         if ( ( (i+1) % 100 == 0 ) || ( i+1 == idList.length ) ) {
           track_ids_str = track_ids_str.slice(0, -1);
-          Spotify.getTracksAudioFeatures(track_ids_str).then(function (data) {
-            for (var j = 0; j < data["audio_features"].length; j++) {
-              if ( this+1 == idList.length ) { // last run of getTracks
-                if (idList[(this+1)-idList.length+j] != data["audio_features"][j].id) console.log("There is a problem!");
-                $scope.musicData[idList[(this+1)-idList.length+j]]["audio_features"] = data["audio_features"][j];
-                if ( j+1 == data["audio_features"].length ) { // features have been added to the last track
-                  $scope.musicLoadingIsComplete = true;
-                }
-              } else if ( (this+1) % 100 == 0 ) { // mid run of getTracks
-                if (idList[(this+1)-100+j] != data["audio_features"][j].id) console.log("There is a problem!");
-                $scope.musicData[idList[(this+1)-100+j]]["audio_features"] = data["audio_features"][j];
-              } else {
-                console.log("This should never happen...");
-              }
-            }
-          }.bind(i));
+          getTracksAudioFeatures(track_ids_str, i, idList);
           track_ids_str = "";
         }
       }
@@ -82,13 +104,19 @@
 
     function getSavedTracksFromSpotify(offset, limit) {
       Spotify.getSavedUserTracks({"offset":offset, "limit":limit}).then(function (data) {
+        console.log(offset, data.items);
         $scope.savedTrackList = $scope.savedTrackList.concat(data.items);
         if (data.items.length < limit) {
           console.log('Saved tracks finished loading!', $scope.savedTrackList);
           getTopTracksFromSpotify();
           return true;
         }
-        getSavedTracksFromSpotify(offset+limit, limit);
+        setTimeout(function() {
+          getSavedTracksFromSpotify(offset+limit, limit);
+        }, 100);
+      }).catch(function(e) {
+        console.log("Something went wrong!");
+        console.log(e); // "oh, no!"
       });
     }
 
@@ -114,14 +142,6 @@
         // console.log('Top tracks: short_term', $scope.topTracks["short_term"]);
         return true;
       });
-    }
-
-    $scope.getSongs = function() {
-      getSavedTracksFromSpotify(0, 50);
-    }
-
-    $scope.playSelectedSong = function(track_name, artist_name) {
-      $scope.$broadcast('updateVideoEvent', track_name, artist_name);
     }
 
   }

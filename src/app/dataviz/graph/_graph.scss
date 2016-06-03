@@ -1,0 +1,102 @@
+.graph-view {
+
+  font-size: 44px;
+  color: lightgreen;
+
+  // Adopted from here: https://github.com/bhargavavn/Scatterplot_zoom/blob/master/scatter.html
+
+  #mygraph {
+
+    font-size: 20px;
+    color: white;
+
+    circle {
+      fill: #2ebd59;
+      &.selected {
+        transition: all 0.2s ease;
+      }
+      &.animate {
+        transition: all 0.5s ease;
+      }
+    }
+    circle:hover {
+      cursor: pointer;
+    }
+  }
+  #mygraph {
+    &.long_term {
+      circle {
+        &.top.long_term {
+          opacity: 0.9;
+          fill: yellow;
+        }
+      }
+    }
+    &.medium_term {
+      circle {
+        &.top.medium_term {
+          opacity: 0.9;
+          fill: yellow;
+        }
+      }
+    }
+    &.short_term {
+      circle {
+        &.top.short_term {
+          opacity: 0.9;
+          fill: yellow;
+        }
+      }
+    }
+    &.hide-non-top {
+      circle:not(.top) {
+        opacity: 0.1 !important;
+      }
+    }
+  }
+  rect {
+    fill: #191919;
+  }
+  text {
+    fill: white;
+  }
+  path {
+      stroke: steelblue;
+      stroke-width: 2;
+      fill: none;
+  }
+  .axis path,
+  .axis line {
+      fill: none;
+      stroke: grey;
+      stroke-width: 1;
+      shape-rendering: crispEdges;
+  }
+  .grid .tick {
+      stroke: lightgrey;
+      opacity: 0.5;
+  }
+  .grid path {
+      stroke-width: 0;
+  }
+  g {
+      overflow: visible;
+  }
+  rect.pane {
+      cursor: move;
+      fill: none;
+      pointer-events: all;
+  }
+  div.tooltip {
+      position: absolute;
+      font-family: inherit;
+      font-size: 20px;
+      text-align: center;
+      width: auto;
+      height: auto;
+      padding: 10px;
+      background: black;
+      //border: 4px solid white;
+      pointer-events: none;
+  }
+}

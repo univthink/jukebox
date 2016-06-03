@@ -37,7 +37,7 @@
       function updateCurrentVideo(track_name, artist_name) {
         getMusicVideos(track_name, artist_name)
           .success(function(data) {
-            console.log('OK YoutubeController.updateCurrentVideo', data);
+            // console.log('OK YoutubeController.updateCurrentVideo', data);
             if (data.items.length >= 1) {
               $scope.yt_video_id = data.items[0].id.videoId;
             }
