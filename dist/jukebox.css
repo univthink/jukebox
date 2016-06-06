@@ -450,7 +450,11 @@ svg path {
   .dataviz-page .tutorial-text {
     font-size: 31px;
     color: yellow;
-    transition: all ease-out 1s; }
+    transition: all ease-out 1s;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none; }
     .dataviz-page .tutorial-text.ng-hide {
       opacity: 0; }
   .dataviz-page .error-text {
