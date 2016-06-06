@@ -6,12 +6,15 @@
     .module('jukebox')
     .controller('DatavizController', datavizController);
 
-  function datavizController($scope, $http, Spotify) {
-
+  function datavizController($scope, $http, $timeout, Spotify) {
+    $scope.loadFromSampleData = "";
     $scope.pageClass = 'dataviz-page';
     $scope.musicLoadingIsComplete = false;
     $scope.getSongsClicked = false;
+    $scope.errorText = "";
+    $scope.tutorialVisible = true;
 
+    // initialize data objects
     $scope.musicData = {}; // maps spotify ids to data objects
     $scope.musicTracks = [];
     $scope.savedTrackList = [];
@@ -21,10 +24,10 @@
       "short_term": {}
     };
 
-    Spotify.login();
-
+    $scope.userIsLoggedIn = false;
     $scope.login = function () {
       Spotify.login();
+      $scope.userIsLoggedIn = true;
     };
 
     // Helper functions
@@ -34,8 +37,27 @@
     }
 
     $scope.getSongs = function() {
+      $scope.errorText = "";
       $scope.getSongsClicked = true;
+      $scope.loadFromSampleData = "";
+      $scope.musicLoadingIsComplete = false;
+      $scope.musicData = {}; // maps spotify ids to data objects
+      $scope.musicTracks = [];
+      $scope.savedTrackList = [];
+      $scope.topTracks = {
+        "long_term" : {},
+        "medium_term": {},
+        "short_term": {}
+      };
       getSavedTracksFromSpotify(0, 50);
+    }
+
+    $scope.loadFromDataSet = function(str) {
+      $scope.loadFromSampleData = str;
+      //$scope.userIsLoggedIn = true;
+      //$scope.getSongsClicked = true;
+      $scope.musicLoadingIsComplete = true;
+      if ($scope.tutorialVisible) $timeout(function() { $scope.tutorialVisible = false; }, 10000);
     }
 
     $scope.playSelectedSong = function(track_name, artist_name) {
@@ -47,7 +69,8 @@
       if ($scope.featureRequestsToMake == 0) {
         console.log("Music loading is complete!", $scope.musicData);
         $scope.musicTracks = Object.keys($scope.musicData).map(key => $scope.musicData[key]);
-        $scope.musicLoadingIsComplete = true;
+        $scope.musicLoadingIsComplete = true; // triggers initializing the GraphController
+        if ($scope.tutorialVisible) $timeout(function() { $scope.tutorialVisible = false; }, 10000);
       }
     });
 
@@ -91,7 +114,6 @@
 
     function addAudioFeaturesToTracks(idList) {
       $scope.featureRequestsToMake = Math.ceil(idList.length / 100);
-      console.log($scope.featureRequestsToMake);
       var track_ids_str = "";
       for (var i = 0; i < idList.length; i++) {
         track_ids_str += idList[i] + ',';
@@ -118,6 +140,7 @@
       }).catch(function(e) {
         console.log("Something went wrong!");
         console.log(e); // "oh, no!"
+        $scope.errorText = 'Error importing Spotify library. Please click Get Songs again.';
       });
     }
 

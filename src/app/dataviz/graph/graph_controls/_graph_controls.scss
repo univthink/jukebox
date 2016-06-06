@@ -1,16 +1,28 @@
 .graph-controls-view {
+  position: fixed;
+  left: 0;
+  bottom: 90px;
   font-size: 20px;
+  width: 100%;
+
   .control-box {
-    position: fixed;
-    top: 120px;
-    right: 10px;
-    width: 400px;
-    height: 470px;
+    width: 100%;
+    height: auto;
+    padding-top: 10px;
+    padding-bottom: 10px;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-around;
+    align-items: center;
     background-color: #2ebd59;
     color: white;
     box-shadow: 0px 2px 5px black;
-    .content {
-      padding: 20px;
+
+    .control-item {
+      input, select {
+        margin-top: -5px;
+        margin-left: 4px;
+      }
     }
   }
 }

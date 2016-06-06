@@ -1,12 +1,29 @@
 <div class="dataviz-page">
   <!-- <link href="https://afeld.github.io/emoji-css/emoji.css" rel="stylesheet"> --> <!-- TODO: Move this elsewhere -->
   <div class="header">
-    <div>Jukebox</div>
-    <button ng-click="login()">Login</button>
-    <button ng-click="getSongs()">Get Songs</button>
+    <div class="contents">
+      <div>Project Jukebox</div>
+      <button ng-click="login()">Login</button>
+      <button ng-click="getSongs()" ng-disabled="!userIsLoggedIn">Get&nbsp;Your&nbsp;Songs</button>
+    </div>
   </div>
-  <div ng-if="!getSongsClicked" class="explainer-text">Click Get Songs to get started. &mapstoup;</div>
-  <div ng-if="getSongsClicked && !musicLoadingIsComplete" spinner></div>
+  <div class="notifications">
+    <div ng-if="!userIsLoggedIn && !loadFromSampleData" class="explainer-text">
+      Click Login to authorize Jukebox to pull data from your Spotify account.
+      <br>
+      Alternatively, load a sample data set.
+      <br>
+      <button ng-click="loadFromDataSet('small')">Load&nbsp;Small&nbsp;Data&nbsp;Set</button>
+      <button ng-click="loadFromDataSet('large')">Load&nbsp;Large&nbsp;Data&nbsp;Set</button>
+    </div>
+    <div ng-if="userIsLoggedIn && !getSongsClicked && !loadFromSampleData" class="explainer-text">Click Get Your Songs to get started.</div>
+    <div ng-show="musicLoadingIsComplete && tutorialVisible" class="tutorial-text">Scroll to Zoom. Click and drag to pan.<br>Click on any data point to play that song.</div>
+    <div ng-if="errorText" class="error-text">{{errorText}}</div>
+  </div>
+  </div>
+  <div ng-if="getSongsClicked && !musicLoadingIsComplete && !errorText" class="spinner-container">
+    <div spinner></div>
+  </div>
   <div ng-controller="GraphController" ng-if="musicLoadingIsComplete">
     <div class="graph-view"> <!-- TODO: add green text in here? -->
       <div id="mygraph" ng-class="selectedTimePeriod">
@@ -16,35 +33,27 @@
     <div ng-controller="GraphControlsController">
     <div class="graph-controls-view">
       <div class="control-box">
-        <div class="content">
-          Top tracks from
+        <div class="control-item">
+          <span style="color: yellow;">Highlight</span> top tracks from
           <select ng-model="selectedTimePeriod" ng-change="changeTopTimePeriod()" name="time-period">
-            <option value="long_term">All time</option>
-            <option value="medium_term">Last 6 months</option>
-            <option value="short_term">Last 4 weeks</option>
+            <option value="long_term">all time</option>
+            <option value="medium_term">last 6 months</option>
+            <option value="short_term">last 4 weeks</option>
           </select>
-          <br>
-          Hide non top tracks?
+        </div>
+        <div class="control-item">
+          Fade non top tracks?
           <input type="checkbox" ng-change="toggleHiddenNonTopTracks()" name="hide-non-top" ng-model="nonTopTracksHidden">
-          <br>
-          Display tracks based on<br>
-          <select ng-model="yAxisCategory" ng-change="changeYAxisCategory()" name="y-axis-category">
-            <option value="danceability">Danceability</option>
-            <option value="energy">Energy</option>
-            <option value="speechiness">Speechiness</option>
-            <option value="acousticness">Acousticness</option>
-            <option value="instrumentalness">Instrumentalness</option>
-            <option value="liveness">Liveness</option>
-            <option value="valence">Valence</option>
-          </select>
-          x
-          <select ng-model="xAxisCategory" ng-change="changeXAxisCategory()" name="x-axis-category">
-            <option value="time">Date added</option>
-          </select>
-          <br>
+        </div>
+        <div class="control-item">
+          Display tracks based on
+          <select ng-options="item as item.name for item in axisCategories" ng-model="axisCategory.x" ng-change="changeXAxisCategory()"></select>
+           x
+          <select ng-options="item as item.name disable when item.value == 'time' for item in axisCategories" ng-model="axisCategory.y" ng-change="changeYAxisCategory()"></select>
+        </div>
+        <div class="control-item">
           Lock Y-axis on zoom?
           <input type="checkbox" ng-change="toggleYAxisLock()" ng-model="yAxisIsLocked" name="lock-y-axis">
-          <br>
         </div>
       </div>
     </div>
