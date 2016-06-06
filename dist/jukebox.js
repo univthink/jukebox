@@ -52,20 +52,40 @@
   angular.module('jukebox').controller('GraphControlsController', graphControlsController);
 
   function graphControlsController($scope) {
+
     $scope.changeXAxisCategory = function () {
-      console.log($scope.xAxisCategory);
-    };
-    $scope.changeYAxisCategory = function () {
-      for (var i = 0; i < $scope.musicTracks.length; i++) {
-        $scope.musicTracks[i]["y_category"] = $scope.musicTracks[i]["audio_features"][$scope.yAxisCategory];
+      if ($scope.axisCategory.x.value == 'time') {
+        for (var i = 0; i < $scope.musicTracks.length; i++) {
+          $scope.musicTracks[i]["x_category"] = $scope.musicTracks[i]["date"];
+          $scope.musicTracks[i]["x_category_val"] = 'time';
+        }
+        $scope.changeXScaleToDate();
+      } else {
+        for (var i = 0; i < $scope.musicTracks.length; i++) {
+          $scope.musicTracks[i]["x_category"] = $scope.musicTracks[i]["audio_features"][$scope.axisCategory.x.value];
+          $scope.musicTracks[i]["x_category_val"] = $scope.axisCategory.x.value;
+        }
+        $scope.changeXScaleToFeature();
       }
+      $scope.updateAxisLabels();
       $scope.updateGraph();
     };
+
+    $scope.changeYAxisCategory = function () {
+      for (var i = 0; i < $scope.musicTracks.length; i++) {
+        $scope.musicTracks[i]["y_category"] = $scope.musicTracks[i]["audio_features"][$scope.axisCategory.y.value];
+        $scope.musicTracks[i]["y_category_val"] = $scope.axisCategory.y.value;
+      }
+      $scope.updateAxisLabels();
+      $scope.updateGraph();
+    };
+
     $scope.changeTopTimePeriod = function () {
       document.getElementById("mygraph").classList = [];
       document.getElementById("mygraph").classList.add($scope.selectedTimePeriod);
       $scope.toggleHiddenNonTopTracks();
     };
+
     $scope.toggleHiddenNonTopTracks = function () {
       if ($scope.nonTopTracksHidden) document.getElementById("mygraph").classList.add("hide-non-top");else {
         document.getElementById("mygraph").classList.remove("hide-non-top");
@@ -81,23 +101,30 @@
 
   angular.module('jukebox').controller('GraphController', graphController);
 
-  function graphController($scope) {
+  function graphController($scope, $http) {
     $scope.selectedTimePeriod = "long_term";
-    $scope.xAxisCategory = "time";
-    $scope.yAxisCategory = "energy";
+    $scope.axisCategories = [{ name: "Danceability", value: "danceability" }, { name: "Energy", value: "energy" }, { name: "Speechiness", value: "speechiness" }, { name: "Acousticness", value: "acousticness" }, { name: "Instrumentalness", value: "instrumentalness" }, { name: "Liveness", value: "liveness" }, { name: "Valence", value: "valence" }, { name: "Date added", value: "time" }];
+
+    $scope.axisCategory = {
+      x: $scope.axisCategories[7], // time
+      y: $scope.axisCategories[1] // energy
+    };
+
+    $scope.xAxisIsLocked = false;
     $scope.yAxisIsLocked = false; // TODO: debug this
-    // Adopted from here: https://github.com/bhargavavn/Scatterplot_zoom/blob/master/scatter.html
+
+    // Original zoomable d3 scatterplot code adopted from here: https://github.com/bhargavavn/Scatterplot_zoom/blob/master/scatter.html
 
     // Set the dimensions of the svg / graph
     var margin = {
-      top: 50,
+      top: 20,
       right: 20,
       bottom: 30,
       left: 60
     };
     var padding = 50;
-    var width = 1000 - margin.left - margin.right;
-    var height = 450 - margin.top - margin.bottom;
+    var width = 1400 - margin.left - margin.right;
+    var height = 530 - margin.top - margin.bottom;
 
     // Parse the date / time
     // e.g. "2016-03-02T07:22:01Z"
@@ -105,10 +132,10 @@
 
     // Set the ranges
     var x = d3.time.scale().range([padding, width]);
-    var y = d3.scale.linear().range([padding / 2, height]);
+    var y = d3.scale.linear().range([height, padding / 2]);
 
     // Define the axes
-    var xAxis = d3.svg.axis().scale(x).orient("top").ticks(5).tickSize(8);
+    var xAxis = d3.svg.axis().scale(x).orient("bottom").ticks(5).tickSize(8);
     var yAxis = d3.svg.axis().scale(y).orient("left").ticks(5).tickSize(8);
 
     // Adds the svg svg
@@ -117,86 +144,218 @@
     var div = d3.select(".mydiv").append("div").attr("class", "tooltip").style("opacity", 0);
 
     // Get the data
-    var data = $scope.musicTracks;
-
-    var _iteratorNormalCompletion = true;
-    var _didIteratorError = false;
-    var _iteratorError = undefined;
-
-    try {
-      for (var _iterator = data[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
-        var d = _step.value;
-
-        d["date"] = parseDate(d["added_at"]);
-        d["y_category"] = d["audio_features"][$scope.yAxisCategory];
-      }
-
-      // Scale the range of the data
-    } catch (err) {
-      _didIteratorError = true;
-      _iteratorError = err;
-    } finally {
-      try {
-        if (!_iteratorNormalCompletion && _iterator.return) {
-          _iterator.return();
-        }
-      } finally {
-        if (_didIteratorError) {
-          throw _iteratorError;
-        }
-      }
+    var data;
+    if ($scope.loadFromSampleData) {
+      $http.get('resources/' + $scope.loadFromSampleData + '_data.json').then(function (json) {
+        $scope.musicTracks = json.data;
+        data = $scope.musicTracks;
+        drawGraph();
+      });
+    } else {
+      data = $scope.musicTracks;
+      drawGraph();
     }
 
-    x.domain(d3.extent(data, function (d) {
-      return d.date;
-    }));
-    y.domain([0, d3.max(data, function (d) {
-      return d["y_category"];
-    }) + 0.1]);
-    //y.domain([0, 1]);
-    //y.domain([0, d3.max(data, function(d) { return d.close; })]);
+    // console.log(data);
+    // var json = JSON.stringify(data);
+    // console.log(json);
 
-    // Zoom selection
-    svg.append("rect").attr("width", width + margin.left + margin.right + padding).attr("height", height + margin.top + margin.bottom + padding);
+    // var toDownload = new Blob([json], { type:'application/json' });
+    // var link = window.URL.createObjectURL(toDownload);
+    // window.location=link;
+    /*
+        // process data for output
+        for (let d of data) {
+          delete d["album"];
+          delete d["available_markets"];
+          delete d["external_ids"];
+          delete d["external_urls"];
+        }
+      */
 
-    svg.selectAll("dot").data(data).enter().append("circle").attr("class", "dot").attr("class", function (d) {
-      if (d["is_top"].length > 0) {
-        return "top " + d["is_top"].join(" ");
+    function drawGraph() {
+      var _iteratorNormalCompletion = true;
+      var _didIteratorError = false;
+      var _iteratorError = undefined;
+
+      try {
+
+        for (var _iterator = data[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
+          var d = _step.value;
+
+          if ($scope.axisCategory.x.value == "time") {
+            d["date"] = parseDate(d["added_at"]);
+            d["x_category"] = d["date"];
+            d["x_category_val"] = "time";
+          } else {
+            d["x_category"] = d["audio_features"][$scope.axisCategory.x.value];
+            d["x_category_val"] = $scope.axisCategory.x.value;
+          }
+          d["y_category"] = d["audio_features"][$scope.axisCategory.y.value];
+          d["y_category_val"] = $scope.axisCategory.y.value;
+        }
+
+        // Scale the range of the data
+      } catch (err) {
+        _didIteratorError = true;
+        _iteratorError = err;
+      } finally {
+        try {
+          if (!_iteratorNormalCompletion && _iterator.return) {
+            _iterator.return();
+          }
+        } finally {
+          if (_didIteratorError) {
+            throw _iteratorError;
+          }
+        }
       }
-    }).attr("r", 8).style("opacity", 0.6).attr("cx", function (d) {
-      return x(d.date);
-    }).attr("cy", function (d) {
-      return y(d["y_category"]);
-    }).on("mouseover", function (d) {
-      d3.select(this)
-      //.attr("r", (2 * d3.select(this).attr("r")))
-      .attr("r", 16).classed("selected", true);
-      div.transition().duration(200).style("opacity", .7).attr("r", 30);
-      div.html(d.name + '<br>' + d.artists[0].name)
-      // TODO: Fix the tooltip placement
-      // .style("left", d3.select(this).attr("cx") + "px")
-      // .style("top", (d3.select(this).attr("cy") - parseInt(div.node().getBoundingClientRect()["height"]) + "px"));
-      .style("left", d3.event.pageX + 10 + "px").style("top", d3.event.pageY - parseInt(div.node().getBoundingClientRect()["height"] + 10) + "px");
-      //.style("top", (d3.event.pageY - parseInt(getComputedStyle(div).getPropertyValue("height")) + "px"));
-      //.style("top", (d3.event.pageY - parseInt(div.style("height"))) + "px");
-    }).on("mouseout", function (d) {
-      d3.select(this)
-      //.attr("r", (d3.select(this).attr("r") / 2))
-      .attr("r", 8).classed("selected", false);
-      // TODO: IDEA: Expand to be the album art!
-      div.transition().duration(500).style("opacity", 0);
-    }).on("click", function (d) {
-      $scope.playSelectedSong(d.name, d.artists[0].name);
-    });
 
-    // Add the X Axis
-    svg.append("g").attr("class", "x axis").call(xAxis);
+      x.domain(d3.extent(data, function (d) {
+        return d["x_category"];
+      }));
+      y.domain([0, d3.max(data, function (d) {
+        return d["y_category"];
+      }) + 0.1]);
+      //y.domain([0, 1]);
+      //y.domain([0, d3.max(data, function(d) { return d.close; })]);
 
-    // Add the Y Axis
-    svg.append("g").attr("class", "y axis").call(yAxis);
+      // Zoom selection
+      svg.append("rect").attr("width", width + margin.left + margin.right + padding).attr("height", height + margin.top + margin.bottom + padding);
 
-    // Call funtion zoom
-    svg.call(d3.behavior.zoom().x(x).y(y).on("zoom", zoom));
+      // Add axis labels
+      var leftLabel = svg.append("text").attr("y", height / 2 + 25).attr("x", margin.left).attr("class", "axis-label x left");
+
+      var rightLabel = svg.append("text").attr("y", height / 2 + 25).attr("x", width - 150).attr("class", "axis-label x right");
+
+      var topLabel = svg.append("text").attr("y", margin.top).attr("x", width / 2 - padding).attr("class", "axis-label y top");
+
+      var bottomLabel = svg.append("text").attr("y", height - padding / 2).attr("x", width / 2 - padding).attr("class", "axis-label y bottom");
+
+      $scope.updateAxisLabels = function () {
+        if ($scope.axisCategory.x.value == "time") {
+          leftLabel.text("");
+          rightLabel.text("");
+        } else {
+          leftLabel.text("low " + $scope.axisCategory.x.value);
+          rightLabel.text("high " + $scope.axisCategory.x.value);
+        }
+        topLabel.text("high " + $scope.axisCategory.y.value);
+        bottomLabel.text("low " + $scope.axisCategory.y.value);
+      };
+
+      $scope.updateAxisLabels();
+
+      // Data point creation
+      svg.selectAll("dot").data(data).enter().append("circle").attr("class", "dot").attr("class", function (d) {
+        if (d["is_top"].length > 0) {
+          return "top " + d["is_top"].join(" ");
+        }
+      }).attr("r", 8).style("opacity", 0.5).attr("cx", function (d) {
+        return x(d["x_category"]);
+      }).attr("cy", function (d) {
+        return y(d["y_category"]);
+      }).on("mouseover", function (d) {
+        d3.select(this)
+        //.attr("r", (2 * d3.select(this).attr("r")))
+        .attr("r", 16).classed("selected", true);
+        div.transition().duration(200).style("opacity", .8).attr("r", 30);
+        div.html(function () {
+          if (d["x_category_val"] == "time") {
+            var date = new Date(d["x_category"]);
+            var date_str = date.toLocaleString();
+            return d.name + '<br>' + d.artists[0].name + '<br><div class="subtext">' + d["y_category"] + ' ' + d["y_category_val"] + '<br>' + 'Added ' + date_str + '<br></div>';
+          } else {
+            return d.name + '<br>' + d.artists[0].name + '<br><div class="subtext">' + d["y_category"] + ' ' + d["y_category_val"] + '<br>' + d["x_category"] + ' ' + d["x_category_val"] + '<br></div>';
+          }
+        })
+        // TODO: Fix the tooltip placement
+        // .style("left", d3.select(this).attr("cx") + "px")
+        // .style("top", (d3.select(this).attr("cy") - parseInt(div.node().getBoundingClientRect()["height"]) + "px"));
+        .style("left", d3.event.pageX + 10 + "px").style("top", d3.event.pageY - parseInt(div.node().getBoundingClientRect()["height"] + 10) + "px");
+        //.style("top", (d3.event.pageY - parseInt(getComputedStyle(div).getPropertyValue("height")) + "px"));
+        //.style("top", (d3.event.pageY - parseInt(div.style("height"))) + "px");
+      }).on("mouseout", function (d) {
+        d3.select(this)
+        //.attr("r", (d3.select(this).attr("r") / 2))
+        .attr("r", 8).classed("selected", false);
+        // TODO: IDEA: Expand to be the album art!
+        div.transition().duration(500).style("opacity", 0);
+      }).on("click", function (d) {
+        $scope.playSelectedSong(d.name, d.artists[0].name);
+      });
+
+      // Add the X Axis
+      svg.append("g").attr("class", "x axis").call(xAxis).attr("transform", "translate(0," + height + ")"); // factor in padding?
+
+      // Add the Y Axis
+      svg.append("g").attr("class", "y axis").call(yAxis);
+
+      // Call funtion zoom
+      svg.call(d3.behavior.zoom().x(x).y(y).on("zoom", zoom));
+
+      $scope.changeXScaleToDate = function () {
+        x = d3.time.scale().range([padding, width]);
+        x.domain(d3.extent(data, function (d) {
+          return d["x_category"];
+        }));
+        xAxis = d3.svg.axis().scale(x).orient("bottom").ticks(5).tickSize(8);
+        svg.call(d3.behavior.zoom().x(x).y(y).on("zoom", zoom));
+      };
+
+      $scope.changeXScaleToFeature = function () {
+        x = d3.scale.linear().range([padding, width]);
+        x.domain([0, d3.max(data, function (d) {
+          return d["x_category"];
+        }) + 0.1]);
+        xAxis = d3.svg.axis().scale(x).orient("bottom").ticks(5).tickSize(8);
+        svg.call(d3.behavior.zoom().x(x).y(y).on("zoom", zoom));
+      };
+
+      $scope.toggleYAxisLock = function () {
+        $scope.yAxisIsLocked = !$scope.yAxisIsLocked;
+        //xAxis.scale(x);
+      };
+
+      // Zoom into data (.dot)
+      function zoom() {
+        // console.log(d3.event.scale);
+        if ($scope.xAxisIsLocked && $scope.yAxisIsLocked) return;
+        if ($scope.xAxisIsLocked) {
+          svg.selectAll("circle").classed("animate", false).attr("cy", function (d) {
+            return x(d["y_category"]);
+          });
+          d3.select('.y.axis').call(yAxis);
+        } else if ($scope.yAxisIsLocked) {
+          svg.selectAll("circle").classed("animate", false).attr("cx", function (d) {
+            return x(d["x_category"]);
+          });
+          d3.select('.x.axis').call(xAxis);
+        } else {
+          svg.selectAll("circle").classed("animate", false).attr("cx", function (d) {
+            return x(d["x_category"]);
+          }).attr("cy", function (d) {
+            return y(d["y_category"]);
+          });
+          d3.select('.x.axis').call(xAxis);
+          d3.select('.y.axis').call(yAxis);
+        }
+      }
+
+      $scope.updateGraph = function () {
+        // x.domain(d3.extent(data, function(d) { return d["x_category"]; }));
+        // y.domain([0, d3.max(data, function(d) { return d["y_category"]; }) + 0.1]);
+        // d3.select('.x.axis').call(xAxis);
+        // d3.select('.y.axis').call(yAxis);
+        svg.selectAll("circle").classed("animate", true).attr("cx", function (d) {
+          return x(d["x_category"]);
+        }).attr("cy", function (d) {
+          return y(d["y_category"]);
+        });
+        d3.select('.x.axis').call(xAxis);
+        d3.select('.y.axis').call(yAxis);
+      };
+    }
 
     // TODO: Investigate why neither of these work.
     // $scope.$watch('yAxisIsLocked', function() {
@@ -205,43 +364,6 @@
     // $scope.$watch('nonTopTracksHidden', function() {
     //   console.log($scope.nonTopTracksHidden);
     // });
-
-    $scope.toggleYAxisLock = function () {
-      $scope.yAxisIsLocked = !$scope.yAxisIsLocked;
-    };
-
-    // Zoom into data (.dot)
-    function zoom() {
-      // console.log(d3.event.scale);
-      if (!$scope.yAxisIsLocked) {
-        svg.selectAll("circle").classed("animate", false).attr("cx", function (d) {
-          return x(d.date);
-        }).attr("cy", function (d) {
-          return y(d["y_category"]);
-        });
-        d3.select('.x.axis').call(xAxis);
-        d3.select('.y.axis').call(yAxis);
-      } else {
-        svg.selectAll("circle").classed("animate", false).attr("cx", function (d) {
-          return x(d.date);
-        });
-      }
-      d3.select('.x.axis').call(xAxis);
-    }
-
-    $scope.updateGraph = function () {
-      // x.domain(d3.extent(data, function(d) { return d.date; }));
-      // y.domain([0, d3.max(data, function(d) { return d["y_category"]; }) + 0.1]);
-      // d3.select('.x.axis').call(xAxis);
-      // d3.select('.y.axis').call(yAxis);
-      svg.selectAll("circle").classed("animate", true).attr("cx", function (d) {
-        return x(d.date);
-      }).attr("cy", function (d) {
-        return y(d["y_category"]);
-      });
-      d3.select('.x.axis').call(xAxis);
-      d3.select('.y.axis').call(yAxis);
-    };
   }
 })();
 'use strict';
@@ -338,6 +460,28 @@
 
 (function () {
 
+    'use strict';
+
+    angular.module('jukebox').factory('sharedRoomData', function () {
+        var data = {
+            roomId: '',
+            roomName: '',
+            allAdmin: false,
+            passwordProtected: false,
+            roomPassword: '',
+            userId: '',
+            userName: '',
+            loaded: false,
+            queue: {},
+            trending: []
+        };
+        return data;
+    });
+})();
+'use strict';
+
+(function () {
+
   'use strict';
 
   angular.module('jukebox').directive('plusButton', plusButton);
@@ -364,28 +508,6 @@
 
 (function () {
 
-    'use strict';
-
-    angular.module('jukebox').factory('sharedRoomData', function () {
-        var data = {
-            roomId: '',
-            roomName: '',
-            allAdmin: false,
-            passwordProtected: false,
-            roomPassword: '',
-            userId: '',
-            userName: '',
-            loaded: false,
-            queue: {},
-            trending: []
-        };
-        return data;
-    });
-})();
-'use strict';
-
-(function () {
-
   'use strict';
 
   angular.module('jukebox').directive('header', header).filter('spotifyEmbedUrl', function ($sce) {
@@ -402,6 +524,23 @@
         currentlyPlaying: '='
       },
       templateUrl: 'common/header/header.html'
+    };
+  }
+})();
+'use strict';
+
+(function () {
+
+  'use strict';
+
+  angular.module('jukebox').directive('footer', footer);
+
+  function footer() {
+    return {
+      restrict: 'A',
+      replace: true,
+      scope: {},
+      templateUrl: 'common/footer/footer.html'
     };
   }
 })();
@@ -591,23 +730,6 @@
 
         return backendAPI;
     }]);
-})();
-'use strict';
-
-(function () {
-
-  'use strict';
-
-  angular.module('jukebox').directive('footer', footer);
-
-  function footer() {
-    return {
-      restrict: 'A',
-      replace: true,
-      scope: {},
-      templateUrl: 'common/footer/footer.html'
-    };
-  }
 })();
 'use strict';
 
@@ -1016,12 +1138,15 @@
 
   angular.module('jukebox').controller('DatavizController', datavizController);
 
-  function datavizController($scope, $http, Spotify) {
-
+  function datavizController($scope, $http, $timeout, Spotify) {
+    $scope.loadFromSampleData = "";
     $scope.pageClass = 'dataviz-page';
     $scope.musicLoadingIsComplete = false;
     $scope.getSongsClicked = false;
+    $scope.errorText = "";
+    $scope.tutorialVisible = true;
 
+    // initialize data objects
     $scope.musicData = {}; // maps spotify ids to data objects
     $scope.musicTracks = [];
     $scope.savedTrackList = [];
@@ -1031,10 +1156,10 @@
       "short_term": {}
     };
 
-    Spotify.login();
-
+    $scope.userIsLoggedIn = false;
     $scope.login = function () {
       Spotify.login();
+      $scope.userIsLoggedIn = true;
     };
 
     // Helper functions
@@ -1044,8 +1169,29 @@
     }
 
     $scope.getSongs = function () {
+      $scope.errorText = "";
       $scope.getSongsClicked = true;
+      $scope.loadFromSampleData = "";
+      $scope.musicLoadingIsComplete = false;
+      $scope.musicData = {}; // maps spotify ids to data objects
+      $scope.musicTracks = [];
+      $scope.savedTrackList = [];
+      $scope.topTracks = {
+        "long_term": {},
+        "medium_term": {},
+        "short_term": {}
+      };
       getSavedTracksFromSpotify(0, 50);
+    };
+
+    $scope.loadFromDataSet = function (str) {
+      $scope.loadFromSampleData = str;
+      //$scope.userIsLoggedIn = true;
+      //$scope.getSongsClicked = true;
+      $scope.musicLoadingIsComplete = true;
+      if ($scope.tutorialVisible) $timeout(function () {
+        $scope.tutorialVisible = false;
+      }, 10000);
     };
 
     $scope.playSelectedSong = function (track_name, artist_name) {
@@ -1059,7 +1205,10 @@
         $scope.musicTracks = Object.keys($scope.musicData).map(function (key) {
           return $scope.musicData[key];
         });
-        $scope.musicLoadingIsComplete = true;
+        $scope.musicLoadingIsComplete = true; // triggers initializing the GraphController
+        if ($scope.tutorialVisible) $timeout(function () {
+          $scope.tutorialVisible = false;
+        }, 10000);
       }
     });
 
@@ -1127,7 +1276,6 @@
 
     function addAudioFeaturesToTracks(idList) {
       $scope.featureRequestsToMake = Math.ceil(idList.length / 100);
-      console.log($scope.featureRequestsToMake);
       var track_ids_str = "";
       for (var i = 0; i < idList.length; i++) {
         track_ids_str += idList[i] + ',';
@@ -1154,6 +1302,7 @@
       }).catch(function (e) {
         console.log("Something went wrong!");
         console.log(e); // "oh, no!"
+        $scope.errorText = 'Error importing Spotify library. Please click Get Songs again.';
       });
     }
 
@@ -1191,7 +1340,7 @@
     module = angular.module('jukebox', []);
   }
   module.run(['$templateCache', function ($templateCache) {
-    $templateCache.put('/jukebox/dataviz/dataviz.html', '<div class="dataviz-page"><div class="header"><div>Jukebox</div><button ng-click="login()">Login</button> <button ng-click="getSongs()">Get Songs</button></div><div ng-if="!getSongsClicked" class="explainer-text">Click Get Songs to get started. &mapstoup;</div><div ng-if="getSongsClicked && !musicLoadingIsComplete" spinner></div><div ng-controller="GraphController" ng-if="musicLoadingIsComplete"><div class="graph-view"><div id="mygraph" ng-class="selectedTimePeriod"><div class="mydiv"></div></div></div><div ng-controller="GraphControlsController"><div class="graph-controls-view"><div class="control-box"><div class="content">Top tracks from<select ng-model="selectedTimePeriod" ng-change="changeTopTimePeriod()" name="time-period"><option value="long_term">All time</option><option value="medium_term">Last 6 months</option><option value="short_term">Last 4 weeks</option></select><br>Hide non top tracks? <input type="checkbox" ng-change="toggleHiddenNonTopTracks()" name="hide-non-top" ng-model="nonTopTracksHidden"><br>Display tracks based on<br><select ng-model="yAxisCategory" ng-change="changeYAxisCategory()" name="y-axis-category"><option value="danceability">Danceability</option><option value="energy">Energy</option><option value="speechiness">Speechiness</option><option value="acousticness">Acousticness</option><option value="instrumentalness">Instrumentalness</option><option value="liveness">Liveness</option><option value="valence">Valence</option></select>x<select ng-model="xAxisCategory" ng-change="changeXAxisCategory()" name="x-axis-category"><option value="time">Date added</option></select><br>Lock Y-axis on zoom? <input type="checkbox" ng-change="toggleYAxisLock()" ng-model="yAxisIsLocked" name="lock-y-axis"><br></div></div></div></div></div><div ng-controller="YoutubeController"><div class="iframe-container"><iframe id="ytplayer" type="text/html" ng-src="{{ yt_video_id | youtubeEmbedUrl }}" frameborder="0" allowfullscreen></div></div></div>');
+    $templateCache.put('/jukebox/dataviz/dataviz.html', '<div class="dataviz-page"><div class="header"><div class="contents"><div>Project Jukebox</div><button ng-click="login()">Login</button> <button ng-click="getSongs()" ng-disabled="!userIsLoggedIn">Get&nbsp;Your&nbsp;Songs</button></div></div><div class="notifications"><div ng-if="!userIsLoggedIn && !loadFromSampleData" class="explainer-text">Click Login to authorize Jukebox to pull data from your Spotify account.<br>Alternatively, load a sample data set.<br><button ng-click="loadFromDataSet(\'small\')">Load&nbsp;Small&nbsp;Data&nbsp;Set</button> <button ng-click="loadFromDataSet(\'large\')">Load&nbsp;Large&nbsp;Data&nbsp;Set</button></div><div ng-if="userIsLoggedIn && !getSongsClicked && !loadFromSampleData" class="explainer-text">Click Get Your Songs to get started.</div><div ng-show="musicLoadingIsComplete && tutorialVisible" class="tutorial-text">Scroll to Zoom. Click and drag to pan.<br>Click on any data point to play that song.</div><div ng-if="errorText" class="error-text">{{errorText}}</div></div></div><div ng-if="getSongsClicked && !musicLoadingIsComplete && !errorText" class="spinner-container"><div spinner></div></div><div ng-controller="GraphController" ng-if="musicLoadingIsComplete"><div class="graph-view"><div id="mygraph" ng-class="selectedTimePeriod"><div class="mydiv"></div></div></div><div ng-controller="GraphControlsController"><div class="graph-controls-view"><div class="control-box"><div class="control-item"><span style="color: yellow">Highlight</span> top tracks from<select ng-model="selectedTimePeriod" ng-change="changeTopTimePeriod()" name="time-period"><option value="long_term">all time</option><option value="medium_term">last 6 months</option><option value="short_term">last 4 weeks</option></select></div><div class="control-item">Fade non top tracks? <input type="checkbox" ng-change="toggleHiddenNonTopTracks()" name="hide-non-top" ng-model="nonTopTracksHidden"></div><div class="control-item">Display tracks based on<select ng-options="item as item.name for item in axisCategories" ng-model="axisCategory.x" ng-change="changeXAxisCategory()"></select>x<select ng-options="item as item.name disable when item.value == \'time\' for item in axisCategories" ng-model="axisCategory.y" ng-change="changeYAxisCategory()"></select></div><div class="control-item">Lock Y-axis on zoom? <input type="checkbox" ng-change="toggleYAxisLock()" ng-model="yAxisIsLocked" name="lock-y-axis"></div></div></div></div></div><div ng-controller="YoutubeController"><div class="iframe-container"><iframe id="ytplayer" type="text/html" ng-src="{{ yt_video_id | youtubeEmbedUrl }}" frameborder="0" allowfullscreen></div></div>');
   }]);
 })();
 
@@ -1224,7 +1373,7 @@
     module = angular.module('jukebox', []);
   }
   module.run(['$templateCache', function ($templateCache) {
-    $templateCache.put('/jukebox/search/search.html', '<div class="search-wrapper"><div class="search-header-items"><div class="search-header-item search"><input id="song-search-box" type="search" ng-model="searchText" ng-model-options="{ debounce: 500 }" ng-change="myData.sendQuery()" placeholder="Search Spotify..." autofocus></div><div class="search-header-item close-search"><button ng-click="closeSearch()"><span>Cancel</span></button></div></div><div class="song-suggestions" ng-if="!myData.spotify.results && !searchText"><div class="song-results-header"><span>Trending</span></div><div ng-if="myData.spotify.suggestions.length > 0"><div ng-repeat="result in myData.spotify.suggestions"><div ng-click="addSong(result.uri, result.name, result.artists[0].name, result.album.name, result.album.images[0].url)" class="song-search-result"><img src="{{ result.album.images[0].url }}" class="song-image"><div class="song-info"><div class="song-title">{{ result.name }}</div><div class="song-artist">{{ result.artists[0].name }}</div></div></div></div></div></div><div class="song-search-results"><div ng-if="myData.spotify.results.length > 0"><div ng-repeat="result in myData.spotify.results"><div ng-click="addSong(result.uri, result.name, result.artists[0].name, result.album.name, result.album.images[0].url)" class="song-search-result"><img src="{{ result.album.images[0].url }}" class="song-image"><div class="song-info"><div class="song-title">{{ result.name }}</div><div class="song-artist">{{ result.artists[0].name }}</div></div></div></div></div></div><div ng-if="querying"><div spinner></div></div></div>');
+    $templateCache.put('/jukebox/queue/queue.html', '<div class="desktop-content"><div ng-controller="YoutubeController" ng-if="room.queue[0] && !mobile"><div class="iframe-container"><iframe id="ytplayer" type="text/html" ng-src="{{ yt_video_id | youtubeEmbedUrl }}" frameborder="0" allowfullscreen></div></div></div><div class="queue-wrapper"><div ng-if="!room.loaded" spinner></div><div ng-if="room.loaded"><div header currently-playing="room.queue[0]"></div><div class="song-queue" data-as-sortable="dragControlListeners" data-ng-model="room.queue"><div ng-repeat="song in room.queue"><div class="song-queue-item noselect" data-uuid="{{ song.unique_id }}" data-as-sortable-item ng-swipe-left="showDeleteButton = true" ng-swipe-right="showDeleteButton = false"><img src="{{ song.image_url }}" class="song-image"><div class="song-info"><div class="song-title">{{ song.track }}</div><div class="song-artist">{{ song.artist }}</div><div class="song-user">@{{ song.submitter }}</div></div><i class="fa fa-th-list drag-button" ng-if="room.allAdmin && !showDeleteButton" data-as-sortable-item-handle></i> <i class="fa fa-trash fa-lg delete-button" ng-if="room.allAdmin && showDeleteButton" ng-click="deleteSong($event)"></i></div></div></div></div></div><div plus-button></div>');
   }]);
 })();
 
@@ -1235,7 +1384,7 @@
     module = angular.module('jukebox', []);
   }
   module.run(['$templateCache', function ($templateCache) {
-    $templateCache.put('/jukebox/queue/queue.html', '<div class="desktop-content"><div ng-controller="YoutubeController" ng-if="room.queue[0] && !mobile"><div class="iframe-container"><iframe id="ytplayer" type="text/html" ng-src="{{ yt_video_id | youtubeEmbedUrl }}" frameborder="0" allowfullscreen></div></div></div><div class="queue-wrapper"><div ng-if="!room.loaded" spinner></div><div ng-if="room.loaded"><div header currently-playing="room.queue[0]"></div><div class="song-queue" data-as-sortable="dragControlListeners" data-ng-model="room.queue"><div ng-repeat="song in room.queue"><div class="song-queue-item noselect" data-uuid="{{ song.unique_id }}" data-as-sortable-item ng-swipe-left="showDeleteButton = true" ng-swipe-right="showDeleteButton = false"><img src="{{ song.image_url }}" class="song-image"><div class="song-info"><div class="song-title">{{ song.track }}</div><div class="song-artist">{{ song.artist }}</div><div class="song-user">@{{ song.submitter }}</div></div><i class="fa fa-th-list drag-button" ng-if="room.allAdmin && !showDeleteButton" data-as-sortable-item-handle></i> <i class="fa fa-trash fa-lg delete-button" ng-if="room.allAdmin && showDeleteButton" ng-click="deleteSong($event)"></i></div></div></div></div></div><div plus-button></div>');
+    $templateCache.put('/jukebox/search/search.html', '<div class="search-wrapper"><div class="search-header-items"><div class="search-header-item search"><input id="song-search-box" type="search" ng-model="searchText" ng-model-options="{ debounce: 500 }" ng-change="myData.sendQuery()" placeholder="Search Spotify..." autofocus></div><div class="search-header-item close-search"><button ng-click="closeSearch()"><span>Cancel</span></button></div></div><div class="song-suggestions" ng-if="!myData.spotify.results && !searchText"><div class="song-results-header"><span>Trending</span></div><div ng-if="myData.spotify.suggestions.length > 0"><div ng-repeat="result in myData.spotify.suggestions"><div ng-click="addSong(result.uri, result.name, result.artists[0].name, result.album.name, result.album.images[0].url)" class="song-search-result"><img src="{{ result.album.images[0].url }}" class="song-image"><div class="song-info"><div class="song-title">{{ result.name }}</div><div class="song-artist">{{ result.artists[0].name }}</div></div></div></div></div></div><div class="song-search-results"><div ng-if="myData.spotify.results.length > 0"><div ng-repeat="result in myData.spotify.results"><div ng-click="addSong(result.uri, result.name, result.artists[0].name, result.album.name, result.album.images[0].url)" class="song-search-result"><img src="{{ result.album.images[0].url }}" class="song-image"><div class="song-info"><div class="song-title">{{ result.name }}</div><div class="song-artist">{{ result.artists[0].name }}</div></div></div></div></div></div><div ng-if="querying"><div spinner></div></div></div>');
   }]);
 })();
 

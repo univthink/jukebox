@@ -50,6 +50,8 @@ handlers:
 #   upload: src/app/index.html
 - url: /dist
   static_dir: dist
+- url: /resources
+  static_dir: dist/resources
 - url: .*
   static_files: dist/index.html
   upload: dist/index.html
